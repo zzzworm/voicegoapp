@@ -16,3 +16,13 @@ struct HighlightFillButtonStyle: ButtonStyle {
   }
 
 }
+
+struct AnimateableFillButtonStyle: ButtonStyle {
+
+  func makeBody(configuration: Self.Configuration) -> some View {
+    configuration.label
+      .foregroundColor(configuration.isPressed ? Color.black : Color.blue)
+      .background(Color.white)
+  }
+
+}

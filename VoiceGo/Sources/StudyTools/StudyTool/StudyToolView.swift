@@ -28,6 +28,7 @@ struct StudyToolView: View {
                     else {
                         ScrollView{
                             LazyVStack {
+                                ToolQACardView(card: viewStore.card)
                                 ForEachStore(self.store.scope(
                                     state: \.toolHistoryListState,
                                     action: StudyToolDomain.Action.toolHistory
@@ -45,6 +46,9 @@ struct StudyToolView: View {
                         }
                     }
                 }
+                .task {
+                    viewStore.send(.fetchStudyHistory)
+                }
                 .navigationTitle("StudyTool")
                 .navigationViewStyle(.stack)
                 
@@ -57,7 +61,7 @@ struct StudyToolView_Previews: PreviewProvider {
     static var previews: some View {
         StudyToolView(
             store: Store(
-                initialState: StudyToolDomain.State(id: UUID(), studyTool: StudyTool.sample[0]),
+                initialState: StudyToolDomain.State(id: UUID(), studyTool: StudyTool.sample[0], card: QACard(isExample: true, originText:"apply", actionText: "翻译", answer: "应用")),
                 reducer: StudyToolDomain.init
             )
         )

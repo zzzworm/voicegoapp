@@ -1,0 +1,75 @@
+//
+//  ToolHeaderCard.swift
+//  VoiceGo
+//
+//  Created by zzzworm on 2025/3/27.
+//
+
+import SwiftUI
+import MarkdownUI
+
+
+
+
+
+
+
+struct QAListCard : Equatable{
+    var isExample : Bool = true
+    var originCaption : String = "原文"
+    var originText : String = ""
+    var actionText : String = ""
+    var suggestions: [String] = []
+}
+
+struct ToolQListCardView: View {
+    let card: QAListCard
+    let cornerRadius: CGFloat = 15.0
+    var body: some View{
+        ZStack(alignment: .leading) {
+            RoundedRectangle(cornerRadius: cornerRadius)
+                .fill(.white)
+                .shadow(radius: 10)
+            VStack{
+                HStack{
+                    Spacer()
+                    
+                    
+                    Text("示例")
+                        .font(.footnote)
+                        .foregroundStyle(.white)
+                        .padding(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
+                        .background{
+                            UnevenRoundedRectangle(cornerRadii: RectangleCornerRadii(topLeading: 0,bottomLeading: cornerRadius, bottomTrailing: 0, topTrailing: cornerRadius))
+                                .fill(.blue)
+                                .shadow(radius: 10)
+                        }
+                    
+                }
+                Spacer()
+            }
+            VStack {
+                
+                GroundedCaptionView(caption:card.originCaption)
+                Text(card.originText)
+                GroundedCaptionView(caption:card.actionText)
+                    
+                VStack {
+                    ForEach(card.suggestions){ suggestion in
+                        GroundedCaptionItemView(caption:suggestion)
+                    }
+                }
+                Spacer()
+            }
+            .padding(10)
+        }
+        .frame( height: 250)
+        
+    }
+    
+}
+
+
+#Preview {
+    ToolQListCardView(card: QAListCard(isExample: true, originText:"apply", actionText: "翻译", suggestions: ["hi"]))
+}

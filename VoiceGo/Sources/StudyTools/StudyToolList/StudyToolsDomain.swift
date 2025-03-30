@@ -40,13 +40,23 @@ struct StudyToolListDomain: Reducer {
                     return .none
                 }
 
-                state.dataLoadingStatus = .loading
+                //state.dataLoadingStatus = .loading
+                state.studyToolListState = IdentifiedArrayOf(
+                    uniqueElements: StudyTool.sample.map {
+                        StudyToolDomain.State(
+                            id: uuid(),
+                            studyTool: $0, card: QACard(isExample: true, originText:"apply", actionText: "翻译", answer: "应用")
+                        )
+                    }
+                )
+                
                 return .run { send in
 //                    let result = await TaskResult { try await apiClient.fetchStudyTools() }
 //                   await send(.fetchStudyToolsResponse(result))
 //                   await .fetchStudyToolsResponse(
 //                       TaskResult { result }
 //                   )
+                    
                 }
             case .fetchStudyToolsResponse(.success(let studyTools)):
                 state.dataLoadingStatus = .success
@@ -54,7 +64,7 @@ struct StudyToolListDomain: Reducer {
                     uniqueElements: studyTools.map {
                         StudyToolDomain.State(
                             id: uuid(),
-                            studyTool: $0
+                            studyTool: $0, card: QACard(isExample: true, originText:"apply", actionText: "翻译", answer: "应用")
                         )
                     }
                 )

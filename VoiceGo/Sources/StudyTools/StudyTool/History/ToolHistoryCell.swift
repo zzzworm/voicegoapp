@@ -11,7 +11,7 @@ import MarkdownUI
 
 
 struct ToolHistoryCell: View {
-    let store: StoreOf<ToolHistoryDomain>
+    @State var store: StoreOf<ToolHistoryDomain>
     
     var body: some View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
@@ -22,9 +22,21 @@ struct ToolHistoryCell: View {
                 VStack{
                     HStack {
                         VStack(alignment: .leading) {
-                            Text(viewStore.history.question).font(.system(.title, design: .rounded))
+                            HStack{
+                                Text(viewStore.history.question).font(.system(.title, design: .rounded))
+                                VoiceAnimatedButton(animating: $store.isSpeaking) {
+                                    if(viewStore.isSpeaking){
+                                        viewStore.send(.stopSpeak)
+                                    }
+                                    else{
+                                        viewStore.send(.speakAnswer(viewStore.history.question))
+                                    }
+                                }
+                            }
                             Divider()
-                            Markdown("\(viewStore.history.answer)").font(.system(.body, design: .rounded))
+                            Markdown("\(viewStore.history.answer)")
+                                .textSelection(.enabled)
+                                .font(.system(.body, design: .rounded))
                             
                         }
                         .padding(10)
@@ -33,12 +45,14 @@ struct ToolHistoryCell: View {
                     .padding(5)
                     Divider()
                     HStack{
-                        Button {
-                            
-                            viewStore.send(.speakAnswer(viewStore.history.answer))
-                        } label: {
-                            Image(systemName: "speaker.3")
-                        }.buttonStyle(HighlightFillButtonStyle())
+                        VoiceAnimatedButton( animating: $store.isSpeaking) {
+                            if(viewStore.isSpeaking){
+                                viewStore.send(.stopSpeak)
+                            }
+                            else{
+                                viewStore.send(.speakAnswer(viewStore.history.answer))
+                            }
+                        }
                         Button {
                             viewStore.send(.copyAnswer(viewStore.history.answer))
                         } label: {
@@ -58,11 +72,12 @@ struct ToolHistoryCell_Previews: PreviewProvider {
             store: Store(
                 initialState: ToolHistoryDomain.State(
                     id: UUID(),
-                    history: ToolHistory.sample[0]
+                    history: ToolHistory.sample[0],
+                    isSpeaking: false
                 ),
                 reducer: ToolHistoryDomain.init
             )
+            
         )
-        .previewLayout(.fixed(width: 300, height: 300))
     }
 }

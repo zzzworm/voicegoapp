@@ -15,6 +15,7 @@ struct StudyToolDomain: Reducer {
         let id: UUID
         let studyTool: StudyTool
         var dataLoadingStatus = DataLoadingStatus.notStarted
+        var card : QACard
         var toolHistoryListState: IdentifiedArrayOf<ToolHistoryDomain.State> = []
         var shouldShowError: Bool {
             dataLoadingStatus == .error
@@ -39,7 +40,10 @@ struct StudyToolDomain: Reducer {
                 if state.dataLoadingStatus == .success || state.dataLoadingStatus == .loading {
                     return .none
                 }
-
+                state.toolHistoryListState = IdentifiedArrayOf(uniqueElements: ToolHistory.sample.map { history in
+                    let uuid = self.uuid() // Use the dependency for generating a unique ID
+                    return ToolHistoryDomain.State(id: uuid, history: history)
+                })
                     return .none
                 
             case .fetchStudyHistoryResponse(.success(let toolHistoryList)):

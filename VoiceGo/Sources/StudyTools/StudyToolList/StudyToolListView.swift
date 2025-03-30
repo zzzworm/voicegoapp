@@ -33,7 +33,7 @@ struct StudyToolListView: View {
                             )) { store in
                                 let cell = StudyToolCell(store: store)
                                 NavigationLink {
-                                    cell
+                                    StudyToolView(store:store)
                                 } label: {
                                     cell
                                 }
