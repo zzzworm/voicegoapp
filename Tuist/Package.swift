@@ -33,6 +33,7 @@ let package = Package(
         .package(url:"https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.18.0"),
         .package(url:"https://github.com/gonzalezreal/swift-markdown-ui.git", from: "2.4.1"),
         .package(url: "https://github.com/swiftlang/swift-cmark", from: "0.5.0"),
+        .package(url:"https://github.com/Moya/Moya.git", from: "15.0.3"),
 
     ]
 )

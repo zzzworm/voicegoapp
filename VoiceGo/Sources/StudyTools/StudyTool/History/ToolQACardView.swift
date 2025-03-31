@@ -24,7 +24,7 @@ struct ToolQACardView: View {
         ZStack(alignment: .leading) {
             RoundedRectangle(cornerRadius: cornerRadius)
                 .fill(.white)
-                .shadow(radius: 10)
+                .shadow(radius: 2)
             VStack{
                 HStack{
                     Spacer()
@@ -35,7 +35,7 @@ struct ToolQACardView: View {
                         .background{
                             UnevenRoundedRectangle(cornerRadii: RectangleCornerRadii(topLeading: 0,bottomLeading: cornerRadius, bottomTrailing: 0, topTrailing: cornerRadius))
                                 .fill(.blue)
-                                .shadow(radius: 10)
+                                .shadow(radius: 2)
                         }
                     
                 }
@@ -50,8 +50,6 @@ struct ToolQACardView: View {
             }
             .padding(10)
         }
-        .frame( height: 250)
-        
     }
     
 }

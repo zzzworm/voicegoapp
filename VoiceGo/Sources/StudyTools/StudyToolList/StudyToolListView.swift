@@ -44,8 +44,9 @@ struct StudyToolListView: View {
                 .task {
                     viewStore.send(.fetchStudyTools)
                 }
-                .navigationTitle("StudyTools")
+                .navigationTitle("学习工具")
                 .navigationViewStyle(.stack)
+                .navigationBarTitleDisplayMode(.inline)
                 
                 
             }

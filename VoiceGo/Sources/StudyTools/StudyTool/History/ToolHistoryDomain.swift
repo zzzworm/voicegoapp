@@ -75,7 +75,15 @@ struct ToolHistoryDomain: Reducer {
                 return speekText(question)
             case .speakAnswer(let answer):
                 state.isSpeaking = true
-                return speekText(answer)
+                if let attString = try? AttributedString(
+                    markdown:answer
+                ){
+                    let content = String(attString.characters)
+                    return speekText(content)
+                }
+                else{
+                    return .none
+                }
             case .stopSpeak:
                 return .run { send in
                     let ret =  await speechSynthesizer.stopSpeaking()

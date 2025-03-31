@@ -18,7 +18,7 @@ struct ToolHistoryCell: View {
             ZStack(alignment: .leading) {
                 RoundedRectangle(cornerRadius: 10)
                     .fill(.white)
-                    .shadow(radius: 10)
+                    .shadow(radius: 2)
                 VStack{
                     HStack {
                         VStack(alignment: .leading) {
@@ -45,6 +45,7 @@ struct ToolHistoryCell: View {
                     .padding(5)
                     Divider()
                     HStack{
+                        
                         VoiceAnimatedButton( animating: $store.isSpeaking) {
                             if(viewStore.isSpeaking){
                                 viewStore.send(.stopSpeak)
@@ -53,11 +54,16 @@ struct ToolHistoryCell: View {
                                 viewStore.send(.speakAnswer(viewStore.history.answer))
                             }
                         }
+                        .frame(width:26)
+                        
                         Button {
                             viewStore.send(.copyAnswer(viewStore.history.answer))
                         } label: {
                             Image(systemName: "doc.on.clipboard")
-                        }.buttonStyle(HighlightFillButtonStyle())
+                        }
+                        .buttonStyle(HighlightFillButtonStyle())
+                        .frame(width:26)
+                        
                         Spacer()
                     }.padding(10)
                 }

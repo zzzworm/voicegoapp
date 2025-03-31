@@ -27,25 +27,29 @@ struct StudyToolView: View {
                     else {
                         ScrollView{
                             LazyVStack {
-                                ToolQACardView(card: viewStore.card)
+                                if (0 == viewStore.toolHistoryListState.count) {
+                                    ToolQACardView(card: viewStore.card)
+                                }
+                                
                                 ForEachStore(self.store.scope(
                                     state: \.toolHistoryListState,
                                     action: StudyToolDomain.Action.toolHistory
                                 )) { store in
                                     let cell = ToolHistoryCell(store: store)
                                     VStack{
-                                       cell
-                                       
+                                        cell
                                     }
                                 }
-                            }
+                                
+                            }.padding()
                         }
                     }
                 }
                 .task {
                     viewStore.send(.fetchStudyHistory)
                 }
-                .navigationTitle("StudyTool")
+                .navigationTitle(viewStore.studyTool.title)
+                .navigationBarTitleDisplayMode(.inline)
                 .navigationViewStyle(.stack)
             }
             

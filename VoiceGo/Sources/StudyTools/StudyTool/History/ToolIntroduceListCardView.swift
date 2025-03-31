@@ -21,7 +21,7 @@ struct ToolIntroduceListCardView: View {
         ZStack(alignment: .leading) {
             RoundedRectangle(cornerRadius: cornerRadius)
                 .fill(.white)
-                .shadow(radius: 5)
+                .shadow(radius: 2)
             
             VStack {
                 HStack(){
