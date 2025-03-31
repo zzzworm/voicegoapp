@@ -47,7 +47,7 @@ struct VoiceAnimatedButton: View {
     }
 }
 
-
+@available(iOS 17.0, *)
 #Preview {
     @Previewable @State var animating : Bool = false
     VoiceAnimatedButton(animating: $animating){

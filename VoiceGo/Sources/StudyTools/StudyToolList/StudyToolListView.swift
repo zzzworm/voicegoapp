@@ -15,7 +15,7 @@ struct StudyToolListView: View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
             NavigationView {
                 Group {
-                    if viewStore.isLoading {
+                    if viewStore.dataLoadingStatus == .loading {
                         ProgressView()
                             .frame(width: 100, height: 100)
                     } else if viewStore.shouldShowError {
@@ -46,6 +46,7 @@ struct StudyToolListView: View {
                 }
                 .navigationTitle("StudyTools")
                 .navigationViewStyle(.stack)
+                
                 
             }
         }

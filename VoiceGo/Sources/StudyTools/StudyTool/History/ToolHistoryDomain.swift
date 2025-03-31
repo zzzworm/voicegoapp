@@ -7,7 +7,7 @@
 import Foundation
 import ComposableArchitecture
 import AVFAudio
-import UIKit
+
 
 struct ToolHistoryDomain: Reducer {
     @ObservableState
@@ -28,8 +28,9 @@ struct ToolHistoryDomain: Reducer {
         case speakFailed
         case binding(BindingAction<State>)
     }
-
+    
     @Dependency(\.speechSynthesizer) var speechSynthesizer
+    @Dependency(\.clipboardClient) var clipboardClient
     
     fileprivate func speekText(_ answer: String) -> Effect<ToolHistoryDomain.Action> {
         return .run { send in
@@ -61,6 +62,7 @@ struct ToolHistoryDomain: Reducer {
         }
     }
     
+    
     var body: some ReducerOf<Self> {
         
         Reduce { state, action in
@@ -80,15 +82,16 @@ struct ToolHistoryDomain: Reducer {
                     await send(.speakFailed)
                 }
             case .copyAnswer(let answer):
-                UIPasteboard.general.string = answer
-                return .none
+                return .run { send in 
+                    clipboardClient.copyValue(answer) 
+                }
             case .speakFinished:
                 state.isSpeaking = false
                 return .none
             case .speakFailed:
                 state.isSpeaking = false
                 return .none
-            
+                
             case .binding(\.isSpeaking):
                 return .none
             case .binding(_):

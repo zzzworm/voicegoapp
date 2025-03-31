@@ -10,12 +10,11 @@ import ComposableArchitecture
 
 struct StudyToolView: View {
     let store: StoreOf<StudyToolDomain>
-    
     var body: some View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
             NavigationView {
                 Group {
-                    if viewStore.isLoading {
+                    if viewStore.dataLoadingStatus == .loading {
                         ProgressView()
                             .frame(width: 100, height: 100)
                     } else if viewStore.shouldShowError {
@@ -35,11 +34,8 @@ struct StudyToolView: View {
                                 )) { store in
                                     let cell = ToolHistoryCell(store: store)
                                     VStack{
-                                        NavigationLink {
-                                            cell
-                                        } label: {
-                                            cell
-                                        }
+                                       cell
+                                       
                                     }
                                 }
                             }
@@ -51,8 +47,8 @@ struct StudyToolView: View {
                 }
                 .navigationTitle("StudyTool")
                 .navigationViewStyle(.stack)
-                
             }
+            
         }
     }
 }

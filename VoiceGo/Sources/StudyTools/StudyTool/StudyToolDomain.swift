@@ -21,9 +21,6 @@ struct StudyToolDomain: Reducer {
             dataLoadingStatus == .error
         }
         
-        var isLoading: Bool {
-            dataLoadingStatus == .loading
-        }
     }
     
     enum Action: Equatable {
