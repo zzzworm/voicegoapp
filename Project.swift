@@ -15,6 +15,9 @@ let project = Project(
                         "UIColorName": "",
                         "UIImageName": "",
                     ],
+                    "NSAppTransportSecurity": [
+                        "NSAllowsArbitraryLoads": true
+                    ]
                 ]
             ),
             sources: ["VoiceGo/Sources/**"],
@@ -29,6 +32,7 @@ let project = Project(
                 .external(name: "ComposableArchitecture"),
                 .external(name: "MarkdownUI"),
                 .external(name: "cmark-gfm"),
+                .external(name: "Moya"),
             ],
             settings: .settings(base: [
             "DEVELOPMENT_ASSET_PATHS": ["VoiceGo/Resources/PreviewContent/Sources", "VoiceGo/Resources/PreviewContent/PreviewAssets.xcassets"] 

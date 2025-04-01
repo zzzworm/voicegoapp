@@ -7,7 +7,7 @@
 
 import Foundation
 import ComposableArchitecture
-import Alamofire
+import Moya
 
 struct APIClient {
     var fetchStudyTools:  @Sendable () async throws -> [StudyTool]
@@ -16,25 +16,24 @@ struct APIClient {
     struct Failure: Error, Equatable {}
 }
 
-// This is the "live" fact dependency that reaches into the outside world to fetch the data from network.
-// Typically this live implementation of the dependency would live in its own module so that the
-// main feature doesn't need to compile it.
-extension APIClient: DependencyKey {
-  static let liveValue = Self(
-    fetchStudyTools: {
-        let (data, _) = try await URLSession.shared
-            .data(from: URL(string: "https://fakestoreapi.com/products")!)
-        let products = try JSONDecoder().decode([StudyTool].self, from: data)
-        return products
-    },
-    fetchUserProfile: {
-        let (data, _) = try await URLSession.shared
-            .data(from: URL(string: "https://fakestoreapi.com/users/1")!)
-        let profile = try JSONDecoder().decode(UserProfile.self, from: data)
-        return profile
-    }
-  )
+// 使用Moya实现APIClient的liveValue
+extension APIClient {
+    static let liveValue = Self(
+        fetchStudyTools: {
+            let provider = MoyaProvider<APIService>()
+            let response = try await provider.asyncRequest(.fetchStudyTools)
+            let products = try JSONDecoder().decode([StudyTool].self, from: response.data)
+            return products
+        },
+        fetchUserProfile: {
+            let provider = MoyaProvider<APIService>()
+            let response = try await provider.asyncRequest(.fetchUserProfile)
+            let profile = try JSONDecoder().decode(UserProfile.self, from: response.data)
+            return profile
+        }
+    )
 }
+
 
 extension APIClient {
     static var previewValue = Self(
@@ -43,7 +42,7 @@ extension APIClient {
     )
 }
 
-extension APIClient {
+extension APIClient : TestDependencyKey  {
     static var testValue = Self(
         fetchStudyTools: { StudyTool.sample },
         fetchUserProfile: { .sample }

@@ -21,6 +21,18 @@ extension Session {
         }
     }
     
+//    public func eventSourceRequest(_ urlRequest: URLRequest) -> DataStreamRequest {
+//        
+//        return streamRequest(convertible, headers: headers) { request in
+//            request.timeoutInterval = TimeInterval(Int32.max)
+//            request.headers.add(name: "Accept", value: "text/event-stream")
+//            request.headers.add(name: "Cache-Control", value: "no-cache")
+//            if let lastEventID = lastEventID {
+//                request.headers.add(name: "Last-Event-ID", value: lastEventID)
+//            }
+//        }
+//    }
+    
 }
 
 extension DataStreamRequest {
