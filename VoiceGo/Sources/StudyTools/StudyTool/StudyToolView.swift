@@ -52,7 +52,7 @@ struct StudyToolBottomBarView: View {
                         self, name: UIResponder.keyboardWillHideNotification,
                         object: nil)
                 }
-            }.padding()
+            }.padding(EdgeInsets(top: 5, leading: 10, bottom: 10, trailing: 10))
             Text("AI生成内容，仅供参考")
         }
     }
@@ -65,41 +65,37 @@ struct StudyToolView: View {
             NavigationView {
                 Group {
                     VStack {
-//                        ScrollView {
-//                            if viewStore.dataLoadingStatus == .loading {
-//                                ProgressView()
-//                                    .frame(width: 100, height: 100)
-//                            } else if viewStore.shouldShowError {
-//                                ErrorView(
-//                                    message: "Oops, we couldn't fetch product list",
-//                                    retryAction: { viewStore.send(.fetchStudyHistory) }
-//                                )
-//
-//                            } else {
-//
-//                                LazyVStack {
-//                                    if 0 == viewStore.toolHistoryListState.count {
-//                                        ToolQACardView(card: viewStore.card)
-//                                    }
-//
-//                                    ForEachStore(
-//                                        self.store.scope(
-//                                            state: \.toolHistoryListState,
-//                                            action: StudyToolDomain.Action.toolHistory
-//                                        )
-//                                    ) { store in
-//                                        let cell = ToolHistoryCell(store: store)
-//                                        VStack {
-//                                            cell
-//                                        }.padding(.horizontal, 5, .vertical, 8)
-//                                    }
-//
-//                                }
-////                                .padding(.bottom, viewStore.isKeyboardVisible ? 300 : 0)  // 动态底部间距
-////                                .animation(.easeOut, value: viewStore.isKeyboardVisible)
-//
-//                            }
-//                        }
+                        ScrollView {
+                            if viewStore.dataLoadingStatus == .loading {
+                                ProgressView()
+                                    .frame(width: 100, height: 100)
+                            } else if viewStore.shouldShowError {
+                                ErrorView(
+                                    message: "Oops, we couldn't fetch product list",
+                                    retryAction: { viewStore.send(.fetchStudyHistory) }
+                                )
+
+                            } else {
+
+                                LazyVStack {
+                                    if 0 == viewStore.toolHistoryListState.count {
+                                        ToolQACardView(card: viewStore.card)
+                                    }
+
+                                    ForEachStore(
+                                        self.store.scope(
+                                            state: \.toolHistoryListState,
+                                            action: StudyToolDomain.Action.toolHistory
+                                        )
+                                    ) { store in
+                                        ToolHistoryCell(store: store)
+                                            .padding(EdgeInsets(top: 0, leading: 10, bottom: 10, trailing: 10))
+                                    }
+                                }
+                                .padding(.bottom, viewStore.isKeyboardVisible ? 300 : 0)  // 动态底部间距
+                                .animation(.easeOut, value: viewStore.isKeyboardVisible)
+                            }
+                        }
                         StudyToolBottomBarView(viewStore: viewStore)
                     }
                 }
