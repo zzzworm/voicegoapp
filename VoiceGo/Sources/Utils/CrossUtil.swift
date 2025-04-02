@@ -62,3 +62,13 @@ private struct StackNavigationSubview<Content>: View where Content: View {
         }
     }
 }
+
+
+extension Error where Self:Equatable
+{
+    fileprivate
+    func equals(_ other:any Error) -> Bool
+    {
+        (other as? Self).map { $0 == self } ?? false
+    }
+}

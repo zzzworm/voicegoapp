@@ -17,25 +17,23 @@ struct StudyToolDomain: Reducer {
         var dataLoadingStatus = DataLoadingStatus.notStarted
         var card : QACard
         var toolHistoryListState: IdentifiedArrayOf<ToolHistoryDomain.State> = []
-        var inputText: String = ""
-        var isKeyboardVisible: Bool = false
         var shouldShowError: Bool {
             dataLoadingStatus == .error
         }
-        
+        var inputBarState = InputBarDomain.State()
     }
     
     enum Action: Equatable {
         case fetchStudyHistory
         case fetchStudyHistoryResponse(TaskResult<[ToolHistory]>)
         case toolHistory(id: ToolHistoryDomain.State.ID, action: ToolHistoryDomain.Action)
-        case inputTextChanged(String)
-        case keyboardWillShow
-        case keyboardWillHide
+        case inputBar(InputBarDomain.Action)
     }
 
     var body: some ReducerOf<Self> {
-
+        Scope(state: \.inputBarState, action: /Action.inputBar) {
+            InputBarDomain()
+        }
         Reduce { state, action in
             switch action {
             case .fetchStudyHistory:
@@ -59,14 +57,7 @@ struct StudyToolDomain: Reducer {
                 return .none
             case .toolHistory(id: let id, action: let action):
                 return .none
-            case .inputTextChanged(let text):
-                state.inputText = text
-                return .none
-            case .keyboardWillShow:
-                state.isKeyboardVisible = true
-                return .none
-            case .keyboardWillHide:
-                state.isKeyboardVisible = false
+            case .inputBar(_):
                 return .none
             }
         }

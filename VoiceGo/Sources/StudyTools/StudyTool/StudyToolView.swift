@@ -8,52 +8,67 @@
 import ComposableArchitecture
 import SwiftUI
 
-struct StudyToolBottomBarView: View {
-    let viewStore: ViewStore<StudyToolDomain.State, StudyToolDomain.Action>
+
+struct InputBarDomain : Reducer{
+    @ObservableState
+    struct State : Equatable {
+        var inputText: String = ""
+        var isKeyboardVisible: Bool = false
+        var speechRecognitionInputState: SpeechRecognitionInputDomain.State = .init()
+    }
+    enum Action: Equatable, BindableAction {
+        case binding(BindingAction<State>)
+        case inputTextChanged(String)
+        case speechRecognitionInput(SpeechRecognitionInputDomain.Action)
+    }
+    
+    
+    
+    var body: some ReducerOf<Self>  {
+        BindingReducer()
+        Scope(state: \.speechRecognitionInputState, action: /Action.speechRecognitionInput) {
+            SpeechRecognitionInputDomain()
+        }
+        Reduce { state, action in
+            switch action {
+            case .binding:
+                return .none
+            case .inputTextChanged(let text):
+                state.inputText = text
+                return .none
+            case .speechRecognitionInput(let action):
+                return .none
+            }
+        }
+    }
+}
+
+struct BottomInputBarBarView: View {
+    @FocusState var isFocused : Bool // 1
+    @Perception.Bindable var store: StoreOf<InputBarDomain>
     var body: some View {
-        VStack(alignment: .center) {
-            HStack {
-                // 添加按钮
-                Button {
-                    viewStore.send(.fetchStudyHistory)
-                } label: {
-                    Image(systemName: "mic")
-                        .font(.title)
-                }
-                
-                // 添加输入框
-                TextField(
-                    "请输入内容",
-                    text: viewStore.binding(
-                        get: \.inputText,
-                        send: StudyToolDomain.Action.inputTextChanged
+        WithViewStore(self.store, observe: { $0 }) { viewStore in
+            VStack(alignment: .center) {
+                HStack {
+                    // 添加按钮
+                    SpeechRecognitionInputView(store: store.scope(state: \.speechRecognitionInputState, action: InputBarDomain.Action.speechRecognitionInput))
+                    
+                    // 添加输入框
+                    TextField(
+                        "请输入内容",
+                        text: viewStore.binding(
+                            get: \.inputText,
+                            send: InputBarDomain.Action.inputTextChanged
+                        )
                     )
-                )
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .onAppear {
-                    NotificationCenter.default.addObserver(
-                        forName: UIResponder.keyboardWillShowNotification,
-                        object: nil, queue: .main
-                    ) { _ in
-                        viewStore.send(.keyboardWillShow)
-                    }
-                    NotificationCenter.default.addObserver(
-                        forName: UIResponder.keyboardWillHideNotification,
-                        object: nil, queue: .main
-                    ) { _ in
-                        viewStore.send(.keyboardWillHide)
-                    }
-                }
-                .onDisappear {
-                    NotificationCenter.default.removeObserver(
-                        self, name: UIResponder.keyboardWillShowNotification,
-                        object: nil)
-                    NotificationCenter.default.removeObserver(
-                        self, name: UIResponder.keyboardWillHideNotification,
-                        object: nil)
-                }
-            }.padding(EdgeInsets(top: 5, leading: 10, bottom: 10, trailing: 10))
-            Text("AI生成内容，仅供参考")
+                    .focused($isFocused) // 2
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+
+                }.padding(EdgeInsets(top: 5, leading: 10, bottom: 10, trailing: 10))
+                
+            }
+            // Synchronize store focus state and local focus state.
+            .bind($store.isKeyboardVisible, to: $isFocused)
         }
     }
 }
@@ -64,50 +79,59 @@ struct StudyToolView: View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
             NavigationView {
                 Group {
-                    VStack {
-                        ScrollView {
-                            if viewStore.dataLoadingStatus == .loading {
-                                ProgressView()
-                                    .frame(width: 100, height: 100)
-                            } else if viewStore.shouldShowError {
-                                ErrorView(
-                                    message: "Oops, we couldn't fetch product list",
-                                    retryAction: { viewStore.send(.fetchStudyHistory) }
-                                )
-
-                            } else {
-
-                                LazyVStack {
-                                    if 0 == viewStore.toolHistoryListState.count {
-                                        ToolQACardView(card: viewStore.card)
+                    ZStack{
+                        
+                        VStack {
+                            ScrollView {
+                                if viewStore.dataLoadingStatus == .loading {
+                                    ProgressView()
+                                        .frame(width: 100, height: 100)
+                                } else if viewStore.shouldShowError {
+                                    ErrorView(
+                                        message: "Oops, we couldn't fetch product list",
+                                        retryAction: { viewStore.send(.fetchStudyHistory) }
+                                    )
+                                    
+                                } else {
+                                    
+                                    LazyVStack {
+                                        if 0 == viewStore.toolHistoryListState.count {
+                                            ToolQACardView(card: viewStore.card)
+                                        }
+                                        
+                                        ForEachStore(
+                                            self.store.scope(
+                                                state: \.toolHistoryListState,
+                                                action: StudyToolDomain.Action.toolHistory
+                                            )
+                                        ) { store in
+                                            ToolHistoryCell(store: store)
+                                                .padding(EdgeInsets(top: 0, leading: 10, bottom: 10, trailing: 10))
+                                        }
                                     }
-
-                                    ForEachStore(
-                                        self.store.scope(
-                                            state: \.toolHistoryListState,
-                                            action: StudyToolDomain.Action.toolHistory
-                                        )
-                                    ) { store in
-                                        ToolHistoryCell(store: store)
-                                            .padding(EdgeInsets(top: 0, leading: 10, bottom: 10, trailing: 10))
-                                    }
+                                    .padding(.bottom, viewStore.inputBarState.isKeyboardVisible ? 300 : 0)  // 动态底部间距
+                                    .animation(.easeOut, value: viewStore.inputBarState.isKeyboardVisible)
                                 }
-                                .padding(.bottom, viewStore.isKeyboardVisible ? 300 : 0)  // 动态底部间距
-                                .animation(.easeOut, value: viewStore.isKeyboardVisible)
                             }
+                            
+                            BottomInputBarBarView(store: store.scope(state: \.inputBarState, action: StudyToolDomain.Action.inputBar))
+                            Text("AI生成内容，仅供参考")
                         }
-                        StudyToolBottomBarView(viewStore: viewStore)
+                        .onTapGesture {
+                            viewStore.send(.inputBar(.set(\.isKeyboardVisible, false)))
+                        }
+                        
                     }
+                    .task {
+                        viewStore.send(.fetchStudyHistory)
+                    }
+                    .navigationTitle(viewStore.studyTool.title)
+                    .navigationBarTitleDisplayMode(.inline)
+                    .navigationViewStyle(.stack)
+                    
                 }
-                .task {
-                    viewStore.send(.fetchStudyHistory)
-                }
-                .navigationTitle(viewStore.studyTool.title)
-                .navigationBarTitleDisplayMode(.inline)
-                .navigationViewStyle(.stack)
-
+                
             }
-
         }
     }
 }
