@@ -20,19 +20,19 @@ struct StudyToolDomain: Reducer {
         var shouldShowError: Bool {
             dataLoadingStatus == .error
         }
-        var inputBarState = InputBarDomain.State()
+        var inputBarState = BottomInputBarDomain.State()
     }
     
     enum Action: Equatable {
         case fetchStudyHistory
         case fetchStudyHistoryResponse(TaskResult<[ToolHistory]>)
         case toolHistory(id: ToolHistoryDomain.State.ID, action: ToolHistoryDomain.Action)
-        case inputBar(InputBarDomain.Action)
+        case inputBar(BottomInputBarDomain.Action)
     }
 
     var body: some ReducerOf<Self> {
         Scope(state: \.inputBarState, action: /Action.inputBar) {
-            InputBarDomain()
+            BottomInputBarDomain()
         }
         Reduce { state, action in
             switch action {
