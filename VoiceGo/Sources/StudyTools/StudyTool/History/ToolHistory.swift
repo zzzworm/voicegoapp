@@ -6,7 +6,7 @@
 //
 
 struct ToolHistory : Equatable, Identifiable {
-    let id : Int
+    let id : String
     let question : String
     let answer : String
 }
@@ -21,7 +21,7 @@ extension ToolHistory: Decodable {
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: ToolHistoryKeys.self)
-        self.id = try container.decode(Int.self, forKey: .id)
+        self.id = try container.decode(String.self, forKey: .id)
         self.question = try container.decode(String.self, forKey: .question)
         self.answer = try container.decode(String.self, forKey: .answer)
     }
@@ -31,7 +31,7 @@ extension ToolHistory {
     static var sample: [ToolHistory] {
         [
             .init(
-                id: 1,
+                id: "89fc7a46-4ef5-4250-a6a0-07293a3c7056",
                 question: "apply",
                 answer: """
                 1. **单词类型及释义**
@@ -46,7 +46,7 @@ extension ToolHistory {
                 """
             ),
             .init(
-                id: 2,
+                id: "89fc7a46-4ef5-4250-a6a0-07293a3c7057",
                 question: "wait",
                 answer: """
                 单词类型及释义

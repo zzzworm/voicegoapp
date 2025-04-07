@@ -2,6 +2,7 @@ import ProjectDescription
 
 let project = Project(
     name: "VoiceGo",
+    organizationName: "Shanghai Souler Information Technology Co., Ltd.",
     targets: [
         .target(
             name: "VoiceGo",
@@ -16,8 +17,18 @@ let project = Project(
                         "UIImageName": "",
                     ],
                     "NSAppTransportSecurity": [
-                        "NSAllowsArbitraryLoads": true
-                    ]
+                        "NSAllowsArbitraryLoads": true,
+                        "NSAllowsLocalNetworking": true,
+                    ],
+                    "NSPhotoLibraryUsageDescription": "App需要访问您的照片库，以便您可以选择图片进行处理。",
+                    "NSMicrophoneUsageDescription": "App需要访问您的麦克风，以便您可以进行语音输入。",
+                    "NSCameraUsageDescription": "App需要访问您的相机，以便您可以拍摄照片或视频。",
+                    "NSPhotoLibraryAddUsageDescription": "App需要访问您的照片库，以便您可以保存图片。",
+                    "NSSpeechRecognitionUsageDescription": "App需要访问您的语音识别功能，以便您可以进行语音输入。",
+                    "NSLocalNetworkUsageDescription": "App需要访问您的本地网络，以便您可以使用局域网功能。",
+                    "NSBonjourServices" : [
+                        "_pulse._tcp",
+                    ],
                 ]
             ),
             sources: ["VoiceGo/Sources/**"],
@@ -33,9 +44,14 @@ let project = Project(
                 .external(name: "MarkdownUI"),
                 .external(name: "cmark-gfm"),
                 .external(name: "Moya"),
+                .external(name: "Pulse"),
+                .external(name: "PulseUI"),
+                .external(name: "SwiftyJSON"),
             ],
             settings: .settings(base: [
-            "DEVELOPMENT_ASSET_PATHS": ["VoiceGo/Resources/PreviewContent/Sources", "VoiceGo/Resources/PreviewContent/PreviewAssets.xcassets"] 
+            "DEVELOPMENT_ASSET_PATHS": ["VoiceGo/Resources/PreviewContent/Sources", "VoiceGo/Resources/PreviewContent/PreviewAssets.xcassets"],
+            "DEVELOPMENT_TEAM": "S75X4J33FV",
+            "CODE_SIGN_STYLE": "Automatic",
             ])
         ),
         // .target(

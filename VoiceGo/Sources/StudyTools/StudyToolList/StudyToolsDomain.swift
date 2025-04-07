@@ -10,7 +10,7 @@ import ComposableArchitecture
 
 struct StudyToolListDomain: Reducer {
     @Dependency(\.uuid) var uuid
-    //@Dependency(\.apiClient) var apiClient
+    @Dependency(\.apiClient) var apiClient
 
     struct State: Equatable {
         var dataLoadingStatus = DataLoadingStatus.notStarted
@@ -40,23 +40,10 @@ struct StudyToolListDomain: Reducer {
                     return .none
                 }
 
-                //state.dataLoadingStatus = .loading
-                state.studyToolListState = IdentifiedArrayOf(
-                    uniqueElements: StudyTool.sample.map {
-                        StudyToolDomain.State(
-                            id: uuid(),
-                            studyTool: $0, card: QACard(isExample: true, originText:"apply", actionText: "翻译", answer: "应用")
-                        )
-                    }
-                )
-                
+                state.dataLoadingStatus = .loading
                 return .run { send in
-//                    let result = await TaskResult { try await apiClient.fetchStudyTools() }
-//                   await send(.fetchStudyToolsResponse(result))
-//                   await .fetchStudyToolsResponse(
-//                       TaskResult { result }
-//                   )
-                    
+                    let result = await TaskResult { try await apiClient.fetchStudyTools() }
+                   await send(.fetchStudyToolsResponse(result))
                 }
             case .fetchStudyToolsResponse(.success(let studyTools)):
                 state.dataLoadingStatus = .success

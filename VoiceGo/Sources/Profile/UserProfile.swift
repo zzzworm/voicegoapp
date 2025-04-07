@@ -12,6 +12,7 @@ struct UserProfile: Equatable {
     let email: String
     let firstName: String
     let lastName: String
+    let phoneNumber: String
 }
 
 extension UserProfile: Decodable {
@@ -21,6 +22,7 @@ extension UserProfile: Decodable {
         case name
         case firstname
         case lastname
+        case phoneName
     }
     
     init(from decoder: Decoder) throws {
@@ -31,6 +33,7 @@ extension UserProfile: Decodable {
         let nameContainer = try container.nestedContainer(keyedBy: ProfileKeys.self, forKey: .name)
         self.firstName = try nameContainer.decode(String.self, forKey: .firstname)
         self.lastName = try nameContainer.decode(String.self, forKey: .lastname)
+        self.phoneNumber = try container.decode(String.self, forKey: .phoneName)
     }
 }
 
@@ -39,8 +42,9 @@ extension UserProfile {
         .init(
             id: 1,
             email: "hello@demo.com",
-            firstName: "Pedro",
-            lastName: "Rojas"
+            firstName: "Changhong",
+            lastName: "Zhou",
+            phoneNumber: "15618664527"
         )
     }
     
@@ -49,7 +53,8 @@ extension UserProfile {
             id: 0,
             email: "",
             firstName: "",
-            lastName: ""
+            lastName: "",
+            phoneNumber: ""
         )
     }
 }

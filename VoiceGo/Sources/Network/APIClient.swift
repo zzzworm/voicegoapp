@@ -17,7 +17,7 @@ struct APIClient {
 }
 
 // 使用Moya实现APIClient的liveValue
-extension APIClient {
+extension APIClient/* : DependencyKey */ {
     static let liveValue = Self(
         fetchStudyTools: {
             let provider = MoyaProvider<APIService>()
@@ -37,14 +37,18 @@ extension APIClient {
 
 extension APIClient {
     static var previewValue = Self(
-        fetchStudyTools: { StudyTool.sample },
+        fetchStudyTools: {
+            StudyTool.sample
+        },
         fetchUserProfile: { .sample }
     )
 }
 
 extension APIClient : TestDependencyKey  {
     static var testValue = Self(
-        fetchStudyTools: { StudyTool.sample },
+        fetchStudyTools: {
+            StudyTool.sample
+        },
         fetchUserProfile: { .sample }
     )
 }

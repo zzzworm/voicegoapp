@@ -34,6 +34,7 @@ let package = Package(
         .package(url:"https://github.com/gonzalezreal/swift-markdown-ui.git", from: "2.4.1"),
         .package(url: "https://github.com/swiftlang/swift-cmark", from: "0.5.0"),
         .package(url:"https://github.com/Moya/Moya.git", from: "15.0.3"),
-
+        .package(url:"https://github.com/kean/Pulse.git", from: "5.1.3"),
+        .package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", from: "4.0.0"),
     ]
 )

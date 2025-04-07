@@ -9,7 +9,7 @@ import Foundation
 import ComposableArchitecture
 
 struct ProfileDomain: Reducer {
-    // @Dependency(\.apiClient) var apiClient
+    @Dependency(\.apiClient) var apiClient
 
     struct State: Equatable {
         var profile: UserProfile = .default
@@ -36,7 +36,6 @@ struct ProfileDomain: Reducer {
             if state.dataState == .complete || state.dataState == .loading {
                 return .none
             }
-
             state.dataState = .loading
             return .run { send in
 //                let result = await TaskResult { try await apiClient.fetchUserProfile() }

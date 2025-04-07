@@ -7,11 +7,12 @@
 
 import Foundation
 import Alamofire
+import Moya
 
 extension Session {
     
-    public func eventSourceRequest(_ convertible: URLConvertible, method: HTTPMethod = .get, headers: HTTPHeaders? = nil, lastEventID: String? = nil) -> DataStreamRequest {
-        return streamRequest(convertible, headers: headers) { request in
+    public func eventSourceRequest(_ convertible: URLConvertible, method: HTTPMethod = .get, headers: HTTPHeaders? = nil, lastEventID: String? = nil, interceptor: RequestInterceptor? = nil) -> DataStreamRequest {
+        return streamRequest(convertible, method: method, headers: headers, interceptor: interceptor) { request in
             request.timeoutInterval = TimeInterval(Int32.max)
             request.headers.add(name: "Accept", value: "text/event-stream")
             request.headers.add(name: "Cache-Control", value: "no-cache")
@@ -21,21 +22,18 @@ extension Session {
         }
     }
     
-//    public func eventSourceRequest(_ urlRequest: URLRequest) -> DataStreamRequest {
-//        
-//        return streamRequest(convertible, headers: headers) { request in
-//            request.timeoutInterval = TimeInterval(Int32.max)
-//            request.headers.add(name: "Accept", value: "text/event-stream")
-//            request.headers.add(name: "Cache-Control", value: "no-cache")
-//            if let lastEventID = lastEventID {
-//                request.headers.add(name: "Last-Event-ID", value: lastEventID)
-//            }
-//        }
-//    }
+    public func eventSourceRequest(_ convertible: any URLRequestConvertible, interceptor: (any RequestInterceptor)? = nil) -> DataStreamRequest {
+        let request = streamRequest(convertible,
+                                    interceptor: interceptor)
+
+        return request
+    }
     
 }
 
 extension DataStreamRequest {
+    
+    
     
     public struct EventSource {
         

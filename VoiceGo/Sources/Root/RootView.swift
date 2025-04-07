@@ -28,7 +28,7 @@ struct RootView: View {
                 )
                 .tabItem {
                     Image(systemName: "list.bullet")
-                    Text("Products")
+                    Text("学习")
                 }
                 .tag(RootDomain.Tab.studytools)
                 ProfileView(
@@ -39,7 +39,7 @@ struct RootView: View {
                 )
                 .tabItem {
                     Image(systemName: "person.fill")
-                    Text("Profile")
+                    Text("我的")
                 }
                 .tag(RootDomain.Tab.profile)
             }

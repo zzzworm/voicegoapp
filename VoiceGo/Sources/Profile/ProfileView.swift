@@ -7,6 +7,7 @@
 
 import SwiftUI
 import ComposableArchitecture
+import PulseUI
 
 struct ProfileView: View {
     let store: StoreOf<ProfileDomain>
@@ -15,20 +16,8 @@ struct ProfileView: View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
             NavigationView {
                 ZStack {
-                    Form {
-                        Section {
-                            Text(viewStore.profile.firstName.capitalized)
-                            +
-                            Text(" \(viewStore.profile.lastName.capitalized)")
-                        } header: {
-                            Text("Full name")
-                        }
-                        
-                        Section {
-                            Text(viewStore.profile.email)
-                        } header: {
-                            Text("Email")
-                        }
+                    NavigationLink(destination: ConsoleView()) {
+                        Text("Console")
                     }
                     
                     if viewStore.isLoading {
@@ -38,7 +27,8 @@ struct ProfileView: View {
                 .task {
                     viewStore.send(.fetchUserProfile)
                 }
-                .navigationTitle("Profile")
+                .navigationTitle("我的")
+                .navigationBarTitleDisplayMode(.inline)
             }
         }
     }
