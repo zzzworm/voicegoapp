@@ -7,7 +7,9 @@
 
 import SwiftUI
 import ComposableArchitecture
+#if DEBUG
 import PulseUI
+#endif
 
 struct ProfileView: View {
     let store: StoreOf<ProfileDomain>
@@ -16,9 +18,11 @@ struct ProfileView: View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
             NavigationView {
                 ZStack {
+#if DEBUG
                     NavigationLink(destination: ConsoleView()) {
                         Text("Console")
                     }
+#endif
                     
                     if viewStore.isLoading {
                         ProgressView()

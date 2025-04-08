@@ -13,7 +13,7 @@ import Alamofire
 
 
 struct AIServiceClient {
-    var sendChatMessage: @Sendable (String, ResponseMode, @escaping (DataStreamRequest.EventSource) -> Void) -> DataStreamRequest
+    var sendChatMessage: @Sendable (String, ResponseMode, @escaping (DataStreamRequest.EventSource) -> Void) async throws -> DataStreamRequest?
     var stopResponse: @Sendable (String) async throws -> Response
     var getSession: @Sendable (String) async throws -> Response
     var messageFeedback: @Sendable (String, [String: Any]) async throws -> Response
@@ -29,29 +29,26 @@ struct AIServiceClient {
 
 // 使用Moya实现AIServiceClient的liveValue
 extension AIServiceClient : DependencyKey {
-    
-    static var provider =  MoyaProvider<AIChatService>()
-    /*{
-        let sseRequestClosure = { (endpoint: Endpoint, closure: @escaping MoyaProvider.RequestResultClosure) in
-            do {
-                let urlRequest = try endpoint.urlRequest()
-                let afRequest = AF.eventSourceRequest(urlRequest.url!, method: HTTPMethod(rawValue: urlRequest.httpMethod!)) 
-                closure(.success(afRequest.request!))
-            } catch {
-                closure(.failure(MoyaError.underlying(error, nil)))
-            }
-        }
-        let provider = MoyaProvider<AIChatService>(requestClosure: sseRequestClosure)
+    static var provider :  MoyaProvider<AIChatService>{
+        @Dependency(\.session) var session
+        let provider = MoyaProvider<AIChatService>(session: session)
         return provider
     }
-     */
+    
     static let liveValue = Self(
         sendChatMessage: { query, responseMode, handler in
             let messageReq = ChatMessageReq(
                 user: "a5e5f0cc-6ee7-4aad-af69-56fa085ee3f6",
                 query: query
             )
-            return provider.sseRequest(.sendChatMessage(messageReq: messageReq), handler:handler)
+            return provider.sseRequest(.sendChatMessage(messageReq: messageReq), callbackQueue: .main , handler:handler, completion: { result in
+                switch result {
+                case .success(let response):
+                    print("SSE request succeeded with response: \(response)")
+                case .failure(let error):
+                    print("SSE request failed with error: \(error)")
+                }
+            })
         },
         stopResponse: { chatID in
             
@@ -91,7 +88,14 @@ extension AIServiceClient {
                 user: "a5e5f0cc-6ee7-4aad-af69-56fa085ee3f6",
                 query: query
             )
-            return provider.sseRequest(.sendChatMessage(messageReq: messageReq), handler:handler)
+            return provider.sseRequest(.sendChatMessage(messageReq: messageReq), callbackQueue: .main , handler:handler, completion: { result in
+                switch result {
+                case .success(let response):
+                    print("SSE request succeeded with response: \(response)")
+                case .failure(let error):
+                    print("SSE request failed with error: \(error)")
+                }
+            })
         },
         stopResponse: { _ in Response(statusCode: 200, data: Data()) },
         getSession: { _ in Response(statusCode: 200, data: Data()) },
@@ -114,7 +118,14 @@ extension AIServiceClient: TestDependencyKey {
                 user: "a5e5f0cc-6ee7-4aad-af69-56fa085ee3f6",
                 query: query
             )
-            return provider.sseRequest(.sendChatMessage(messageReq: messageReq), handler:handler)
+            return provider.sseRequest(.sendChatMessage(messageReq: messageReq), callbackQueue: .main , handler:handler, completion: { result in
+                switch result {
+                case .success(let response):
+                    print("SSE request succeeded with response: \(response)")
+                case .failure(let error):
+                    print("SSE request failed with error: \(error)")
+                }
+            })
         },
         stopResponse: { _ in Response(statusCode: 200, data: Data()) },
         getSession: { _ in Response(statusCode: 200, data: Data()) },

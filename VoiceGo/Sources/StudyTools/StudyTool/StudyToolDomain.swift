@@ -42,6 +42,7 @@ struct StudyToolDomain: Reducer {
                 if state.dataLoadingStatus == .success || state.dataLoadingStatus == .loading {
                     return .none
                 }
+                state.dataLoadingStatus = .loading
                 return .run{ send in
                     let query = ConversationQuery(user: "a5e5f0cc-6ee7-4aad-af69-56fa085ee3f6")
                     let result = await TaskResult {
@@ -72,6 +73,7 @@ struct StudyToolDomain: Reducer {
                 })
                 return .none
             case .fetchStudyHistoryResponse(.failure(_)):
+                state.dataLoadingStatus = .error
                 return .none
             case .toolHistory(id: let id, action: let action):
                 return .none
@@ -94,6 +96,8 @@ struct StudyToolDomain: Reducer {
                             }
                         })
                     }
+                case .toggleSpeechMode:
+                    break
                 }
                 return .none
             }

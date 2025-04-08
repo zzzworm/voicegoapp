@@ -14,12 +14,14 @@ struct BottomInputBarDomain : Reducer{
         var inputText: String = ""
         var isKeyboardVisible: Bool = false
         var speechRecognitionInputState: SpeechRecognitionInputDomain.State = .init()
+        var speechMode = false
     }
     enum Action: Equatable, BindableAction {
         case binding(BindingAction<State>)
         case inputTextChanged(String)
         case submitText(String)
         case speechRecognitionInput(SpeechRecognitionInputDomain.Action)
+        case toggleSpeechMode
     }
     
     
@@ -47,10 +49,13 @@ struct BottomInputBarDomain : Reducer{
                     case .failure(let error):
                         print("Error transcribing speech: \(error)")
                     }
-              
+                    
                 case .speechRecognizerAuthorizationStatusResponse(_):
                     break
                 }
+                return .none
+            case .toggleSpeechMode:
+                state.speechMode.toggle()
                 return .none
             case .submitText(_):
                 return .none
@@ -66,10 +71,26 @@ struct BottomInputBarBarView: View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
             VStack(alignment: .center) {
                 HStack {
-                    // 添加按钮
-                    SpeechRecognitionInputView(store: store.scope(state: \.speechRecognitionInputState, action: BottomInputBarDomain.Action.speechRecognitionInput))
-                    Form{
+                    Button {
+                        store.send(.toggleSpeechMode)
+                    } label: {
+                        Image(
+                            systemName: viewStore.speechMode
+                            ? "keyboard" : "mic"
+                        )
+                        .font(.headline)
+                        .foregroundColor(.black)
+                    }
+                    .frame(width: 30)
+                
+                    if (viewStore.speechMode){
+                        
+                        SpeechRecognitionInputView(store: store.scope(state: \.speechRecognitionInputState, action: BottomInputBarDomain.Action.speechRecognitionInput))
+                            .frame(maxHeight: 30)
+                    }
+                    else{
                         // 添加输入框
+                        
                         TextField(
                             "请输入内容",
                             text: viewStore.binding(
@@ -79,11 +100,14 @@ struct BottomInputBarBarView: View {
                         )
                         .focused($isFocused) // 2
                         .textFieldStyle(RoundedBorderTextFieldStyle())
-                    }.onSubmit{
-                        viewStore.send(.submitText(viewStore.inputText))
+                        .onSubmit{
+                            viewStore.send(.submitText(viewStore.inputText))
+                        }
+                        .frame(maxHeight: 30)
                     }
-
-                }.padding(EdgeInsets(top: 5, leading: 10, bottom: 10, trailing: 10))
+                }
+                .padding(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
+                .frame(maxHeight: 30)
                 
             }
             // Synchronize store focus state and local focus state.
@@ -93,15 +117,15 @@ struct BottomInputBarBarView: View {
 }
 
 struct BottomInputBarBarView_Previews: PreviewProvider {
-   //Add preview
+    //Add preview
     @FocusState var focus: Bool
     static var previews: some View {
         BottomInputBarBarView(store: Store(
             initialState:BottomInputBarDomain.State(), reducer: BottomInputBarDomain.init))
-            .previewLayout(.sizeThatFits)
-            .padding()
-            .background(Color.white)
-            .cornerRadius(10)
-            .shadow(radius: 5)
+        .previewLayout(.sizeThatFits)
+        .padding()
+        .background(Color.white)
+        .cornerRadius(10)
+        .shadow(radius: 5)
     }
 }

@@ -51,7 +51,10 @@ struct SpeechRecognitionInputDomain {
                     else { return }
                     
                     let request = SFSpeechAudioBufferRecognitionRequest()
-                    for try await result in await self.speechClient.startTask(request) {
+                    for try await result in await self.speechClient.startTask(request: request,
+                        onAudioLevelChanged: { level in
+                            // Handle audio level changes if needed
+                        }) {
                         await send(
                             .speech(.success(result.bestTranscription.formattedString)), animation: .linear)
                     }
@@ -116,22 +119,35 @@ struct SpeechRecognitionInputView: View {
     @Perception.Bindable var store: StoreOf<SpeechRecognitionInputDomain>
 #endif
     var body: some View {
-        
-            Button {
-                store.send(.recordButtonTapped)
-            } label: {
-                    Image(
-                        systemName: store.isRecording
-                        ? "mic.fill" : "mic"
-                    )
-                    .font(.headline)
-    
-                    .foregroundColor(.black)
-                    .padding(8)
+        WithViewStore(self.store, observe: { $0 }) { viewStore in
+            ZStack{
+                WaveMonitorView(soundMonitor: SampleMonitor())
+                Button {
+                    store.send(.recordButtonTapped)
+                } label: {
+                    Text("按住说话")
+                        .font(.caption)
+                        .foregroundColor(.black)
+                        .padding(.all, 8)
+                }
+                .frame(maxWidth: .infinity)
+                .fixedSize(horizontal: false, vertical: true)
                 .background(.gray.opacity(0.4))
-                .cornerRadius(10)
+                .alert($store.scope(state: \.alert, action: \.alert))
+                .simultaneousGesture(
+                    DragGesture(minimumDistance: 0)
+                        .onChanged({ _ in
+                            
+                        })
+                        .onEnded({ _ in
+                            store.send(.recordButtonTapped)
+                        })
+                )
+            
+        
+                
             }
-        .alert($store.scope(state: \.alert, action: \.alert))
+        }
     }
 }
 

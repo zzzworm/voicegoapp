@@ -33,6 +33,7 @@ public struct ChatMessageReq: Equatable, Encodable {
     let query: String
     let response_mode : ResponseMode = .streaming
     let auto_generate_name: Bool = true
+    let inputs: [String: String] = [:]
 }
 
 

@@ -17,16 +17,19 @@ struct APIClient {
 }
 
 // 使用Moya实现APIClient的liveValue
-extension APIClient/* : DependencyKey */ {
+extension APIClient /* : DependencyKey */ {
+    static var provider :  MoyaProvider<APIService>{
+        @Dependency(\.session) var session
+        let provider = MoyaProvider<APIService>(session: session)
+        return provider
+    }
     static let liveValue = Self(
         fetchStudyTools: {
-            let provider = MoyaProvider<APIService>()
             let response = try await provider.asyncRequest(.fetchStudyTools)
             let products = try JSONDecoder().decode([StudyTool].self, from: response.data)
             return products
         },
         fetchUserProfile: {
-            let provider = MoyaProvider<APIService>()
             let response = try await provider.asyncRequest(.fetchUserProfile)
             let profile = try JSONDecoder().decode(UserProfile.self, from: response.data)
             return profile
