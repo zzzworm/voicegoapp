@@ -12,7 +12,7 @@ struct SpeechRecognitionInputDomain {
         var transcribedText = ""
         var currentSample: Int = 0
         var numberOfSamples: Int = 10
-        var soundSamples: [Float] = [Float](repeating: -50.0, count: 10)
+        var soundSamples: [Float] = [Float](repeating: -30.0, count: 10)
     }
     
     enum Action : Equatable, BindableAction {
@@ -32,6 +32,7 @@ struct SpeechRecognitionInputDomain {
     @Dependency(\.speechClient) var speechClient
     
     var body: some ReducerOf<Self> {
+        BindingReducer()
         Reduce { state, action in
             switch action {
             case .alert:
@@ -122,6 +123,7 @@ struct SpeechRecognitionInputDomain {
             }
         }
         .ifLet(\.$alert, action: \.alert)
+        
     }
 }
 
@@ -136,7 +138,14 @@ struct SpeechRecognitionInputView: View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
             ZStack(alignment: .center){
                 if(viewStore.isRecording){
-                    WaveMonitorView(soundSamples: $store.soundSamples)
+                    HStack{
+                        Spacer()
+                            .frame(maxWidth: .infinity)
+                        WaveMonitorView(soundSamples: $store.soundSamples)
+                            .frame(maxWidth: .infinity)
+                        Spacer()
+                            .frame(maxWidth: .infinity)
+                    }
                 }
                 else{
                     Text("按住说话")
@@ -153,7 +162,9 @@ struct SpeechRecognitionInputView: View {
             .gesture(
                 DragGesture(minimumDistance: 0)
                     .onChanged({ _ in
-                        store.send(.recordButtonTapped)
+                        if !viewStore.isRecording {
+                            store.send(.recordButtonTapped)
+                        }
                     })
                     .onEnded({ _ in
                         store.send(.recordButtonReleased)

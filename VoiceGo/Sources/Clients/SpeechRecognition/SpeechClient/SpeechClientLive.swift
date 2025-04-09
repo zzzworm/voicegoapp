@@ -29,43 +29,11 @@ private actor Speech {
     var recognitionTask: SFSpeechRecognitionTask? = nil
     var recognitionContinuation: AsyncThrowingStream<SpeechRecognitionResult, any Error>.Continuation?
     
-    var averagePowerForChannel0: Float = 0
-    var averagePowerForChannel1: Float = 0
-    let LEVEL_LOWPASS_TRIG:Float32 = 0.30
-    
-    
     func finishTask() {
         self.audioEngine?.stop()
         self.audioEngine?.inputNode.removeTap(onBus: 0)
         self.recognitionTask?.finish()
         self.recognitionContinuation?.finish()
-    }
-    
-    private func audioMetering(buffer:AVAudioPCMBuffer) {
-        buffer.frameLength = 1024
-        let inNumberFrames:UInt = UInt(buffer.frameLength)
-        if buffer.format.channelCount > 0 {
-            let samples = (buffer.floatChannelData![0])
-            var avgValue:Float32 = 0
-            vDSP_meamgv(samples,1 , &avgValue, inNumberFrames)
-            var v:Float = -100
-            if avgValue != 0 {
-                v = 20.0 * log10f(avgValue)
-            }
-            self.averagePowerForChannel0 = (self.LEVEL_LOWPASS_TRIG*v) + ((1-self.LEVEL_LOWPASS_TRIG)*self.averagePowerForChannel0)
-            self.averagePowerForChannel1 = self.averagePowerForChannel0
-        }
-        
-        if buffer.format.channelCount > 1 {
-            let samples = buffer.floatChannelData![1]
-            var avgValue:Float32 = 0
-            vDSP_meamgv(samples, 1, &avgValue, inNumberFrames)
-            var v:Float = -100
-            if avgValue != 0 {
-                v = 20.0 * log10f(avgValue)
-            }
-            self.averagePowerForChannel1 = (self.LEVEL_LOWPASS_TRIG*v) + ((1-self.LEVEL_LOWPASS_TRIG)*self.averagePowerForChannel1)
-        }
     }
     
     func startTask(
@@ -119,8 +87,7 @@ private actor Speech {
                                     return
                                 }
                 request.append(buffer)
-                strongSelf.audioMetering(buffer: buffer)
-                onAudioLevelChanged?(strongSelf.averagePowerForChannel0)
+                onAudioLevelChanged?(buffer.averagePower[0])
             }
             
             self.audioEngine?.prepare()

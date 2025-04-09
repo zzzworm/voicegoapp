@@ -14,15 +14,16 @@ struct BarView: View {
     var value: CGFloat
     var numberOfSamples: Int = 10
     var body: some View {
-        ZStack(alignment: .center){
-            RoundedRectangle(cornerRadius: 20)
-                .fill(LinearGradient(gradient: Gradient(colors: [.purple, .blue]),
-                                     startPoint: .top,
-                                     endPoint: .bottom))
-                .frame( height: value)
+        GeometryReader { geometry in
+            ZStack {
+                RoundedRectangle(cornerRadius: geometry.size.height / 5 )
+                    .fill(LinearGradient(gradient: Gradient(colors: [.purple, .blue]),
+                                         startPoint: .top,
+                                         endPoint: .bottom))
+                    .frame( height: value)
+            }
+            .frame(maxHeight: .infinity) // 关键点
         }
-        .frame(maxWidth: .infinity)
-        .fixedSize(horizontal: false, vertical: true)
         
     }
 }
@@ -38,9 +39,9 @@ struct WaveMonitorView: View {
     
     var body: some View {
         GeometryReader { geometry in
-            HStack(spacing: 4) {
+            HStack(alignment: .center, spacing: (geometry.size.width / CGFloat(soundSamples.count)/3.0)) {
                 ForEach(soundSamples, id: \.self) { level in
-                    BarView(value: self.normalizeSoundLevel(level: level, height:geometry.size.height), numberOfSamples: soundSamples.count)
+                        BarView(value: self.normalizeSoundLevel(level: level, height:geometry.size.height), numberOfSamples: soundSamples.count)
                 }
             }
         }
@@ -50,7 +51,7 @@ struct WaveMonitorView: View {
 struct ContentView_Previews: PreviewProvider {
     
     static var previews: some View {
-        @State var soundSamples: [Float] = [Float](repeating: 0, count: 10)
+        @State var soundSamples: [Float] = (0 ..< 10).map { _ in Float.random(in: -50...0) }
         WaveMonitorView(soundSamples: $soundSamples)
             .frame(width: UIScreen.main.bounds.width, height: 30)
             .padding()
