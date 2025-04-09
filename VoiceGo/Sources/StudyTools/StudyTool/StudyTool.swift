@@ -56,9 +56,9 @@ extension StudyTool {
             ),
             .init(
                 id: 3,
-                title: "翻译练习",
-                description: "翻译练习",
-                category: "翻译练习",
+                title: "AI润色",
+                description: "AI润色",
+                category: "AI润色",
                 imageString: "jacket"
             ),
             .init(

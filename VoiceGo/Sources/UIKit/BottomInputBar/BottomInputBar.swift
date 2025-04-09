@@ -40,24 +40,29 @@ struct BottomInputBarDomain : Reducer{
                 return .none
             case .speechRecognitionInput(let action):
                 switch action {
-                case .alert, .recordButtonTapped:
+                case .binding(_):
+                    break
+                case .alert, .recordButtonTapped, .recordButtonReleased:
                     break
                 case .speech(let result):
                     switch result {
                     case .success(let text):
-                        state.inputText = text
+                        return .send(.submitText(text))
                     case .failure(let error):
                         print("Error transcribing speech: \(error)")
                     }
                     
                 case .speechRecognizerAuthorizationStatusResponse(_):
                     break
+                case .soundLeveUpdate(_):
+                    return .none
                 }
                 return .none
             case .toggleSpeechMode:
                 state.speechMode.toggle()
                 return .none
-            case .submitText(_):
+            case .submitText(let text):
+                state.inputText = text
                 return .none
             }
         }

@@ -18,7 +18,7 @@ extension SpeechClient: DependencyKey {
             },
             startTask: { request,onAudioLevelChanged  in
                 let request = UncheckedSendable(request)
-                return await speech.startTask(request: request)
+                return await speech.startTask(request: request, onAudioLevelChanged: onAudioLevelChanged)
             }
         )
     }
@@ -31,17 +31,14 @@ private actor Speech {
     
     var averagePowerForChannel0: Float = 0
     var averagePowerForChannel1: Float = 0
-    var onAudioLevelChanged: ((Float) -> Void)?
     let LEVEL_LOWPASS_TRIG:Float32 = 0.30
     
-    private var timer: Timer?
     
     func finishTask() {
         self.audioEngine?.stop()
         self.audioEngine?.inputNode.removeTap(onBus: 0)
         self.recognitionTask?.finish()
         self.recognitionContinuation?.finish()
-        timer?.invalidate()
     }
     
     private func audioMetering(buffer:AVAudioPCMBuffer) {
@@ -72,10 +69,9 @@ private actor Speech {
     }
     
     func startTask(
-        request: UncheckedSendable<SFSpeechAudioBufferRecognitionRequest>
+        request: UncheckedSendable<SFSpeechAudioBufferRecognitionRequest>, onAudioLevelChanged: ((Float) -> Void)?
     ) -> AsyncThrowingStream<SpeechRecognitionResult, any Error> {
         let request = request.wrappedValue
-        
         return AsyncThrowingStream { continuation in
             self.recognitionContinuation = continuation
             let audioSession = AVAudioSession.sharedInstance()
@@ -124,15 +120,12 @@ private actor Speech {
                                 }
                 request.append(buffer)
                 strongSelf.audioMetering(buffer: buffer)
+                onAudioLevelChanged?(strongSelf.averagePowerForChannel0)
             }
             
             self.audioEngine?.prepare()
             do {
                 try self.audioEngine?.start()
-                timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true, block: { (timer) in
-                    // 7
-                    self.onAudioLevelChanged?(self.averagePowerForChannel0)
-                })
             } catch {
                 continuation.finish(throwing: SpeechClient.Failure.couldntStartAudioEngine)
                 return
@@ -141,8 +134,4 @@ private actor Speech {
     }
     
 
-// 8
-deinit {
-    timer?.invalidate()
-}
 }

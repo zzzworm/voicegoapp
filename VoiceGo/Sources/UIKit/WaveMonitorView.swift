@@ -9,34 +9,27 @@
 import SwiftUI
 
 
-class SampleMonitor : ObservableObject{
-    @Published public var soundSamples: [Float]
-    var numberOfSamples: Int = 10
-    init(numberOfSamples: Int = 10) {
-        self.soundSamples = [Float](repeating: .zero, count: numberOfSamples)
-        self.numberOfSamples = numberOfSamples // In production check this is > 0.
-
-    }
-}
-
 
 struct BarView: View {
     var value: CGFloat
     var numberOfSamples: Int = 10
     var body: some View {
-        ZStack {
+        ZStack(alignment: .center){
             RoundedRectangle(cornerRadius: 20)
                 .fill(LinearGradient(gradient: Gradient(colors: [.purple, .blue]),
                                      startPoint: .top,
                                      endPoint: .bottom))
-                .frame(width: (UIScreen.main.bounds.width - CGFloat(numberOfSamples) * 4) / CGFloat(numberOfSamples), height: value)
+                .frame( height: value)
         }
+        .frame(maxWidth: .infinity)
+        .fixedSize(horizontal: false, vertical: true)
+        
     }
 }
 
 struct WaveMonitorView: View {
     
-    @ObservedObject var soundMonitor : SampleMonitor = SampleMonitor()
+    @Binding  var soundSamples: [Float]
     private func normalizeSoundLevel(level: Float, height: CGFloat = 300) -> CGFloat {
         let level = max(0.1, CGFloat(level) + 50) / 2 // between 0.1 and 25
         
@@ -46,8 +39,8 @@ struct WaveMonitorView: View {
     var body: some View {
         GeometryReader { geometry in
             HStack(spacing: 4) {
-                ForEach(soundMonitor.soundSamples, id: \.self) { level in
-                    BarView(value: self.normalizeSoundLevel(level: level, height:geometry.size.height), numberOfSamples: soundMonitor.numberOfSamples)
+                ForEach(soundSamples, id: \.self) { level in
+                    BarView(value: self.normalizeSoundLevel(level: level, height:geometry.size.height), numberOfSamples: soundSamples.count)
                 }
             }
         }
@@ -57,8 +50,13 @@ struct WaveMonitorView: View {
 struct ContentView_Previews: PreviewProvider {
     
     static var previews: some View {
-        @ObservedObject  var mic = SampleMonitor()
-        WaveMonitorView(soundMonitor: mic)
+        @State var soundSamples: [Float] = [Float](repeating: 0, count: 10)
+        WaveMonitorView(soundSamples: $soundSamples)
+            .frame(width: UIScreen.main.bounds.width, height: 30)
+            .padding()
+            .background(Color.white)
+            .cornerRadius(10)
+            .shadow(radius: 5)
     }
 }
 

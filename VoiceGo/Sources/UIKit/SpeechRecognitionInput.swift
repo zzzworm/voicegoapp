@@ -10,18 +10,22 @@ struct SpeechRecognitionInputDomain {
         @Presents var alert: AlertState<Action.Alert>?
         var isRecording = false
         var transcribedText = ""
+        var currentSample: Int = 0
+        var numberOfSamples: Int = 10
+        var soundSamples: [Float] = [Float](repeating: -50.0, count: 10)
     }
     
-    enum Action : Equatable {
+    enum Action : Equatable, BindableAction {
         static func == (lhs: SpeechRecognitionInputDomain.Action, rhs: SpeechRecognitionInputDomain.Action) -> Bool {
             return false
         }
-        
+        case binding(BindingAction<State>)
         case alert(PresentationAction<Alert>)
         case recordButtonTapped
+        case recordButtonReleased
         case speech(Result<String, any Error>)
         case speechRecognizerAuthorizationStatusResponse(SFSpeechRecognizerAuthorizationStatus)
-        
+        case soundLeveUpdate(Float)
         enum Alert: Equatable {}
     }
     
@@ -32,12 +36,14 @@ struct SpeechRecognitionInputDomain {
             switch action {
             case .alert:
                 return .none
-                
+            case .soundLeveUpdate(let level):
+                state.soundSamples[state.currentSample] = level
+                state.currentSample = (state.currentSample + 1) % state.numberOfSamples
+                return .none
             case .recordButtonTapped:
-                state.isRecording.toggle()
                 
-                guard state.isRecording
-                else {
+                guard !state.isRecording else {
+                    state.isRecording = false
                     return .run { _ in
                         await self.speechClient.finishTask()
                     }
@@ -49,19 +55,25 @@ struct SpeechRecognitionInputDomain {
                     
                     guard status == .authorized
                     else { return }
-                    
                     let request = SFSpeechAudioBufferRecognitionRequest()
                     for try await result in await self.speechClient.startTask(request: request,
-                        onAudioLevelChanged: { level in
-                            // Handle audio level changes if needed
-                        }) {
+                                                                              onAudioLevelChanged: { level in
+                        // Handle audio level changes if needed
+                        DispatchQueue.main.async {
+                            send(.soundLeveUpdate(level))
+                        }
+                    }) {
                         await send(
                             .speech(.success(result.bestTranscription.formattedString)), animation: .linear)
                     }
                 } catch: { error, send in
                     await send(.speech(.failure(error)))
                 }
-                
+            case .recordButtonReleased:
+                state.isRecording = false
+                return .run { _ in
+                    await self.speechClient.finishTask()
+                }
             case .speech(.failure(SpeechClient.Failure.couldntConfigureAudioSession)),
                     .speech(.failure(SpeechClient.Failure.couldntStartAudioEngine)):
                 state.alert = AlertState { TextState("Problem with audio device. Please try again.") }
@@ -105,6 +117,8 @@ struct SpeechRecognitionInputDomain {
                 @unknown default:
                     return .none
                 }
+            case .binding(_):
+                return .none
             }
         }
         .ifLet(\.$alert, action: \.alert)
@@ -112,7 +126,7 @@ struct SpeechRecognitionInputDomain {
 }
 
 struct SpeechRecognitionInputView: View {
-
+    
 #if os(macOS)
     @Bindable var store: StoreOf<SpeechRecognitionInputDomain>
 #else
@@ -120,33 +134,31 @@ struct SpeechRecognitionInputView: View {
 #endif
     var body: some View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
-            ZStack{
-                WaveMonitorView(soundMonitor: SampleMonitor())
-                Button {
-                    store.send(.recordButtonTapped)
-                } label: {
+            ZStack(alignment: .center){
+                if(viewStore.isRecording){
+                    WaveMonitorView(soundSamples: $store.soundSamples)
+                }
+                else{
                     Text("按住说话")
                         .font(.caption)
                         .foregroundColor(.black)
-                        .padding(.all, 8)
+                        .padding(10)
+                        .frame(maxWidth: .infinity)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .background(.gray.opacity(0.4))
+                        .alert($store.scope(state: \.alert, action: \.alert))
                 }
-                .frame(maxWidth: .infinity)
-                .fixedSize(horizontal: false, vertical: true)
-                .background(.gray.opacity(0.4))
-                .alert($store.scope(state: \.alert, action: \.alert))
-                .simultaneousGesture(
-                    DragGesture(minimumDistance: 0)
-                        .onChanged({ _ in
-                            
-                        })
-                        .onEnded({ _ in
-                            store.send(.recordButtonTapped)
-                        })
-                )
-            
-        
-                
             }
+            .fixedSize(horizontal: false, vertical: true)
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged({ _ in
+                        store.send(.recordButtonTapped)
+                    })
+                    .onEnded({ _ in
+                        store.send(.recordButtonReleased)
+                    })
+            )
         }
     }
 }

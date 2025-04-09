@@ -86,8 +86,12 @@ struct StudyToolDomain: Reducer {
                 case .speechRecognitionInput(_):
                     break
                 case .submitText(let query):
+                    if query.isEmpty {
+                        return .none
+                    }
+                    let toolQuery = "[\(state.studyTool.category)]: \(query)"
                     return .run{send in
-                        let rsp = try await aiServiceClient.sendChatMessage(query,.streaming,{ eventSource in
+                        let rsp = try await aiServiceClient.sendChatMessage(toolQuery,.streaming,{ eventSource in
                             switch eventSource.event {
                             case .message(let message):
                                 print("Received message: \(message)")
