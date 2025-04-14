@@ -47,6 +47,10 @@ let project = Project(
                 .external(name: "Pulse"),
                 .external(name: "PulseUI"),
                 .external(name: "SwiftyJSON"),
+                .external(name: "FSRS"),
+                .external(name: "Nuke"),
+                .external(name: "NukeUI"),
+                .external(name: "AliyunOSSSDK"),
             ],
             settings: .settings(base: [
             "DEVELOPMENT_ASSET_PATHS": ["VoiceGo/Resources/PreviewContent/Sources", "VoiceGo/Resources/PreviewContent/PreviewAssets.xcassets"],

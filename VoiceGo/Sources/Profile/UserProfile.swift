@@ -13,6 +13,11 @@ struct UserProfile: Equatable {
     let firstName: String
     let lastName: String
     let phoneNumber: String
+    let icon: String
+    
+    var name: String {
+        "\(lastName)\(firstName) "
+    }
 }
 
 extension UserProfile: Decodable {
@@ -23,6 +28,7 @@ extension UserProfile: Decodable {
         case firstname
         case lastname
         case phoneName
+        case icon
     }
     
     init(from decoder: Decoder) throws {
@@ -34,6 +40,7 @@ extension UserProfile: Decodable {
         self.firstName = try nameContainer.decode(String.self, forKey: .firstname)
         self.lastName = try nameContainer.decode(String.self, forKey: .lastname)
         self.phoneNumber = try container.decode(String.self, forKey: .phoneName)
+        self.icon = try container.decode(String.self, forKey: .icon)
     }
 }
 
@@ -44,17 +51,19 @@ extension UserProfile {
             email: "hello@demo.com",
             firstName: "Changhong",
             lastName: "Zhou",
-            phoneNumber: "15618664527"
+            phoneNumber: "15618664527",
+            icon: "https://example.com/icon.png"
         )
     }
     
     static var `default`: UserProfile {
         .init(
             id: 0,
-            email: "",
-            firstName: "",
-            lastName: "",
-            phoneNumber: ""
+            email: "tophu1@163.com",
+            firstName: "changhong",
+            lastName: "Zhou",
+            phoneNumber: "15618664527",
+            icon: "https://example.com/icon.png"
         )
     }
 }

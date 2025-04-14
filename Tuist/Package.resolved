@@ -1,5 +1,5 @@
 {
-  "originHash" : "92960fee02ca81dfe54b96ecddae86b92eaf065980d0549c94ae12ce5f7de948",
+  "originHash" : "f1b86621cc0c1081f4c9fde2f708cc5740e0b73a33465c5367c450a61b16b19e",
   "pins" : [
     {
       "identity" : "alamofire",
@@ -8,6 +8,15 @@
       "state" : {
         "revision" : "513364f870f6bfc468f9d2ff0a95caccc10044c5",
         "version" : "5.10.2"
+      }
+    },
+    {
+      "identity" : "aliyun-oss-ios-sdk",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/zangqilong198812/aliyun-oss-ios-sdk.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "faecda31368839aadd405ad5f31df70436fb031c"
       }
     },
     {
@@ -35,6 +44,15 @@
       "state" : {
         "revision" : "2849f5323265386e200484b0d0f896e73c3411b9",
         "version" : "6.0.1"
+      }
+    },
+    {
+      "identity" : "nuke",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/kean/Nuke.git",
+      "state" : {
+        "revision" : "0ead44350d2737db384908569c012fe67c421e4d",
+        "version" : "12.8.0"
       }
     },
     {
@@ -134,6 +152,15 @@
       "state" : {
         "revision" : "ec2862d1364536fc22ec56a3094e7a034bbc7da8",
         "version" : "1.8.1"
+      }
+    },
+    {
+      "identity" : "swift-fsrs",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/open-spaced-repetition/swift-fsrs.git",
+      "state" : {
+        "revision" : "129e4dc4e99625ee2dd2ee627fab866f2993e3d7",
+        "version" : "5.0.0"
       }
     },
     {

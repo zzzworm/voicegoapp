@@ -36,5 +36,8 @@ let package = Package(
         .package(url:"https://github.com/Moya/Moya.git", from: "15.0.3"),
         .package(url:"https://github.com/kean/Pulse.git", from: "5.1.3"),
         .package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", from: "4.0.0"),
+        .package(url:"https://github.com/open-spaced-repetition/swift-fsrs.git", from: "5.0.0"),
+        .package(url:"https://github.com/kean/Nuke.git", from: "12.0.0"),
+        .package(url:"https://github.com/zangqilong198812/aliyun-oss-ios-sdk.git", branch:"main"),
     ]
 )

@@ -11,20 +11,19 @@ import ComposableArchitecture
 import PulseUI
 #endif
 
-struct ProfileView: View {
-    let store: StoreOf<ProfileDomain>
+struct ProfileSettingView: View {
+    let store: StoreOf<ProfileSettingDomain>
     
     var body: some View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
             NavigationView {
                 ZStack {
-                    List{
 #if DEBUG
-                        NavigationLink(destination: ConsoleView()) {
-                            Text("Console")
-                        }
-#endif
+                    NavigationLink(destination: ConsoleView()) {
+                        Text("Console")
                     }
+#endif
+                    
                     if viewStore.isLoading {
                         ProgressView()
                     }
@@ -39,7 +38,7 @@ struct ProfileView: View {
     }
 }
 
-struct ProfileView_Previews: PreviewProvider {
+struct ProfileSettingView_Previews: PreviewProvider {
     static var previews: some View {
         ProfileView(
             store: Store(
