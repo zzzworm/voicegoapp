@@ -8,7 +8,7 @@ let project = Project(
             name: "VoiceGo",
             destinations: .iOS,
             product: .app,
-            bundleId: "com.zzwormstudio.VoiceGo",
+            bundleId: "com.souler.cn.VoiceGo",
             deploymentTargets: .iOS("16.0"),
             infoPlist: .extendingDefault(
                 with: [
@@ -93,7 +93,7 @@ let project = Project(
             name: "VoiceGoTests",
             destinations: .iOS,
             product: .unitTests,
-            bundleId: "com.zzwormstudio.VoiceGoTests",
+            bundleId: "com.souler.cn.VoiceGoTests",
             infoPlist: .default,
             sources: ["VoiceGo/Tests/**"],
             resources: [],

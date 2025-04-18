@@ -1,0 +1,7 @@
+app_identifier("com.souler.cn.VoiceGo") # The bundle identifier of your app
+
+itc_team_id("118003479") # App Store Connect Team ID
+team_id("M45G2F887R") # Developer Portal Team ID
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile

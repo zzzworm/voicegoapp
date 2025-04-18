@@ -89,7 +89,7 @@ struct StudyToolDomain: Reducer {
                     if query.isEmpty {
                         return .none
                     }
-                    let toolQuery = "[\(state.studyTool.category)]: \(query)"
+                    let toolQuery = "[\(state.studyTool.categoryKey)]: \(query)"
                     return .run{send in
                         let rsp = try await aiServiceClient.sendChatMessage(toolQuery,.streaming,{ eventSource in
                             switch eventSource.event {

@@ -25,7 +25,7 @@ struct StudyToolCell: View {
                 Spacer()
                 
                 AsyncImage(
-                    url: URL(string: viewStore.studyTool.imageString)
+                    url: URL(string: viewStore.studyTool.imageUrl)
                 ) { image in
                     image
                         .resizable()

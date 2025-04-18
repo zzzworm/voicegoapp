@@ -6,6 +6,8 @@
 //  Copyright © 2025 Shanghai Souler Information Technology Co., Ltd. All rights reserved.
 //
 import SwiftUI
+import Nuke
+import NukeUI
 
 struct ProfileCell : View {
     let profile : UserProfile
@@ -14,17 +16,14 @@ struct ProfileCell : View {
     var body: some View {
         Button(action: action) {
             HStack {
-                Image(systemName: profile.icon)
-                    .resizable()
-                    .scaledToFit()
+                LazyImage(url: URL(string: profile.userIconUrl))
                     .frame(width: 34, height: 34)
-                    .foregroundColor(.primary)
                 VStack{
                     Spacer()
                     Text(profile.phoneNumber)
                         .font(.headline)
                         .foregroundColor(.primary)
-                    Text(profile.name)
+                    Text(profile.username)
                         .font(.headline)
                         .foregroundColor(.primary)
                     Spacer()

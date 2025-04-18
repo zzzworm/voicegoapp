@@ -8,39 +8,37 @@
 import Foundation
 
 struct UserProfile: Equatable {
-    let id: Int
+    let id : Int
+    let documentId: String
     let email: String
-    let firstName: String
-    let lastName: String
+    let username: String
+    let provider : String
     let phoneNumber: String
-    let icon: String
+    let userIconUrl: String
     
-    var name: String {
-        "\(lastName)\(firstName) "
-    }
 }
 
 extension UserProfile: Decodable {
     private enum ProfileKeys: String, CodingKey {
         case id
+        case documentId
         case email
         case name
-        case firstname
-        case lastname
+        case provider
+        case username
         case phoneName
-        case icon
+        case userIconUrl
     }
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: ProfileKeys.self)
         self.id = try container.decode(Int.self, forKey: .id)
+        self.documentId = try container.decode(String.self, forKey: .documentId)
         self.email = try container.decode(String.self, forKey: .email)
-        
-        let nameContainer = try container.nestedContainer(keyedBy: ProfileKeys.self, forKey: .name)
-        self.firstName = try nameContainer.decode(String.self, forKey: .firstname)
-        self.lastName = try nameContainer.decode(String.self, forKey: .lastname)
+        self.provider = try container.decode(String.self, forKey: .provider)
+        self.username = try container.decode(String.self, forKey: .username)
         self.phoneNumber = try container.decode(String.self, forKey: .phoneName)
-        self.icon = try container.decode(String.self, forKey: .icon)
+        self.userIconUrl = try container.decode(String.self, forKey: .userIconUrl)
     }
 }
 
@@ -48,22 +46,24 @@ extension UserProfile {
     static var sample: UserProfile {
         .init(
             id: 1,
+            documentId: "",
             email: "hello@demo.com",
-            firstName: "Changhong",
-            lastName: "Zhou",
+            username: "Changhong",
+            provider: "local",
             phoneNumber: "15618664527",
-            icon: "https://example.com/icon.png"
+            userIconUrl: "https://example.com/icon.png"
         )
     }
     
     static var `default`: UserProfile {
         .init(
             id: 0,
+            documentId: "",
             email: "tophu1@163.com",
-            firstName: "changhong",
-            lastName: "Zhou",
+            username: "changhong",
+            provider: "local",
             phoneNumber: "15618664527",
-            icon: "https://example.com/icon.png"
+            userIconUrl: "https://example.com/icon.png"
         )
     }
 }

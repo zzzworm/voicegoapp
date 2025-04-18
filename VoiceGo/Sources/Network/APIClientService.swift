@@ -12,15 +12,15 @@ enum APIService {
 
 extension APIService: TargetType {
     var baseURL: URL {
-        return URL(string: "https://fakestoreapi.com")!
+        return URL(string: "http://locahost:1337")!
     }
 
     var path: String {
         switch self {
         case .fetchStudyTools:
-            return "/products"
+            return "/api/study-tools"
         case .fetchUserProfile:
-            return "/users/1"
+            return "/api/users/me"
         }
     }
 
