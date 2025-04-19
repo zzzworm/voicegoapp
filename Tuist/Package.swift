@@ -17,6 +17,17 @@ import PackageDescription
             "cmark-gfm-core":.framework,
             "cmark-gfm-extensions":.framework,
             "cmark-gfm-wrapper":.framework,
+            "Moya":.framework,
+            "Pulse":.framework,
+            "PulseUI":.framework,
+            "SwiftyJSON":.framework,
+            "FSRS":.framework,
+            "Nuke":.framework,
+            "NukeUI":.framework,
+            "AliyunOSSSDK":.framework,
+            "FBLPromises":.framework,
+            "nanopb":.framework,
+            "Get":.framework,
          ]
     )
 #endif
@@ -39,5 +50,16 @@ let package = Package(
         .package(url:"https://github.com/open-spaced-repetition/swift-fsrs.git", from: "5.0.0"),
         .package(url:"https://github.com/kean/Nuke.git", from: "12.0.0"),
         .package(url:"https://github.com/zangqilong198812/aliyun-oss-ios-sdk.git", branch:"main"),
+        .package(url: "https://github.com/firebase/firebase-ios-sdk.git", .upToNextMajor(from: "11.2.0")),
+        .package(url: "https://github.com/openid/AppAuth-iOS.git", .upToNextMajor(from: "1.7.0")),
+        .package(url:"https://github.com/google/GoogleSignIn-iOS.git", from: "7.0.0"),
+        .package(url:"https://github.com/google/gtm-session-fetcher.git", from: "3.5.0"),
+        .package(url:"https://github.com/google/GTMAppAuth.git",from: "4.1.0"),
+        .package(url: "https://github.com/kean/Get", from: "2.2.1"),
+        .package(url:"https://github.com/MojtabaHs/iPhoneNumberField.git", from: "0.10.0"),
+        .package(url:"https://github.com/airbnb/lottie-ios", from: "4.0.0"),
+        .package(url:"https://github.com/alickbass/CodableFirebase", from: "0.2.0"),
+        .package(url:"https://github.com/tonymillion/Reachability", from: "3.2.0"),
+        .package(url:"https://github.com/jrendel/SwiftKeychainWrapper.git", from: "4.0.0"),
     ]
 )

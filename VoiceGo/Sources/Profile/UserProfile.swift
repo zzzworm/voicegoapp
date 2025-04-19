@@ -67,3 +67,17 @@ extension UserProfile {
         )
     }
 }
+
+
+struct Account: Identifiable, Equatable {
+    var id = UUID()
+    var token = ""
+    var firstName = ""
+    var lastName = ""
+    var birthDate = Date()
+    var gender = ""
+    var city = ""
+    var email = ""
+    var phone = ""
+    var enableNotifications = false
+}

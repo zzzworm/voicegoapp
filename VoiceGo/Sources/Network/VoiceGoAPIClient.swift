@@ -1,5 +1,5 @@
 //
-//  APIClient.swift
+//  VoiceGoAPIClient.swift
 //  OnlineStoreTCA
 //
 //  Created by Pedro Rojas on 23/08/22.
@@ -9,7 +9,7 @@ import Foundation
 import ComposableArchitecture
 import Moya
 
-struct APIClient {
+struct VoiceGoAPIClient {
     var fetchStudyTools:  @Sendable () async throws -> [StudyTool]
     var fetchUserProfile:  @Sendable () async throws -> UserProfile
     
@@ -17,7 +17,7 @@ struct APIClient {
 }
 
 // 使用Moya实现APIClient的liveValue
-extension APIClient /* : DependencyKey */ {
+extension VoiceGoAPIClient /* : DependencyKey */ {
     static var provider :  MoyaProvider<APIService>{
         @Dependency(\.session) var session
         let provider = MoyaProvider<APIService>(session: session)
@@ -38,7 +38,7 @@ extension APIClient /* : DependencyKey */ {
 }
 
 
-extension APIClient {
+extension VoiceGoAPIClient {
     static var previewValue = Self(
         fetchStudyTools: {
             StudyTool.sample
@@ -47,7 +47,7 @@ extension APIClient {
     )
 }
 
-extension APIClient : TestDependencyKey  {
+extension VoiceGoAPIClient : TestDependencyKey  {
     static var testValue = Self(
         fetchStudyTools: {
             StudyTool.sample
@@ -57,8 +57,8 @@ extension APIClient : TestDependencyKey  {
 }
 
 extension DependencyValues {
-    var apiClient: APIClient {
-        get { self[APIClient.self] }
-        set { self[APIClient.self] = newValue }
+    var apiClient: VoiceGoAPIClient {
+        get { self[VoiceGoAPIClient.self] }
+        set { self[VoiceGoAPIClient.self] = newValue }
     }
 }
