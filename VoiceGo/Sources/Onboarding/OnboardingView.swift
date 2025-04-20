@@ -24,7 +24,7 @@ extension OnboardingView: View {
 
     @ViewBuilder private var content: some View {
         VStack {
-            TabView(selection: $store.selectedTab) {
+            TabView(selection: $store.currentTab) {
                 ForEach(store.items) { viewData in
                     OnboardingPageView(data: viewData)
                         .tag(viewData.tab)

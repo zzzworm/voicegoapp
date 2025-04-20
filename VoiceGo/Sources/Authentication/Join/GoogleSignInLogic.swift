@@ -45,7 +45,7 @@ struct GoogleSignInLogic<State>: Reducer {
         case let .internal(internalAction):
             switch internalAction {
             case let .loginResponse(.success(data)):                
-                userKeychainClient.storeToken(data.token)
+                userKeychainClient.storeToken(data.jwt)
                 return .run { send in
                     await send(.delegate(.didAuthenticated))
                 }

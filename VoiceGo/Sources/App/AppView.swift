@@ -47,3 +47,13 @@ extension AppView: View {
         }
     }
 }
+
+#Preview {
+    AppView(
+        store: Store(
+            initialState: .join(JoinFeature.State()),
+            reducer: AppFeature.init
+        )
+    )
+}
+

@@ -52,7 +52,7 @@ extension GoogleSignInClient: DependencyKey {
                 let username = "mor_2314"
                 let password = "83r5^_"
                 
-                let request = LoginEmailRequest(username: username, password: password)
+                let request = LoginEmailRequest(identifier: username, password: password)
                 return try await API.provider.async.request(.login(request))
                     .map(AuthenticationResponse.self)
             },

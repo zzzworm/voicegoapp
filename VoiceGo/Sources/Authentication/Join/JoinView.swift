@@ -27,34 +27,58 @@ extension JoinView: View {
             VStack {
                 Spacer()
                 
-//                Image(systemName: "pencil.slash")
-//                    .font(.system(size: 100))
-//
-//                VStack(spacing: 6) {
-//                    Text("LoginOptions.description")
-//                        .multilineTextAlignment(.center)
-//                        .font(.headline)
-//
-//                    Button {
-//                        store.send(.view(.onDevelopedByTap))
-//                    } label: {
-//                        Text("Anatoli Petrosyants")
-//                            .font(.headlineBold)
-//                            .foregroundColor(.black)
-//                            .underline()
-//                    }
-//                }
-//                .padding(.top, 24)
-//                
-//                Spacer()
-//                
-//                Button("Join", action: {
-//                    store.send(.view(.onJoinButtonTap))
-//                })
-//                .buttonStyle(.cta)
+                Image(systemName: "pencil.slash")
+                    .font(.system(size: 100))
+
+                VStack(spacing: 6) {
+                    Text("您的英语AI伴读工具")
+                        .multilineTextAlignment(.center)
+                        .font(.headline)
+                    
+                    VStack{
+                        Button {
+                            store.send(.view(.onClickAuthByTap))
+                        } label: {
+                            Text("一键登录")
+                                .font(.headline)
+                                .fontWeight(.bold)
+                                .foregroundColor(.black)
+                        }.background(Color.white)
+                            .cornerRadius(8)
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 10)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color.gray, lineWidth: 1)
+                            )
+                        Button {
+                            store.send(.view(.onWechatAuthByTap))
+                        } label: {
+                            Text("微信登录")
+                                .font(.headline)
+                                .fontWeight(.bold)
+                                .foregroundColor(.black)
+                        }.background(Color.white)
+                            .cornerRadius(8)
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 10)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color.gray, lineWidth: 1)
+                            )
+                    }
+                }
+                .padding(.top, 24)
+                
+                Spacer()
+                
+                Button("Join", action: {
+                    store.send(.view(.onJoinButtonTap))
+                })
+                .buttonStyle(.cta)
             }
             .padding(24)
-            .navigationTitle("LoginOptions.title")
+            .navigationTitle("晨读AI英语")
             .modifier(NavigationBarModifier())
         } destination: { store in
             switch store.case {
@@ -83,3 +107,4 @@ extension JoinView: View {
         }
     }
 }
+

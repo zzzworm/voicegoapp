@@ -71,6 +71,7 @@ let project = Project(
                 .external(name: "CodableFirebase"),
                 .external(name: "Reachability"),
                 .external(name: "SwiftKeychainWrapper"),
+                .external(name: "SharingGRDB"),
             ],
             settings: .settings(base: [
                 "OTHER_LDFLAGS": "-all_load",

@@ -15,8 +15,8 @@ struct RootView: View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
             TabView(
                 selection: viewStore.binding(
-                    get: \.selectedTab,
-                    send: RootDomain.Action.tabSelected
+                    get: \.currentTab,
+                    send: RootDomain.Action.onTabChanged
                 )
             ) {
                 StudyToolListView(

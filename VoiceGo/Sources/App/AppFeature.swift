@@ -16,7 +16,7 @@ import GoogleSignIn
 struct AppFeature {
 
     @ObservableState
-    enum State {
+    public enum State {
         case loading(LoadingFeature.State)
         case onboarding(OnboardingFeature.State)
         case join(JoinFeature.State)
@@ -50,7 +50,7 @@ struct AppFeature {
     var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
-            case let .appDelegate(_):
+            case let .appDelegate(appDelegateAction):
                 return .none
             /*
                 switch appDelegateAction {
@@ -120,8 +120,8 @@ struct AppFeature {
                     switch action {
                     case .favourites:
                         state = .main(RootDomain.State(currentTab: .wishlist))
-                    case .basket:
-                        state = .main(RootDomain.State(currentTab: .basket))
+                    case .chat:
+                        state = .main(RootDomain.State(currentTab: .chat))
                     default:
                         break
                     }
@@ -133,7 +133,7 @@ struct AppFeature {
             case let .didChangeScenePhase(phase):
                 Log.info("didChangeScenePhase \(phase)")
                 return .none
-                /*
+    
             case let .loading(action: .delegate(loadingAction)):
                 switch loadingAction {
                 case .didLoaded:
@@ -171,7 +171,7 @@ struct AppFeature {
                     state = .loading(LoadingFeature.State())
                     return .none
                 }
-                */
+        
             case .loading, .onboarding, .join, .main:
                 return .none
             }

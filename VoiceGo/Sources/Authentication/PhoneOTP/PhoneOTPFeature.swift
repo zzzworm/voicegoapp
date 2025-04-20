@@ -54,7 +54,7 @@ struct PhoneOTPFeature {
                 return .concatenate(
                     .run { _ in
                         try await self.clock.sleep(for: .seconds(2))
-                        let account = Account(token: "otp_token")
+//                        let account = UserProfile(token: "otp_token")
                     },
                     .send(.delegate(.didCodeAuthenticated))
                 )

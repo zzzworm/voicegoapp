@@ -14,7 +14,7 @@ struct EmailLoginFeature {
     @ObservableState
     struct State: Equatable {
         var isActivityIndicatorVisible = false
-        var username = "mor_2314"
+        var userIdentifier = "mor_2314"
         var password = "83r5^_"
         
         @Presents var alert: AlertState<Never>?
@@ -57,13 +57,13 @@ struct EmailLoginFeature {
                 switch viewAction {                    
                 case .onSignInButtonTap:
                     state.isActivityIndicatorVisible = true
-                    return .run { [username = state.username, password = state.password] send in
+                    return .run { [userIdentifier = state.userIdentifier, password = state.password] send in
                         await send(
                             .internal(
                                 .loginResponse(
                                     await TaskResult {
                                         try await self.authenticationClient.login(
-                                            .init(username: username, password: password)
+                                            .init(identifier: userIdentifier, password: password)
                                         )
                                     }
                                 )
@@ -82,10 +82,10 @@ struct EmailLoginFeature {
                 case let .loginResponse(.success(data)):
                     Log.info("loginResponse: \(data)")
                     state.isActivityIndicatorVisible = false
-                    userKeychainClient.storeToken(data.token)
+                    userKeychainClient.storeToken(data.jwt)
                     return .concatenate(
                         .run { _ in
-                            let account = Account(token: data.token)
+                            let account = data.user
                         },
                         .send(.delegate(.didEmailAuthenticated))
                     )

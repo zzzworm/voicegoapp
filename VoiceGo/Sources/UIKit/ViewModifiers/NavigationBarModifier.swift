@@ -9,8 +9,8 @@ import SwiftUI
 
 struct NavigationBarModifier: ViewModifier {
     
-    private static var backgroundColor = UIColor(named: "white")
-    private static var foregroundColor = UIColor(named: "black")
+    private static var backgroundColor = UIColor.white
+    private static var foregroundColor = UIColor.black
 
     private static var defaultBarAppearance: UINavigationBarAppearance = {
         let backButtonAppearance = UIBarButtonItemAppearance(style: .plain)
@@ -22,8 +22,8 @@ struct NavigationBarModifier: ViewModifier {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
         appearance.backgroundColor = backgroundColor
-        appearance.titleTextAttributes = [.foregroundColor: foregroundColor!]
-        appearance.largeTitleTextAttributes = [.foregroundColor: foregroundColor!]
+        appearance.titleTextAttributes = [.foregroundColor: foregroundColor]
+        appearance.largeTitleTextAttributes = [.foregroundColor: foregroundColor]
         appearance.shadowImage = UIImage()
         let backButtonImage = UIImage(systemName: "chevron.left")
         appearance.setBackIndicatorImage(backButtonImage, transitionMaskImage: backButtonImage)

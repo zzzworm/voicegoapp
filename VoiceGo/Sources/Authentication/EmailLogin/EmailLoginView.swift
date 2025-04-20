@@ -29,8 +29,8 @@ extension EmailLoginView: View {
             VStack {
                 VStack {
                     TextField(
-                        "Base.emailPlaceholder",
-                        text: $store.username
+                        "用户名或者邮箱",
+                        text: $store.userIdentifier
                     )
                     .autocapitalization(.none)
                     .keyboardType(.emailAddress)
@@ -45,14 +45,14 @@ extension EmailLoginView: View {
                     
                     HStack {
                         Spacer()
-                        Button("Login.forgotPassword", action: {
+                        Button("忘记密码", action: {
                             store.send(.view(.onForgotPasswordButtonTap))
                         })
                         .buttonStyle(.linkButton)
                     }
                     .padding(.top, 16)
                     
-                    Button("Base.continue", action: {
+                    Button("确定", action: {
                         store.send(.view(.onSignInButtonTap))
                     })
                     .buttonStyle(.cta)
@@ -62,7 +62,7 @@ extension EmailLoginView: View {
                 
                 Spacer()
             }
-            .navigationTitle("Login.title")
+            .navigationTitle("邮箱&用户名登录")
         }
         .alert($store.scope(state: \.alert, action: \.alert))
     }

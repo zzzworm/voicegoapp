@@ -1,5 +1,5 @@
 {
-  "originHash" : "ed29fb2740070f968e214aff9b11217de59d25b96ac921b8acef50a7d406b3c8",
+  "originHash" : "b3ebb9c6f445897e0def27d86c5c3f9055bfffea77e2ebc7064ff6607af68a85",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -116,6 +116,15 @@
       "state" : {
         "revision" : "53156c7ec267db846e6b64c9f4c4e31ba4cf75eb",
         "version" : "8.0.2"
+      }
+    },
+    {
+      "identity" : "grdb.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/groue/GRDB.swift",
+      "state" : {
+        "revision" : "04e73c26c4ce8218ab85aaf791942bb0b204f330",
+        "version" : "7.4.1"
       }
     },
     {
@@ -269,6 +278,15 @@
       "state" : {
         "revision" : "5dd1907d64f0d36f158f61a466bab75067224893",
         "version" : "6.9.0"
+      }
+    },
+    {
+      "identity" : "sharing-grdb",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/sharing-grdb",
+      "state" : {
+        "revision" : "83ad5261983c4fcc92d071610e09718ce5227e29",
+        "version" : "0.1.1"
       }
     },
     {

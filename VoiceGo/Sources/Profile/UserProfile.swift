@@ -7,14 +7,16 @@
 
 import Foundation
 
-struct UserProfile: Equatable {
+struct UserProfile: Identifiable, Equatable {
     let id : Int
     let documentId: String
     let email: String
+    let city : String
     let username: String
     let provider : String
     let phoneNumber: String
     let userIconUrl: String
+    var enableNotifications = false
     
 }
 
@@ -23,11 +25,13 @@ extension UserProfile: Decodable {
         case id
         case documentId
         case email
+        case city
         case name
         case provider
         case username
         case phoneName
         case userIconUrl
+        case jwt
     }
     
     init(from decoder: Decoder) throws {
@@ -39,6 +43,7 @@ extension UserProfile: Decodable {
         self.username = try container.decode(String.self, forKey: .username)
         self.phoneNumber = try container.decode(String.self, forKey: .phoneName)
         self.userIconUrl = try container.decode(String.self, forKey: .userIconUrl)
+        self.city = try container.decode(String.self, forKey: .city)
     }
 }
 
@@ -48,6 +53,7 @@ extension UserProfile {
             id: 1,
             documentId: "",
             email: "hello@demo.com",
+            city: "Beijing",
             username: "Changhong",
             provider: "local",
             phoneNumber: "15618664527",
@@ -60,6 +66,7 @@ extension UserProfile {
             id: 0,
             documentId: "",
             email: "tophu1@163.com",
+            city: "Shanghai",
             username: "changhong",
             provider: "local",
             phoneNumber: "15618664527",
@@ -68,16 +75,3 @@ extension UserProfile {
     }
 }
 
-
-struct Account: Identifiable, Equatable {
-    var id = UUID()
-    var token = ""
-    var firstName = ""
-    var lastName = ""
-    var birthDate = Date()
-    var gender = ""
-    var city = ""
-    var email = ""
-    var phone = ""
-    var enableNotifications = false
-}

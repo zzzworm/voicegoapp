@@ -21,7 +21,8 @@ struct JoinFeature {
     
     enum Action {
         enum ViewAction: Equatable {
-            case onDevelopedByTap
+            case onClickAuthByTap
+            case onWechatAuthByTap
             case onJoinButtonTap
         }
         
@@ -64,8 +65,10 @@ struct JoinFeature {
                     state.loginOptions = LoginOptionsFeature.State()
                     return .none
                     
-                case .onDevelopedByTap:
+                case .onClickAuthByTap:
                     state.developedBy = DevelopedByFeature.State()
+                    return .none
+                case .onWechatAuthByTap:
                     return .none
                 }
                 

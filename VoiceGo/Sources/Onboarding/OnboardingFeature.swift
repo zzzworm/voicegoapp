@@ -14,7 +14,7 @@ struct OnboardingFeature {
     @ObservableState
     struct State: Equatable, Hashable {
         var items: [Onboarding] = Onboarding.pages
-        var selectedTab: Onboarding.Tab = .page1
+        var currentTab: Onboarding.Tab = .page1
         var showGetStarted = false
     }
     
@@ -45,12 +45,12 @@ struct OnboardingFeature {
                 )
                 
 //            case let .onTabChanged(tab):
-//                state.selectedTab = tab
+//                state.currentTab = tab
 //                state.showGetStarted = (tab == .page3)
 //                return .none
                 
-            case .binding(\.selectedTab):
-                state.showGetStarted = (state.selectedTab == .page3)
+            case .binding(\.currentTab):
+                state.showGetStarted = (state.currentTab == .page3)
                 return .none
                 
             case .binding:

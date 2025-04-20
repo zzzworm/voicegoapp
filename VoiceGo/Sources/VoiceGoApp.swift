@@ -38,15 +38,24 @@ struct VoiceGoApp: App {
         LoggerStore.shared.configuration.saveInterval = .seconds(3600 * 24 * 3) // 3天
 #endif
     }
+    
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+        @Environment(\.scenePhase) private var scenePhase
+    
     var body: some Scene {
-        WindowGroup {
+        let wg = WindowGroup {
             if !_XCTIsTesting {
-                RootView(
+                AppView(
                     store: Store(
-                        initialState: RootDomain.State(),
-                        reducer: RootDomain.init
+                        initialState: AppFeature.State(),
+                        reducer: AppFeature.init
                     )
                 )
+            }
+        }
+        if #available(iOS 17.0, *) {
+            wg.onChange(of: scenePhase) { (phase, _) in
+                self.appDelegate.store.send(.didChangeScenePhase(phase))
             }
         }
     }

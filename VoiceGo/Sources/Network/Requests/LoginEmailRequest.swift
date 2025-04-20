@@ -6,12 +6,12 @@
 //
 
 struct LoginEmailRequest: Encodable {
-    let username: String
+    let identifier: String
     let password: String
 
     
-    init(username: String, password: String) {
-        self.username = username
+    init(identifier: String, password: String) {
+        self.identifier = identifier
         self.password = password
     }
 }

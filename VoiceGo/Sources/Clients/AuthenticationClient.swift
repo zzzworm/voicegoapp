@@ -10,7 +10,8 @@ import Dependencies
 
 /// A structure representing the authentication response.
 struct AuthenticationResponse: Equatable, Decodable {
-    var token: String
+    var jwt: String
+    var user : UserProfile
 }
 
 /// An enumeration representing possible authentication errors.
@@ -21,7 +22,7 @@ enum AuthenticationError: Equatable, LocalizedError, Sendable {
     var errorDescription: String? {
         switch self {
         case .invalidEmail:
-            return "User invalid email."
+            return  "User Identifier invalid."
         case .invalidUserPassword:
             return "Unknown user or invalid password."
         }
@@ -58,7 +59,7 @@ extension AuthenticationClient: DependencyKey {
 //                else { throw AuthenticationError.invalidUserPassword }
                 
                 // Construct parameters and perform API request
-                let request = LoginEmailRequest(username: data.username, password: data.password)
+                let request = LoginEmailRequest(identifier: data.identifier, password: data.password)
                 return try await API.provider.async.request(.login(request))
                     .map(AuthenticationResponse.self)
             }
