@@ -28,6 +28,7 @@ struct ProfileSettingDomain: Reducer {
     enum Action: Equatable {
         case fetchUserProfile
         case fetchUserProfileResponse(TaskResult<UserProfile>)
+        case logout
     }
 
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
@@ -53,6 +54,8 @@ struct ProfileSettingDomain: Reducer {
         case .fetchUserProfileResponse(.failure(let error)):
             state.dataState = .complete
             print("Error: \(error)")
+            return .none
+        case .logout:
             return .none
         }
     }

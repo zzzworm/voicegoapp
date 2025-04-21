@@ -1,6 +1,6 @@
 //
 //  UserNotificationClient.swift
-//  Showcase
+// VoiceGo
 //
 //  Created by Anatoli Petrosyants on 04.09.23.
 //

@@ -1,6 +1,6 @@
 //
 //  AnyTransition+Extensions.swift
-//  Showcase
+// VoiceGo
 //
 //  Created by Anatoli Petrosyants on 12.04.23.
 //

@@ -1,6 +1,6 @@
 //
 //  UserCredentialsClient.swift
-//  Showcase
+// VoiceGo
 //
 //  Created by Anatoli Petrosyants on 07.09.23.
 //

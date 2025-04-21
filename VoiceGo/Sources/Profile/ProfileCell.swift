@@ -16,13 +16,26 @@ struct ProfileCell : View {
     var body: some View {
         Button(action: action) {
             HStack {
-                LazyImage(url: URL(string: profile.userIconUrl))
-                    .frame(width: 34, height: 34)
+                if let iconUrl = profile.userIconUrl
+                {
+                    LazyImage(url: URL(string: iconUrl))
+                        .frame(width: 34, height: 34)
+                }else {
+                    Image(systemName: "person.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 34, height: 34)
+                        .foregroundColor(.gray)
+                }
+                
                 VStack{
                     Spacer()
-                    Text(profile.phoneNumber)
-                        .font(.headline)
-                        .foregroundColor(.primary)
+                    if let phoneNumber = profile.phoneNumber
+                    {
+                        Text(phoneNumber)
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                    }
                     Text(profile.username)
                         .font(.headline)
                         .foregroundColor(.primary)

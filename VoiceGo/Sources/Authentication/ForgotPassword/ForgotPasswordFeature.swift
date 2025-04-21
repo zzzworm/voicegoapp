@@ -1,6 +1,6 @@
 //
 //  ForgotPasswordFeature.swift
-//  Showcase
+// VoiceGo
 //
 //  Created by Anatoli Petrosyants on 21.06.23.
 //

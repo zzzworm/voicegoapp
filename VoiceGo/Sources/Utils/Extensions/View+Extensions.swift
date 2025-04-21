@@ -1,6 +1,6 @@
 //
 //  View+Extensions.swift
-//  Showcase
+// VoiceGo
 //
 //  Created by Anatoli Petrosyants on 20.03.23.
 //

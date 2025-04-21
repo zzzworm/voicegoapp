@@ -1,6 +1,6 @@
 //
 //  PhoneLoginFeature.swift
-//  Showcase
+// VoiceGo
 //
 //  Created by Anatoli Petrosyants on 29.08.23.
 //

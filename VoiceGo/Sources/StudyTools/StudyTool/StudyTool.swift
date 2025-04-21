@@ -30,18 +30,9 @@ extension StudyTool: Codable {
         case title
         case description
         case categoryKey
-        case image
+        case imageUrl
     }
     
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StudyToolKeys.self)
-        self.id = try container.decode(Int.self, forKey: .id)
-        self.documentId = try container.decode(String.self, forKey: .documentId)
-        self.title = try container.decode(String.self, forKey: .title)
-        self.description = try container.decode(String.self, forKey: .description)
-        self.categoryKey = try container.decode(String.self, forKey: .categoryKey)
-        self.imageUrl = try container.decode(String.self, forKey: .image)
-    }
 }
 
 extension StudyTool {

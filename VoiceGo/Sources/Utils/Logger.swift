@@ -1,6 +1,6 @@
 //
 //  Logger.swift
-//  Showcase
+// VoiceGo
 //
 //  Created by Anatoli Petrosyants on 27.02.23.
 //

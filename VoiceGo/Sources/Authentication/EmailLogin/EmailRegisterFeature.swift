@@ -1,5 +1,5 @@
 //
-//  EmailLoginFeature.swift
+//  EmailRegisterFeature.swift
 // VoiceGo
 //
 //  Created by Anatoli Petrosyants on 12.04.23.
@@ -10,22 +10,22 @@ import ComposableArchitecture
 import SharingGRDB
 
 @Reducer
-struct EmailLoginFeature {
+struct EmailRegisterFeature {
     
     @ObservableState
     struct State: Equatable {
         var isActivityIndicatorVisible = false
-        var userIdentifier = "StrapiUser1"
+        var username = "StrapiUser1"
+        var email = "StrapiUser1@example.com"
         var password = "password123"
+        var retypePassword = "password123"
         
         @Presents var alert: AlertState<Never>?
     }
     
     enum Action: Equatable, BindableAction {
         enum ViewAction: Equatable {
-            case onSignInButtonTap
-            case onSignUpButtonTap
-            case onForgotPasswordButtonTap
+            case onConfirmButtonTap
         }
         
         enum InternalAction: Equatable {
@@ -34,8 +34,6 @@ struct EmailLoginFeature {
         
         enum Delegate {
             case didEmailAuthenticated
-            case didForgotPasswordPressed
-            case didRegisterPressed
         }
         
         case view(ViewAction)
@@ -60,16 +58,23 @@ struct EmailLoginFeature {
             // view actions
             case let .view(viewAction):
                 switch viewAction {                    
-                case .onSignInButtonTap:
+                case .onConfirmButtonTap:
+                    if(state.password != state.retypePassword) {
+                        state.alert = AlertState { TextState("两次输入的密码不一致") }
+                        return .none
+                    }
                     state.isActivityIndicatorVisible = true
-                    return .run { [userIdentifier = state.userIdentifier, password = state.password] send in
+                    return .run { [username = state.username, email = state.email, password = state.password] send in
                         await send(
                             .internal(
                                 .loginResponse(
                                     await TaskResult {
-                                        try await self.authenticationClient.login(
-                                            .init(identifier: userIdentifier, password: password)
-                                        )
+                                        let registerRequest = RegisterEmailRequest(
+                                            email: email,
+                                            username: username,
+                                            password: password
+                                        );
+                                        return try await self.authenticationClient.register(registerRequest)
                                     }
                                 )
                             )
@@ -77,10 +82,6 @@ struct EmailLoginFeature {
                     }
                     .cancellable(id: CancelID.login)
                     
-                case .onForgotPasswordButtonTap:
-                    return .send(.delegate(.didForgotPasswordPressed))
-                case .onSignUpButtonTap:
-                    return .send(.delegate(.didRegisterPressed))
                 }
                 
             // internal actions

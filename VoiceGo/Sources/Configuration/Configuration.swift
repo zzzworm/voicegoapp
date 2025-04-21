@@ -1,6 +1,6 @@
 //
 //  Configuration.swift
-//  Showcase
+// VoiceGo
 //
 //  Created by Anatoli Petrosyants on 27.02.23.
 //
@@ -17,12 +17,13 @@ public enum BuildConfiguration: String {
     case release
 }
 
-protocol ShowcaseConfiguration {
+protocol VoiceGoConfiguration {
     var buildConfiguration: BuildConfiguration { get }
     var baseURL: String { get }
+    var dbName: String { get }
     var appVersion: String { get }
-    var client: String { get }
-    var clientId: String { get }
+    var ossbucket: String { get }
+    var ossEndpoint: String { get }
     var buildNumber: Int { get }
     var operatingSystemVersion: OperatingSystemVersion { get }
     var osName: String { get }
@@ -83,7 +84,7 @@ public class Configuration {
     }
 }
 
-extension Configuration: ShowcaseConfiguration {
+extension Configuration:VoiceGoConfiguration {
     
     var buildConfiguration: BuildConfiguration {
         #if DEBUG
@@ -99,6 +100,14 @@ extension Configuration: ShowcaseConfiguration {
         return config["base_url"] as! String
     }
     
+    var dbName : String {
+        if let name =  config["dbName"] as? String
+            , !name.isEmpty {
+            return name
+        }
+        return "db.sqlite"
+    }
+    
     var appVersion: String {
         guard let appVersion = info["CFBundleShortVersionString"] else {
             return ""
@@ -106,12 +115,12 @@ extension Configuration: ShowcaseConfiguration {
         return "\(appVersion)"
     }
     
-    var client : String {
-        return config["client"] as! String
+    var ossbucket : String {
+        return config["ossBucket"] as! String
     }
     
-    var clientId: String {
-        return config["clientId"] as! String
+    var ossEndpoint: String {
+        return config["ossEndpoint"] as! String
     }
     
     var buildNumber : Int {

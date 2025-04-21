@@ -1,6 +1,6 @@
 //
 //  LoginOptionsView.swift
-//  Showcase
+// VoiceGo
 //
 //  Created by Anatoli Petrosyants on 29.08.23.
 //
@@ -93,6 +93,8 @@ extension JoinView: View {
                 
             case let .phoneOTP(store):
                 PhoneOTPView(store: store)
+            case let .emailRegister(store):
+                EmailRegisterView(store: store)
             }
         }
         .sheet(

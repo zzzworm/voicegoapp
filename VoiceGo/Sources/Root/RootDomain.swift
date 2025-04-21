@@ -8,8 +8,11 @@
 import Foundation
 import ComposableArchitecture
 
-struct RootDomain: Reducer {
-    struct State: Equatable {
+@Reducer
+struct RootDomain {
+
+    @ObservableState
+    struct State : Equatable {
         var currentTab = Tab.studytools
         var studytoolListState = StudyToolListDomain.State()
         var profileState = ProfileDomain.State()
@@ -23,7 +26,7 @@ struct RootDomain: Reducer {
         case profile
     }
     
-    enum Action: Equatable, BindableAction {
+    enum Action: BindableAction {
         case onTabChanged(Tab)
         case addNotifications(Notification)
                 
@@ -31,9 +34,9 @@ struct RootDomain: Reducer {
         case profile(ProfileDomain.Action)
         case notifications(NotificationsFeature.Action)
                 
-                enum Delegate: Equatable {
+        enum Delegate: Equatable {
                     case didLogout
-                }
+        }
         case binding(BindingAction<State>)
         case delegate(Delegate)
     }
@@ -56,6 +59,8 @@ struct RootDomain: Reducer {
             case .onTabChanged(let tab):
                 state.currentTab = tab
                 return .none
+            case .profile(.delegate(.didLogout)):
+                return .send(.delegate(.didLogout))
             case .profile:
                 return .none
             case let .addNotifications(notification):

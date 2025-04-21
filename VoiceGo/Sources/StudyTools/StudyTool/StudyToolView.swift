@@ -31,8 +31,8 @@ struct StudyToolView: View {
                                 } else {
                                     
                                     LazyVStack {
-                                        if 0 == viewStore.toolHistoryListState.count {
-                                            ToolQACardView(card: viewStore.card)
+                                        if 0 == viewStore.toolHistoryListState.count , let card = viewStore.card {
+                                            ToolQACardView(card: card)
                                         }
                                         
                                         ForEachStore(

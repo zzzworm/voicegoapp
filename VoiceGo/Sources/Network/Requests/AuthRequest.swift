@@ -1,6 +1,6 @@
 //
 //  LoginEmailRequest.swift
-//  Showcase
+// VoiceGo
 //
 //  Created by Anatoli Petrosyants on 08.09.23.
 //
@@ -14,4 +14,12 @@ struct LoginEmailRequest: Encodable {
         self.identifier = identifier
         self.password = password
     }
+}
+
+
+struct RegisterEmailRequest: Encodable {
+    let email: String
+    let username : String
+    let password: String
+
 }

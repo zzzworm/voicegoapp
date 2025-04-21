@@ -4,19 +4,23 @@
 <dict>
 	<key>Common</key>
 	<dict>
+		<key>dbName</key>
+		<string>db.sqlite</string>
 		<key>api_version</key>
 		<string>1.0.0</string>
-		<key>client</key>
-		<string>i</string>
-		<key>clientId</key>
-		<string>showcase</string>
+		<key>ossBucket</key>
+		<string>voicego</string>
+		<key>ossEndpoint</key>
+		<string>voiceGo</string>
 	</dict>
 	<key>Development</key>
 	<dict>
+		<key>dbName</key>
+		<string>db_dev.sqlite</string>
 		<key>build_configuration</key>
 		<string>development</string>
 		<key>base_url</key>
-		<string>https://fakestoreapi.com</string>
+		<string>http://localhost:1337</string>
 	</dict>
 	<key>QA</key>
 	<dict>

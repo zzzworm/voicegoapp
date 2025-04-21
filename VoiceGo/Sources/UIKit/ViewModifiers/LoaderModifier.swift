@@ -1,6 +1,6 @@
 //
 //  LoaderModifier.swift
-//  Showcase
+// VoiceGo
 //
 //  Created by Anatoli Petrosyants on 17.07.23.
 //

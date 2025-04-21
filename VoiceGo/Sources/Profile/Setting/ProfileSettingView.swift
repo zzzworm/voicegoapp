@@ -40,10 +40,10 @@ struct ProfileSettingView: View {
 
 struct ProfileSettingView_Previews: PreviewProvider {
     static var previews: some View {
-        ProfileView(
+        ProfileSettingView(
             store: Store(
-                initialState: ProfileDomain.State(),
-                reducer: ProfileDomain.init
+                initialState: ProfileSettingDomain.State(),
+                reducer: ProfileSettingDomain.init
             )
         )
     }
