@@ -63,7 +63,7 @@ struct StudyToolListDomain: Reducer {
                     try await self.database.write { db in
                         for studyTool in studyTools {
                             var studyToolMutable = studyTool
-                            try studyToolMutable.insert(db)
+                            let ret = try studyToolMutable.insert(db)
                         }
                     }
                     

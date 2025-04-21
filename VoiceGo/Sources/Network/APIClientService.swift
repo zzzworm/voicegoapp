@@ -28,7 +28,7 @@ extension APIService: TargetType {
         case .loginLocal:
             return "/api/auth/local"
         case .registerLocal:
-            return "/api/auth/register"
+            return "/api/auth/local/register"
         }
     }
 

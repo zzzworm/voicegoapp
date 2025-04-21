@@ -19,7 +19,7 @@ struct RootDomain {
         var notifications = NotificationsFeature.State()
     }
     
-    enum Tab {
+    enum Tab: Int, CaseIterable {
         case favourites
         case chat
         case studytools

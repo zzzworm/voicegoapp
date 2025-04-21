@@ -9,15 +9,11 @@ import SwiftUI
 import ComposableArchitecture
 
 struct RootView: View {
-    let store: StoreOf<RootDomain>
+    @Perception.Bindable var store: StoreOf<RootDomain>
     
     var body: some View {
-        WithViewStore(self.store, observe: { $0 }) { viewStore in
             TabView(
-                selection: viewStore.binding(
-                    get: \.currentTab,
-                    send: RootDomain.Action.onTabChanged
-                )
+                selection: $store.currentTab.sending(\.onTabChanged)
             ) {
                 StudyToolListView(
                     store: self.store.scope(
@@ -43,7 +39,7 @@ struct RootView: View {
                 }
                 .tag(RootDomain.Tab.profile)
             }
-        }
+        
     }
 }
 

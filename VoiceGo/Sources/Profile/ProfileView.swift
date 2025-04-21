@@ -20,11 +20,7 @@ struct ProfileView: View {
             NavigationView {
                 ZStack {
                     List{
-#if DEBUG
-                        NavigationLink(destination: ConsoleView()) {
-                            Text("Console")
-                        }
-#endif
+
                         HStack{
                             Button(action: {
                                 store.send(.view(.onSettingTapped))
