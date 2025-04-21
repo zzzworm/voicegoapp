@@ -41,18 +41,29 @@ public struct UserDefaultsClient: Sendable {
     
     /// A computed property for retrieving the stored token.
     var token: String? {
-        self.stringForKey(Self.token)
+        self.stringForKey(Self.tokenKey)
     }
     
     /// A method to set the stored token.
     func setToken(_ string: String) async {
-        await self.setString(string, Self.token)
+        await self.setString(string, Self.tokenKey)
+    }
+    
+    /// A computed property for retrieving the stored token.
+    var currentUserID: String? {
+        self.stringForKey(Self.currentUserIDKey)
+    }
+    
+    /// A method to set the stored token.
+    func setCurrentUserID(_ string: String) async {
+        await self.setString(string, Self.currentUserIDKey)
     }
 }
 
 private extension UserDefaultsClient {
     static let hasShownFirstLaunchOnboardingKey = "hasShownFirstLaunchOnboardingKey"
-    static let token = "token"
+    static let tokenKey = "token"
+    static let currentUserIDKey = "currentUserID"
 }
 
 // MARK: TestDependencyKey

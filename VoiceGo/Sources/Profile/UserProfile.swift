@@ -6,8 +6,11 @@
 //
 
 import Foundation
+import SharingGRDB
 
-struct UserProfile: Identifiable, Equatable {
+struct UserProfile: Identifiable, Equatable , FetchableRecord, MutablePersistableRecord {
+    static let databaseTableName = "userProfile"
+
     let id : Int
     let documentId: String
     let email: String
@@ -16,12 +19,11 @@ struct UserProfile: Identifiable, Equatable {
     let provider : String
     let phoneNumber: String
     let userIconUrl: String
-    var enableNotifications = false
     
 }
 
-extension UserProfile: Decodable {
-    private enum ProfileKeys: String, CodingKey {
+extension UserProfile: Codable, EncodableRecord {
+    public enum ProfileKeys: String, CodingKey {
         case id
         case documentId
         case email
@@ -44,6 +46,7 @@ extension UserProfile: Decodable {
         self.phoneNumber = try container.decode(String.self, forKey: .phoneName)
         self.userIconUrl = try container.decode(String.self, forKey: .userIconUrl)
         self.city = try container.decode(String.self, forKey: .city)
+        
     }
 }
 

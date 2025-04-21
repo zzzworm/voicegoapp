@@ -11,7 +11,6 @@ import PackageDescription
         productTypes: [
             //"Maaku":.staticFramework, "TexturedMaaku":.staticFramework,"TextureSwiftSupport":.staticFramework,
             "Alamofire": .framework,
-            "ComposableArchitecture":.framework,
             "MarkdownUI":.framework,
             "cmark-gfm":.framework,
             "cmark-gfm-core":.framework,

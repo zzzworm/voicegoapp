@@ -30,7 +30,8 @@ struct ProfileView: View {
                     }
                 }
                 .task {
-                    viewStore.send(.fetchUserProfile)
+                    viewStore.send(.fetchUserProfileFromDB)
+                    viewStore.send(.fetchUserProfileFromServer)
                 }
                 .navigationTitle("我的")
                 .navigationBarTitleDisplayMode(.inline)

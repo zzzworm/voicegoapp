@@ -36,7 +36,7 @@ extension UserKeychainClient: DependencyKey {
     /// A live implementation of UserCredentialsClient.
     static let liveValue: UserKeychainClient = {
         // Initialize KeychainWrapper with the service name
-        let keychainWrapper = KeychainWrapper(serviceName: "ap.showcase")
+        let keychainWrapper = KeychainWrapper(serviceName: "com.zzzwormstudio")
 
         return Self (
             // Add user credentials to the Keychain
@@ -66,6 +66,6 @@ extension UserKeychainClient: DependencyKey {
 
 private extension UserKeychainClient {
     // Key for storing OAuth token in the Keychain
-    static let oauthTokenKey = "ap.showcase.OAuthToken"
+    static let oauthTokenKey = "com.zzzwormstudio.OAuthToken"
 }
 

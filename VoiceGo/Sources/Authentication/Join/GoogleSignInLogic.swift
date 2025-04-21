@@ -8,11 +8,14 @@
 import Foundation
 import UIKit
 import ComposableArchitecture
+import SharingGRDB
 
 struct GoogleSignInLogic<State>: Reducer {
 
     @Dependency(\.googleSignInClient) var googleSignInClient
     @Dependency(\.userKeychainClient) var userKeychainClient
+    @Dependency(\.userDefaults) var userDefaultsClient
+    @Dependency(\.defaultDatabase) var database
     @Dependency(\.mainQueue) var mainQueue
     
     func reduce(into _: inout State, action: JoinFeature.Action) -> Effect<JoinFeature.Action> {
@@ -47,6 +50,12 @@ struct GoogleSignInLogic<State>: Reducer {
             case let .loginResponse(.success(data)):                
                 userKeychainClient.storeToken(data.jwt)
                 return .run { send in
+                    try await userDefaultsClient.setToken(data.jwt)
+                    var account = data.user
+                    try await self.database.write { db in
+                        try account.insert(db)
+                    }
+                    try await self.userDefaultsClient.setCurrentUserID(account.documentId)
                     await send(.delegate(.didAuthenticated))
                 }
                 

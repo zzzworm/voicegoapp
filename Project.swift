@@ -34,6 +34,7 @@ let project = Project(
             sources: ["VoiceGo/Sources/**"],
             resources: [
                 "VoiceGo/Resources/**",
+                "VoiceGo/Sources/Configuration/config.plist"
             ],
             dependencies: [
                 // .external(name: "Maaku"),

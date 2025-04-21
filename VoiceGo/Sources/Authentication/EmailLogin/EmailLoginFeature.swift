@@ -7,6 +7,7 @@
 
 import SwiftUI
 import ComposableArchitecture
+import SharingGRDB
 
 @Reducer
 struct EmailLoginFeature {
@@ -46,6 +47,8 @@ struct EmailLoginFeature {
     
     @Dependency(\.authenticationClient) var authenticationClient
     @Dependency(\.userKeychainClient) var userKeychainClient
+    @Dependency(\.defaultDatabase) var database
+    @Dependency(\.userDefaults) var userDefaultsClient
 
     var body: some Reducer<State, Action> {
         BindingReducer()
@@ -83,9 +86,15 @@ struct EmailLoginFeature {
                     Log.info("loginResponse: \(data)")
                     state.isActivityIndicatorVisible = false
                     userKeychainClient.storeToken(data.jwt)
+                    
                     return .concatenate(
                         .run { _ in
-                            let account = data.user
+                            try await userDefaultsClient.setToken(data.jwt)
+                            var account = data.user
+                            try await self.database.write { db in
+                                try account.insert(db)
+                            }
+                            try await self.userDefaultsClient.setCurrentUserID(account.documentId)
                         },
                         .send(.delegate(.didEmailAuthenticated))
                     )

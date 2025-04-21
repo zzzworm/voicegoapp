@@ -51,8 +51,7 @@ struct AppFeature {
         Reduce { state, action in
             switch action {
             case let .appDelegate(appDelegateAction):
-                return .none
-            /*
+        
                 switch appDelegateAction {
                 case .didFinishLaunching:
                     // Configure Logger
@@ -106,7 +105,7 @@ struct AppFeature {
                         
                         if let push = try? Push(decoding: response.request.content.userInfo) {
                             Log.info("userNotifications didReceiveResponse push: \(push.aps.navigateTo!)")
-                            await send(.main(.onTabChanged(.notifications)))
+                            await send(.main(.onTabChanged(.chat)))
                         }
                     }
 
@@ -119,7 +118,7 @@ struct AppFeature {
                     let action = QuickAction(shortcutItem: shortcutItem)
                     switch action {
                     case .favourites:
-                        state = .main(RootDomain.State(currentTab: .wishlist))
+                        state = .main(RootDomain.State(currentTab: .favourites))
                     case .chat:
                         state = .main(RootDomain.State(currentTab: .chat))
                     default:
@@ -128,7 +127,7 @@ struct AppFeature {
 
                     return .none
                 }
-             */
+             
                 
             case let .didChangeScenePhase(phase):
                 Log.info("didChangeScenePhase \(phase)")

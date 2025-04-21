@@ -7,12 +7,15 @@
 
 import Foundation
 import ComposableArchitecture
+import SharingGRDB
 
 struct ProfileDomain: Reducer {
     @Dependency(\.apiClient) var apiClient
-
+    @Dependency(\.defaultDatabase) var database
+    @Dependency(\.userDefaults) var userDefaultsClient
+    
     struct State: Equatable {
-        var profile: UserProfile = .default
+        var profile: UserProfile? = .default
         fileprivate var dataState = DataState.notStarted
         var isLoading: Bool {
             dataState == .loading
@@ -26,26 +29,38 @@ struct ProfileDomain: Reducer {
     }
     
     enum Action: Equatable {
-        case fetchUserProfile
+        case fetchUserProfileFromDB
+        case fetchUserProfileFromServer
         case fetchUserProfileResponse(TaskResult<UserProfile>)
     }
 
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
         switch action {
-        case .fetchUserProfile:
-            if state.dataState == .complete || state.dataState == .loading {
+        case .fetchUserProfileFromDB:
+            return .run { send in
+                let userID = try await self.userDefaultsClient.currentUserID
+                let result = await TaskResult { try await database.read { db in
+                    
+                    if let user = try UserProfile.fetchOne(db, key: [ UserProfile.ProfileKeys.documentId.stringValue : userID]) {
+                        return user
+                    }
+                    else{
+                        throw NSError(domain: "UserProfile", code: 0, userInfo: nil)
+                    }
+                } }
+                
+                await send(.fetchUserProfileResponse(result))
+            }
+        case .fetchUserProfileFromServer:
+            if  state.dataState == .loading {
                 return .none
             }
             state.dataState = .loading
             return .run { send in
-//                let result = await TaskResult { try await apiClient.fetchUserProfile() }
-//                await send(.fetchUserProfileResponse(result))
+                let result = await TaskResult { try await apiClient.fetchUserProfile() }
+                await send(.fetchUserProfileResponse(result))
             }
-//            return .task {
-//                await .fetchUserProfileResponse(
-//                    TaskResult { try await apiClient.fetchUserProfile() }
-//                )
-//            }
+
         case .fetchUserProfileResponse(.success(let profile)):
             state.dataState = .complete
             state.profile = profile
