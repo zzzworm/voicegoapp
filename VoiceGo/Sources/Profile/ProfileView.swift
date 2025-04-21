@@ -12,10 +12,11 @@ import PulseUI
 #endif
 
 struct ProfileView: View {
-    let store: StoreOf<ProfileDomain>
+    @Perception.Bindable var store: StoreOf<ProfileDomain>
     
     var body: some View {
-        WithViewStore(self.store, observe: { $0 }) { viewStore in
+        NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
+        
             NavigationView {
                 ZStack {
                     List{
@@ -24,19 +25,34 @@ struct ProfileView: View {
                             Text("Console")
                         }
 #endif
+                        HStack{
+                            Button(action: {
+                                store.send(.view(.onSettingTapped))
+                            }) {
+                                Text("设置")
+                            }
+                            Spacer()
+                        }
                     }
-                    if viewStore.isLoading {
+                    if store.state.isLoading {
                         ProgressView()
                     }
+                    
                 }
                 .task {
-                    viewStore.send(.fetchUserProfileFromDB)
-                    viewStore.send(.fetchUserProfileFromServer)
+                    store.send(.fetchUserProfileFromDB)
+                    store.send(.fetchUserProfileFromServer)
                 }
                 .navigationTitle("我的")
                 .navigationBarTitleDisplayMode(.inline)
             }
-        }
+        
+        } destination: { store in
+                    switch store.case {
+                    case let .setting(store):
+                        ProfileSettingView(store: store)
+                    }
+                }
     }
 }
 

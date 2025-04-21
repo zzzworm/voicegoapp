@@ -1,6 +1,6 @@
 //
 //  HelpView.swift
-//  Showcase
+// VoiceGo
 //
 //  Created by Anatoli Petrosyants on 10.04.23.
 //

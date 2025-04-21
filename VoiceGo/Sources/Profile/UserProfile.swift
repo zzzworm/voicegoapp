@@ -14,11 +14,11 @@ struct UserProfile: Identifiable, Equatable , FetchableRecord, MutablePersistabl
     let id : Int
     let documentId: String
     let email: String
-    let city : String
+    let city : String?
     let username: String
     let provider : String
-    let phoneNumber: String
-    let userIconUrl: String
+    let phoneNumber: String?
+    let userIconUrl: String?
     
 }
 
@@ -28,26 +28,12 @@ extension UserProfile: Codable, EncodableRecord {
         case documentId
         case email
         case city
-        case name
-        case provider
         case username
-        case phoneName
+        case provider
+        case phoneNumber
         case userIconUrl
-        case jwt
     }
     
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: ProfileKeys.self)
-        self.id = try container.decode(Int.self, forKey: .id)
-        self.documentId = try container.decode(String.self, forKey: .documentId)
-        self.email = try container.decode(String.self, forKey: .email)
-        self.provider = try container.decode(String.self, forKey: .provider)
-        self.username = try container.decode(String.self, forKey: .username)
-        self.phoneNumber = try container.decode(String.self, forKey: .phoneName)
-        self.userIconUrl = try container.decode(String.self, forKey: .userIconUrl)
-        self.city = try container.decode(String.self, forKey: .city)
-        
-    }
 }
 
 extension UserProfile {

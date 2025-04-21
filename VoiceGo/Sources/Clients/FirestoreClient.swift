@@ -1,6 +1,6 @@
 //
 //  FirestoreClient.swift
-//  Showcase
+// VoiceGo
 //
 //  Created by Anatoli Petrosyants on 18.08.23.
 //

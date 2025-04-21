@@ -1,6 +1,6 @@
 //
 //  AuthorizationControllerClient.swift
-//  Showcase
+// VoiceGo
 //
 //  Created by Anatoli Petrosyants on 13.09.23.
 //

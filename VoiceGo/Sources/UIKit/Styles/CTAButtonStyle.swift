@@ -1,6 +1,6 @@
 //
 //  CTAButtonStyle.swift
-//  Showcase
+// VoiceGo
 //
 //  Created by Anatoli Petrosyants on 31.03.23.
 //

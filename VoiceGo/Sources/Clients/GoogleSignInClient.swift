@@ -49,11 +49,11 @@ extension GoogleSignInClient: DependencyKey {
                     throw AuthenticationError.invalidEmail
                 }
                 
-                let username = "mor_2314"
-                let password = "83r5^_"
+                let username = "strapiuser1@example.com"
+                let password = "password123"
                 
                 let request = LoginEmailRequest(identifier: username, password: password)
-                return try await API.provider.async.request(.login(request))
+                return try await VoiceGoAPIClient.provider.async.request(.loginLocal(request))
                     .map(AuthenticationResponse.self)
             },
             logout: {

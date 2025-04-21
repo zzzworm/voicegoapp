@@ -1,6 +1,6 @@
 //
 //  LoginOptionsFeature.swift
-//  Showcase
+// VoiceGo
 //
 //  Created by Anatoli Petrosyants on 01.09.23.
 //

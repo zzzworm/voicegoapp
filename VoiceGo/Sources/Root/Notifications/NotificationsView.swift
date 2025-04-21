@@ -1,6 +1,6 @@
 //
 //  NotificationsView.swift
-//  Showcase
+// VoiceGo
 //
 //  Created by Anatoli Petrosyants on 05.10.23.
 //

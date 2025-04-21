@@ -35,6 +35,7 @@ struct VoiceGoApp: App {
         migrator.registerMigration("Create UserPorfile table") { db in
             try db.create(table: UserProfile.databaseTableName) { table in
                 table.primaryKey(["documentId"])
+                table.column("documentId", .text).notNull()
                 table.column("id", .integer).notNull()
                 table.column("email", .text)
                 table.column("username", .text).notNull()
@@ -46,6 +47,7 @@ struct VoiceGoApp: App {
         migrator.registerMigration("Create studyTool used table") { db in
             try db.create(table: StudyTool.databaseTableName) { table in
                 table.primaryKey(["documentId"])
+                table.column("documentId", .text).notNull()
                 table.column("id", .integer).notNull()
                 table.column("title", .text).notNull()
                 table.column("description", .text).notNull()
@@ -55,6 +57,7 @@ struct VoiceGoApp: App {
             
             try db.create(table: StudyToolUsed.databaseTableName) { table in
                 table.primaryKey(["documentId"])
+                table.column("documentId", .text).notNull()
                 table.column("id", .integer).notNull()
                 table.column("lastUsedAt", .date).notNull()
                 table.column("userDocumentId", .text).references(UserProfile.databaseTableName,column: "documentId", onDelete: .cascade)

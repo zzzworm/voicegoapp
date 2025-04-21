@@ -10,13 +10,13 @@ import ComposableArchitecture
 
 // MARK: - LoginView
 
-struct EmailLoginView {
-    @Perception.Bindable var store: StoreOf<EmailLoginFeature>
+struct EmailRegisterView {
+    @Perception.Bindable var store: StoreOf<EmailRegisterFeature>
 }
 
 // MARK: - Views
 
-extension EmailLoginView: View {
+extension EmailRegisterView: View {
     
     var body: some View {
         content
@@ -27,10 +27,22 @@ extension EmailLoginView: View {
             isShowing: $store.isActivityIndicatorVisible)
         {
             VStack {
+                Image(systemName: "pencil.slash")
+                        .font(.system(size: 40))
+                
                 VStack {
                     TextField(
-                        "用户名或者邮箱",
-                        text: $store.userIdentifier
+                        "用户名",
+                        text: $store.username
+                    )
+                    .autocapitalization(.none)
+                    .keyboardType(.emailAddress)
+                    .textContentType(.emailAddress)
+                    .textFieldStyle(.main)
+                    
+                    TextField(
+                        "邮箱",
+                        text: $store.email
                     )
                     .autocapitalization(.none)
                     .keyboardType(.emailAddress)
@@ -43,32 +55,24 @@ extension EmailLoginView: View {
                     )
                     .textFieldStyle(.main)
                     
-                    HStack {
-                        Spacer()
-                        Button("忘记密码", action: {
-                            store.send(.view(.onForgotPasswordButtonTap))
-                        })
-                        .buttonStyle(.linkButton)
-                    }
-                    .padding(.top, 16)
+                    SecureField(
+                        "••••••••",
+                        text: $store.retypePassword
+                    )
+                    .textFieldStyle(.main)
                     
                     Button("确定", action: {
-                        store.send(.view(.onSignInButtonTap))
+                        store.send(.view(.onConfirmButtonTap))
                     })
                     .buttonStyle(.cta)
                     .padding(.top, 24)
                 }
                 .padding(24)
                 
-                Button("账号注册", action: {
-                    store.send(.view(.onSignInButtonTap))
-                })
-                .buttonStyle(.cta)
-                .padding(.top, 24)
                 
                 Spacer()
             }
-            .navigationTitle("邮箱&用户名登录")
+            .navigationTitle("注册")
         }
         .alert($store.scope(state: \.alert, action: \.alert))
     }

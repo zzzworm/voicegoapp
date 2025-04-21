@@ -1,6 +1,6 @@
 //
 //  AuthenticationClient.swift
-//  Showcase
+// VoiceGo
 //
 //  Created by Anatoli Petrosyants on 21.06.23.
 //
@@ -33,6 +33,7 @@ enum AuthenticationError: Equatable, LocalizedError, Sendable {
 struct AuthenticationClient {
     /// A method for performing login using the provided credentials.
     var login: @Sendable (LoginEmailRequest) async throws -> AuthenticationResponse
+    var register: @Sendable (RegisterEmailRequest) async throws -> AuthenticationResponse
 }
 
 extension DependencyValues {
@@ -48,19 +49,22 @@ extension AuthenticationClient: DependencyKey {
     static let liveValue: Self = {
         return Self(
             login: { data in
-                try await Task.sleep(nanoseconds: NSEC_PER_SEC)
+    
+                // Construct parameters and perform API request
+                return try await VoiceGoAPIClient.provider.async.request(.loginLocal(data))
+                    .map(AuthenticationResponse.self)
+            }, register: { data in
                 
-//                // Validate email
-//                guard data.email.isValidEmail()
-//                else { throw AuthenticationError.invalidEmail }
-//
-//                // Validate password
-//                guard data.password.isValidPassword()
-//                else { throw AuthenticationError.invalidUserPassword }
+                // Validate email
+                guard data.email.isValidEmail()
+                else { throw AuthenticationError.invalidEmail }
+
+                // Validate password
+                guard data.password.isValidPassword()
+                else { throw AuthenticationError.invalidUserPassword }
                 
                 // Construct parameters and perform API request
-                let request = LoginEmailRequest(identifier: data.identifier, password: data.password)
-                return try await API.provider.async.request(.login(request))
+                return try await VoiceGoAPIClient.provider.async.request(.registerLocal(data))
                     .map(AuthenticationResponse.self)
             }
         )
@@ -69,7 +73,8 @@ extension AuthenticationClient: DependencyKey {
 
 extension AuthenticationClient: TestDependencyKey {
     static let testValue = Self(
-        login: unimplemented("\(Self.self).login")
+        login: unimplemented("\(Self.self).login"),
+        register: unimplemented("\(Self.self).register")
     )
 }
 

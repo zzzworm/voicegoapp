@@ -1,6 +1,6 @@
 //
 //  LottieViewRepresentable.swift
-//  Showcase
+// VoiceGo
 //
 //  Created by Anatoli Petrosyants on 19.05.23.
 //

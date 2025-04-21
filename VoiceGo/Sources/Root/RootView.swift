@@ -34,7 +34,7 @@ struct RootView: View {
                 ProfileView(
                     store: self.store.scope(
                         state: \.profileState,
-                        action: RootDomain.Action.profile
+                        action: \.profile
                     )
                 )
                 .tabItem {

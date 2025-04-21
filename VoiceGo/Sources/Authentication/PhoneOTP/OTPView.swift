@@ -1,6 +1,6 @@
 //
 //  OTPView.swift
-//  Showcase
+// VoiceGo
 //
 //  Created by Anatoli Petrosyants on 31.08.23.
 //

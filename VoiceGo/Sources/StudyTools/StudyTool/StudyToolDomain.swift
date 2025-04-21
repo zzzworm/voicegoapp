@@ -15,7 +15,7 @@ struct StudyToolDomain: Reducer {
         let id: UUID
         let studyTool: StudyTool
         var dataLoadingStatus = DataLoadingStatus.notStarted
-        var card : QACard
+        var card : QACard?
         var toolHistoryListState: IdentifiedArrayOf<ToolHistoryDomain.State> = []
         var shouldShowError: Bool {
             dataLoadingStatus == .error

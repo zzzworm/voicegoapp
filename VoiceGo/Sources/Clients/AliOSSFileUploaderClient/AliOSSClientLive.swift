@@ -10,11 +10,6 @@ import UIKit
 let OSS_STS_URL = "oss_sts_url"
 
 
-/**
- * the endpoint for OSS used in app, for detail please refer to https://help.aliyun.com/document_detail/31837.html
- */
-let OSS_ENDPOINT = "your bucket's endpoint"
-
 
 extension AliOssFileUploaderClient: DependencyKey {
     
@@ -25,7 +20,7 @@ extension AliOssFileUploaderClient: DependencyKey {
         // set config for oss client networking
         let cfg = OSSClientConfiguration()
         
-        let client = OSSClient(endpoint: OSS_ENDPOINT,
+        let client = OSSClient(endpoint: Configuration.current.ossEndpoint,
                                credentialProvider: credentialProvider,
                                clientConfiguration: cfg)
         let clientActor = AliOssFileUploaderClientActor(client: client)
@@ -62,7 +57,7 @@ extension AliOssFileUploaderClient: DependencyKey {
                             if let fileURL = fileURL {
                                 uploadData = try Data(contentsOf: fileURL)
                             }
-                            for try await uploadResult in await clientActor.putDataAsync(data: uploadData!, bucketName: "your-bucket-name", fileName: fileName){
+                            for try await uploadResult in await clientActor.putDataAsync(data: uploadData!, bucketName: Configuration.current.ossbucket, fileName: fileName){
                                 if case let .completion(fileId, url) = uploadResult {
                                     retUrl = url
                                 }
@@ -92,7 +87,7 @@ private actor AliOssFileUploaderClientActor {
     func putDataAsync(data: Data, bucketName: String ,fileName: String) -> AsyncThrowingStream<UploadDataResult, Error> {
         return AsyncThrowingStream<UploadDataResult, Error> { continuation in
             Task {
-                let fileUrl = URL(string: "https://\(bucketName).\(OSS_ENDPOINT)/\(fileName)")
+                let fileUrl = URL(string: "https://\(bucketName).\(Configuration.current.ossEndpoint)/\(fileName)")
                 let request = OSSPutObjectRequest()
                 request.uploadingData = data
                 request.bucketName = bucketName

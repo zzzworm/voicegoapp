@@ -1,6 +1,6 @@
 //
 //  AppProgressStyle.swift
-//  Showcase
+// VoiceGo
 //
 //  Created by Anatoli Petrosyants on 27.03.23.
 //

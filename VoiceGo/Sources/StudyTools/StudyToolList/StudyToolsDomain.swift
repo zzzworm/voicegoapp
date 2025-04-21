@@ -11,7 +11,7 @@ import ComposableArchitecture
 struct StudyToolListDomain: Reducer {
     @Dependency(\.uuid) var uuid
     @Dependency(\.apiClient) var apiClient
-
+    
     struct State: Equatable {
         var dataLoadingStatus = DataLoadingStatus.notStarted
         var shouldOpenCart = false
@@ -31,7 +31,9 @@ struct StudyToolListDomain: Reducer {
         case fetchStudyToolsResponse(TaskResult<[StudyTool]>)
         case studyTool(id: StudyToolDomain.State.ID, action: StudyToolDomain.Action)
     }
-
+    
+    @Dependency(\.defaultDatabase) var database
+    
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
@@ -39,30 +41,41 @@ struct StudyToolListDomain: Reducer {
                 if state.dataLoadingStatus == .success || state.dataLoadingStatus == .loading {
                     return .none
                 }
-
+                
                 state.dataLoadingStatus = .loading
                 return .run { send in
                     let result = await TaskResult { try await apiClient.fetchStudyTools() }
-                   await send(.fetchStudyToolsResponse(result))
+                    await send(.fetchStudyToolsResponse(result))
                 }
+                
             case .fetchStudyToolsResponse(.success(let studyTools)):
                 state.dataLoadingStatus = .success
                 state.studyToolListState = IdentifiedArrayOf(
                     uniqueElements: studyTools.map {
                         StudyToolDomain.State(
                             id: uuid(),
-                            studyTool: $0, card: QACard(isExample: true, originText:"apply", actionText: "翻译", answer: "应用")
+                            studyTool: $0
                         )
                     }
                 )
-                return .none
+                return .run { _ in
+                    
+                    try await self.database.write { db in
+                        for studyTool in studyTools {
+                            var studyToolMutable = studyTool
+                            try studyToolMutable.insert(db)
+                        }
+                    }
+                    
+                }
+                
             case .fetchStudyToolsResponse(.failure(let error)):
                 state.dataLoadingStatus = .error
                 print(error)
                 print("Error getting StudyTools, try again later.")
                 return .none
-            
-
+                
+                
             case .studyTool:
                 return .none
             }
@@ -71,6 +84,6 @@ struct StudyToolListDomain: Reducer {
             StudyToolDomain()
         }
     }
-
-
+    
+    
 }

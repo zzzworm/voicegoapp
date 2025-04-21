@@ -1,6 +1,6 @@
 //
 //  JoinFeature.swift
-//  Showcase
+// VoiceGo
 //
 //  Created by Anatoli Petrosyants on 29.08.23.
 //
@@ -46,6 +46,7 @@ struct JoinFeature {
     @Reducer(state: .equatable)
     enum Path {
         case emailLogin(EmailLoginFeature)
+        case emailRegister(EmailRegisterFeature)
         case forgotPassword(ForgotPasswordFeature)
         case phoneLogin(PhoneLoginFeature)
         case phoneOTP(PhoneOTPFeature)
@@ -90,11 +91,15 @@ struct JoinFeature {
             // path actions
             case let .path(pathAction):
                 switch pathAction {
-                case .element(id: _, action: .emailLogin(.delegate(.didEmailAuthenticated))):
+                case .element(id: _, action: .emailLogin(.delegate(.didEmailAuthenticated))),.element(id: _, action: .emailRegister(.delegate(.didEmailAuthenticated))):
                     return .send(.delegate(.didAuthenticated))
                     
                 case .element(id: _, action: .emailLogin(.delegate(.didForgotPasswordPressed))):
                     state.path.append(.forgotPassword(.init()))
+                    return .none
+                    
+                case .element(id: _, action: .emailLogin(.delegate(.didRegisterPressed))):
+                    state.path.append(.emailRegister(.init()))
                     return .none
                     
                 case .element(id: _, action: .forgotPassword(.delegate(.didPasswordChanged))):

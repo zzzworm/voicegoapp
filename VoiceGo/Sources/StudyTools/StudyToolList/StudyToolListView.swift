@@ -9,7 +9,7 @@ import SwiftUI
 import ComposableArchitecture
 
 struct StudyToolListView: View {
-    let store: StoreOf<StudyToolListDomain>
+    @Perception.Bindable var store: StoreOf<StudyToolListDomain>
     
     var body: some View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
@@ -41,15 +41,13 @@ struct StudyToolListView: View {
                         }
                     }
                 }
-                .task {
-                    viewStore.send(.fetchStudyTools)
-                }
                 .navigationTitle("学习工具")
                 .navigationViewStyle(.stack)
                 .navigationBarTitleDisplayMode(.inline)
-                
-                
             }
+        }
+        .onAppear() {
+            store.send(.fetchStudyTools)
         }
     }
 }

@@ -4,8 +4,8 @@ git_url "git@git.tower.v6.army:voicego/voicegoapp_certificates.git"
 type "adhoc" # The default type, can be: appstore, adhoc, enterprise or development
 
 app_identifier ["com.souler.cn.VoiceGo", "com.souler.cn.VoiceGo.ServicePush", "com.souler.cn.VoiceGo.VoiceWidget","com.souler.cn.VoiceGo.IntentHandler"]
-#username "zhouchanghong@soulapp.cn" # Your Apple Developer Portal username
+username "zzzworm@gmail.com" # Your Apple Developer Portal username
 # For all available options run `fastlane match --help`
 # Remove the # in the beginning of the line to enable the other options
-
+team_id "S75X4J33FV"
 #api_key_path "fastlane/VD4XC8XQJR.json"
