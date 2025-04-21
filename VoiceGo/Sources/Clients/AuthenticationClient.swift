@@ -59,9 +59,9 @@ extension AuthenticationClient: DependencyKey {
                 guard data.email.isValidEmail()
                 else { throw AuthenticationError.invalidEmail }
 
-                // Validate password
-                guard data.password.isValidPassword()
-                else { throw AuthenticationError.invalidUserPassword }
+//                // Validate password
+//                guard data.password.isValidPassword()
+//                else { throw AuthenticationError.invalidUserPassword }
                 
                 // Construct parameters and perform API request
                 return try await VoiceGoAPIClient.provider.async.request(.registerLocal(data))

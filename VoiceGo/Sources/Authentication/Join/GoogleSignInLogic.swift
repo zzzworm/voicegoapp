@@ -50,7 +50,6 @@ struct GoogleSignInLogic<State>: Reducer {
             case let .loginResponse(.success(data)):                
                 userKeychainClient.storeToken(data.jwt)
                 return .run { send in
-                    try await userDefaultsClient.setToken(data.jwt)
                     var account = data.user
                     try await self.database.write { db in
                         try account.insert(db)

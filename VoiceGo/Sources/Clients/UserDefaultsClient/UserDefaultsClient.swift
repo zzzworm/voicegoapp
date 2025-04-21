@@ -25,7 +25,7 @@ public struct UserDefaultsClient: Sendable {
 
  var stringForKey: @Sendable (String) -> String?
     /// A method to set a string value for a given key.
-    var setString: @Sendable (String, String) async -> Void
+    var setString: @Sendable (String?, String) async -> Void
 
   var remove: @Sendable (String) async -> Void
 
@@ -40,22 +40,12 @@ public struct UserDefaultsClient: Sendable {
     }
     
     /// A computed property for retrieving the stored token.
-    var token: String? {
-        self.stringForKey(Self.tokenKey)
-    }
-    
-    /// A method to set the stored token.
-    func setToken(_ string: String) async {
-        await self.setString(string, Self.tokenKey)
-    }
-    
-    /// A computed property for retrieving the stored token.
     var currentUserID: String? {
         self.stringForKey(Self.currentUserIDKey)
     }
     
     /// A method to set the stored token.
-    func setCurrentUserID(_ string: String) async {
+    func setCurrentUserID(_ string: String?) async {
         await self.setString(string, Self.currentUserIDKey)
     }
 }

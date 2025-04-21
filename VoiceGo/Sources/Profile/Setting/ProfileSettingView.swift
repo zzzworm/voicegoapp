@@ -18,18 +18,26 @@ struct ProfileSettingView: View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
             NavigationView {
                 ZStack {
+                    List{
+
 #if DEBUG
                     NavigationLink(destination: ConsoleView()) {
                         Text("Console")
                     }
 #endif
                     
+                        HStack{
+                            Button(action: {
+                                store.send(.logout)
+                            }) {
+                                Text("退出登录")
+                            }
+                            Spacer()
+                        }
+                    }
                     if viewStore.isLoading {
                         ProgressView()
                     }
-                }
-                .task {
-                    viewStore.send(.fetchUserProfile)
                 }
                 .navigationTitle("我的")
                 .navigationBarTitleDisplayMode(.inline)

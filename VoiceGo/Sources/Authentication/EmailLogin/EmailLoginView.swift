@@ -10,13 +10,17 @@ import ComposableArchitecture
 
 // MARK: - LoginView
 
-struct EmailLoginView {
-    @Perception.Bindable var store: StoreOf<EmailLoginFeature>
-}
 
 // MARK: - Views
 
-extension EmailLoginView: View {
+struct EmailLoginView: View {
+    @Perception.Bindable var store: StoreOf<EmailLoginFeature>
+    
+    enum FocusedField {
+            case username, password
+        }
+
+    @FocusState private var focusedField: FocusedField?
     
     var body: some View {
         content
@@ -36,12 +40,14 @@ extension EmailLoginView: View {
                     .keyboardType(.emailAddress)
                     .textContentType(.emailAddress)
                     .textFieldStyle(.main)
+                    .focused($focusedField, equals: .username)
                     
                     SecureField(
                         "••••••••",
                         text: $store.password
                     )
                     .textFieldStyle(.main)
+                    .focused($focusedField, equals: .password)
                     
                     HStack {
                         Spacer()
@@ -53,15 +59,24 @@ extension EmailLoginView: View {
                     .padding(.top, 16)
                     
                     Button("确定", action: {
+                        focusedField = nil
                         store.send(.view(.onSignInButtonTap))
                     })
                     .buttonStyle(.cta)
                     .padding(.top, 24)
                 }
                 .padding(24)
+                .onSubmit {
+                            if focusedField == .username {
+                                focusedField = .password
+                            } else {
+                                focusedField = nil
+                            }
+                        }
                 
                 Button("账号注册", action: {
-                    store.send(.view(.onSignInButtonTap))
+                    focusedField = nil
+                    store.send(.view(.onSignUpButtonTap))
                 })
                 .buttonStyle(.cta)
                 .padding(.top, 24)

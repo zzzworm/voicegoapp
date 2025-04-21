@@ -137,7 +137,7 @@ struct AppFeature {
                 switch loadingAction {
                 case .didLoaded:
                     if self.userDefaultsClient.hasShownFirstLaunchOnboarding {
-                        if (self.userKeychainClient.retrieveToken() != nil) {
+                        if let token = self.userKeychainClient.retrieveToken()  {
                             state = .main(RootDomain.State())
                         } else {
                             state = .join(JoinFeature.State())
@@ -168,6 +168,9 @@ struct AppFeature {
                     self.googleSignInClient.logout()
                     self.userKeychainClient.removeToken()
                     state = .loading(LoadingFeature.State())
+                    Task{
+                        await self.userDefaultsClient.setCurrentUserID(nil);
+                    }
                     return .none
                 }
         

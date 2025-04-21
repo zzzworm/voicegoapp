@@ -94,7 +94,6 @@ struct EmailRegisterFeature {
                     
                     return .concatenate(
                         .run { _ in
-                            try await userDefaultsClient.setToken(data.jwt)
                             var account = data.user
                             try await self.database.write { db in
                                 try account.insert(db)
