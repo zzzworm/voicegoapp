@@ -73,6 +73,7 @@ let project = Project(
                 .external(name: "Reachability"),
                 .external(name: "SwiftKeychainWrapper"),
                 .external(name: "SharingGRDB"),
+                .external(name: "StrapiSwift"),
             ],
             settings: .settings(base: [
                 "OTHER_LDFLAGS": "-all_load",

@@ -11,6 +11,7 @@ import Foundation
 import FirebaseCore
 import FirebaseFirestore
 import GoogleSignIn
+import StrapiSwift
 
 @Reducer
 struct AppFeature {
@@ -138,6 +139,9 @@ struct AppFeature {
                 case .didLoaded:
                     if self.userDefaultsClient.hasShownFirstLaunchOnboarding {
                         if let token = self.userKeychainClient.retrieveToken()  {
+                            MainActor.assumeIsolated{
+                                Strapi.configure(baseURL: Configuration.current.baseURL, token: token)
+                            }
                             state = .main(RootDomain.State())
                         } else {
                             state = .join(JoinFeature.State())
@@ -167,6 +171,9 @@ struct AppFeature {
                 case .didLogout:
                     self.googleSignInClient.logout()
                     self.userKeychainClient.removeToken()
+                    MainActor.assumeIsolated{
+                        Strapi.configure(baseURL: Configuration.current.baseURL, token: nil)
+                    }
                     state = .loading(LoadingFeature.State())
                     Task{
                         await self.userDefaultsClient.setCurrentUserID(nil);

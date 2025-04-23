@@ -27,8 +27,8 @@ struct StudyToolListDomain: Reducer {
     }
     
     enum Action: Equatable {
-        case fetchStudyTools
-        case fetchStudyToolsResponse(TaskResult<[StudyTool]>)
+        case fetchStudyToolUsedList
+        case fetchStudyToolsResponse(TaskResult<[StudyToolUsed]>)
         case studyTool(id: StudyToolDomain.State.ID, action: StudyToolDomain.Action)
     }
     
@@ -37,33 +37,44 @@ struct StudyToolListDomain: Reducer {
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
-            case .fetchStudyTools:
+            case .fetchStudyToolUsedList:
                 if state.dataLoadingStatus == .success || state.dataLoadingStatus == .loading {
                     return .none
                 }
                 
                 state.dataLoadingStatus = .loading
                 return .run { send in
-                    let result = await TaskResult { try await apiClient.fetchStudyTools() }
+                    let result = await TaskResult {
+                        let ret = try await apiClient.fetchStudyTools()
+                        return await ret.data
+                    }
                     await send(.fetchStudyToolsResponse(result))
                 }
                 
-            case .fetchStudyToolsResponse(.success(let studyTools)):
+            case .fetchStudyToolsResponse(.success(let studyToolUsedList)):
                 state.dataLoadingStatus = .success
                 state.studyToolListState = IdentifiedArrayOf(
-                    uniqueElements: studyTools.map {
+                    uniqueElements: studyToolUsedList.map {
                         StudyToolDomain.State(
                             id: uuid(),
-                            studyTool: $0
+                            studyTool: $0.studyTool!
                         )
                     }
                 )
                 return .run { _ in
                     
                     try await self.database.write { db in
-                        for studyTool in studyTools {
-                            var studyToolMutable = studyTool
-                            let ret = try studyToolMutable.insert(db)
+                        for studyToolUsed in studyToolUsedList {
+                            
+                            if var studyToolMutable = studyToolUsed.studyTool {
+                                var qaCard = studyToolMutable.exampleCard
+                                if var qaCard = qaCard {
+                                    try qaCard.upsert(db)
+                                }
+                                let ret = try studyToolMutable.upsert(db)
+                            }
+                            var studyToolUsedMutable = studyToolUsed
+                            try studyToolUsedMutable.upsert(db)
                         }
                     }
                     

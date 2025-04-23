@@ -9,14 +9,6 @@ import SwiftUI
 import MarkdownUI
 
 
-struct QACard : Equatable{
-    var isExample : Bool = true
-    var originCaption : String = "原文"
-    var originText : String = ""
-    var actionText : String = ""
-    var answer: String = ""
-}
-
 struct ToolQACardView: View {
     let card: QACard
     let cornerRadius: CGFloat = 15.0
@@ -45,7 +37,9 @@ struct ToolQACardView: View {
                 GroundedCaptionView(caption: card.originCaption)
                 Text(card.originText).padding(EdgeInsets(top: 5, leading: 5, bottom: 10, trailing: 5))
                 GroundedCaptionView(caption:card.actionText)
-                Markdown(card.answer)
+                if let answer = card.suggestions.first{
+                    Markdown(answer)
+                }
                 Spacer()
             }
             .padding(10)
@@ -56,7 +50,7 @@ struct ToolQACardView: View {
 
 
 #Preview {
-    ToolQACardView(card: QACard(isExample: true, originText:"apply", actionText: "翻译", answer: "应用"))
+    ToolQACardView(card: QACard( id:0 ,isExample: true, originText:"apply", actionText: "翻译", suggestions: ["应用"]))
 }
 
 

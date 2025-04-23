@@ -7,6 +7,7 @@
 
 import Foundation
 import Dependencies
+import StrapiSwift
 
 /// A structure representing the authentication response.
 struct AuthenticationResponse: Equatable, Decodable {
@@ -51,8 +52,11 @@ extension AuthenticationClient: DependencyKey {
             login: { data in
     
                 // Construct parameters and perform API request
-                return try await VoiceGoAPIClient.provider.async.request(.loginLocal(data))
-                    .map(AuthenticationResponse.self)
+                let ret = try await Strapi.authentication.local.login(
+                    identifier: data.identifier,
+                    password: data.password, as: UserProfile.self
+                )
+                return AuthenticationResponse(jwt: ret.jwt, user: ret.user)
             }, register: { data in
                 
                 // Validate email
@@ -64,8 +68,8 @@ extension AuthenticationClient: DependencyKey {
 //                else { throw AuthenticationError.invalidUserPassword }
                 
                 // Construct parameters and perform API request
-                return try await VoiceGoAPIClient.provider.async.request(.registerLocal(data))
-                    .map(AuthenticationResponse.self)
+                let ret = try await Strapi.authentication.local.register(username: data.username, email: data.email, password: data.password, as: UserProfile.self)
+                return AuthenticationResponse(jwt: ret.jwt, user: ret.user)
             }
         )
     }()

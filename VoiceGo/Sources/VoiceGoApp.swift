@@ -40,11 +40,22 @@ struct VoiceGoApp: App {
                 table.column("email", .text)
                 table.column("username", .text).notNull()
                 table.column("provider", .text).notNull()
+                table.column("city", .text)
                 table.column("phoneNumber", .text)
                 table.column("userIconUrl", .text)
             }
         }
         migrator.registerMigration("Create studyTool used table") { db in
+            try db.create(table: QACard.databaseTableName) { table in
+                table.primaryKey(["id"])
+                table.column("id", .integer).notNull()
+                table.column("isExample", .boolean).defaults(to: true )
+                table.column("originCaption", .text).notNull()
+                table.column("originText", .text).notNull()
+                table.column("actionText", .text).notNull()
+                table.column("suggestions", .text)
+            }
+            
             try db.create(table: StudyTool.databaseTableName) { table in
                 table.primaryKey(["documentId"])
                 table.column("documentId", .text).notNull()
@@ -53,6 +64,7 @@ struct VoiceGoApp: App {
                 table.column("description", .text).notNull()
                 table.column("categoryKey", .text).notNull()
                 table.column("imageUrl", .text)
+                table.column("cardDocumentId", .text).references(QACard.databaseTableName,column: "id", onDelete: .cascade)
             }
             
             try db.create(table: StudyToolUsed.databaseTableName) { table in

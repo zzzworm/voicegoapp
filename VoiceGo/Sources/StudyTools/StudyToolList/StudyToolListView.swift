@@ -21,7 +21,7 @@ struct StudyToolListView: View {
                     } else if viewStore.shouldShowError {
                         ErrorView(
                             message: "Oops, we couldn't fetch product list",
-                            retryAction: { viewStore.send(.fetchStudyTools) }
+                            retryAction: { viewStore.send(.fetchStudyToolUsedList) }
                         )
                         
                     }
@@ -47,7 +47,7 @@ struct StudyToolListView: View {
             }
         }
         .onAppear() {
-            store.send(.fetchStudyTools)
+            store.send(.fetchStudyToolUsedList)
         }
     }
 }

@@ -23,14 +23,14 @@ struct ToolHistoryCell: View {
                     HStack {
                         VStack(alignment: .leading) {
                             HStack{
-                                Text(viewStore.history.question).font(.system(.title, design: .rounded))
+                                Text(viewStore.history.query).font(.system(.title, design: .rounded))
                                 VoiceAnimatedButton(animating: $store.isSpeaking) {
-                                    if(viewStore.isSpeaking){
-                                        viewStore.send(.stopSpeak)
-                                    }
-                                    else{
-                                        viewStore.send(.speakAnswer(viewStore.history.question))
-                                    }
+//                                    if(viewStore.isSpeaking){
+//                                        viewStore.send(.stopSpeak)
+//                                    }
+//                                    else{
+//                                        viewStore.send(.speakAnswer(viewStore.history.question))
+//                                    }
                                 }
                             }
                             Divider()
@@ -78,7 +78,7 @@ struct ToolHistoryCell_Previews: PreviewProvider {
             store: Store(
                 initialState: ToolHistoryDomain.State(
                     id: UUID(),
-                    history: ToolHistory.sample[0],
+                    history: ToolConversation.sample[0],
                     isSpeaking: false
                 ),
                 reducer: ToolHistoryDomain.init

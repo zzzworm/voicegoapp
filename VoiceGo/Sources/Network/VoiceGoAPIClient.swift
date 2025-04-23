@@ -9,11 +9,11 @@ import Foundation
 import ComposableArchitecture
 import Moya
 import SwiftyJSON
+import StrapiSwift
 
 struct VoiceGoAPIClient {
-    var fetchStudyTools:  @Sendable () async throws -> [StudyTool]
+    var fetchStudyTools:  @Sendable () async throws -> StrapiResponse<[StudyToolUsed]>
     var fetchUserProfile:  @Sendable () async throws -> UserProfile
-    
     struct Failure: Error, Equatable {}
 }
 
@@ -30,18 +30,15 @@ extension VoiceGoAPIClient : DependencyKey  {
             AccessTokenPlugin {_ in token ?? ""}])
         return provider
     }
+    
     static let liveValue = Self(
         fetchStudyTools: {
-            let response = try await provider.asyncRequest(.fetchStudyTools)
-            let listRsp = try JSONDecoder().decode(ListResponse<StudyTool>.self, from: response.data)
-            
-            let products = listRsp.data
-            
-            return products
+            let resp =  try await Strapi.contentManager.collection("study-tool-user-useds/my-list").getDocuments(as: [StudyToolUsed].self)
+            return resp
         },
         fetchUserProfile: {
-            let response = try await provider.asyncRequest(.fetchUserProfile)
-            let profile = try JSONDecoder().decode(UserProfile.self, from: response.data)
+            let response = try await Strapi.contentManager.collection("users/me").getDocuments(as: UserProfile.self)
+            let profile = response.data
             return profile
         }
     )
@@ -51,7 +48,7 @@ extension VoiceGoAPIClient : DependencyKey  {
 extension VoiceGoAPIClient {
     static var previewValue = Self(
         fetchStudyTools: {
-            StudyTool.sample
+            return try await Strapi.contentManager.collection("study-tool-user-useds/my-list").getDocuments(as: [StudyToolUsed].self)
         },
         fetchUserProfile: { .sample }
     )
@@ -60,7 +57,7 @@ extension VoiceGoAPIClient {
 extension VoiceGoAPIClient : TestDependencyKey  {
     static var testValue = Self(
         fetchStudyTools: {
-            StudyTool.sample
+            return try await Strapi.contentManager.collection("study-tool-user-useds/my-list").getDocuments(as: [StudyToolUsed].self)
         },
         fetchUserProfile: { .sample }
     )
