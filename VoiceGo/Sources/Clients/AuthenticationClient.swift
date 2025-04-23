@@ -56,6 +56,9 @@ extension AuthenticationClient: DependencyKey {
                     identifier: data.identifier,
                     password: data.password, as: UserProfile.self
                 )
+                
+                    Strapi.configure(baseURL: Configuration.current.baseURL, token: ret.jwt)
+                
                 return AuthenticationResponse(jwt: ret.jwt, user: ret.user)
             }, register: { data in
                 
@@ -69,6 +72,8 @@ extension AuthenticationClient: DependencyKey {
                 
                 // Construct parameters and perform API request
                 let ret = try await Strapi.authentication.local.register(username: data.username, email: data.email, password: data.password, as: UserProfile.self)
+                    Strapi.configure(baseURL: Configuration.current.baseURL, token: ret.jwt)
+                
                 return AuthenticationResponse(jwt: ret.jwt, user: ret.user)
             }
         )
