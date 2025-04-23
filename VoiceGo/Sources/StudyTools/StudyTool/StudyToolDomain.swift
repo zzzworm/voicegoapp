@@ -25,7 +25,7 @@ struct StudyToolDomain: Reducer {
     
     enum Action: Equatable {
         case fetchStudyHistory
-        case fetchStudyHistoryResponse(TaskResult<[ToolHistory]>)
+        case fetchStudyHistoryResponse(TaskResult<[ToolConversation]>)
         case toolHistory(id: ToolHistoryDomain.State.ID, action: ToolHistoryDomain.Action)
         case inputBar(BottomInputBarDomain.Action)
     }
@@ -49,9 +49,9 @@ struct StudyToolDomain: Reducer {
                         let resp = try await aiServiceClient.getSessionList(query)
                         do {
                             let rsp = try JSONDecoder().decode(ConversationRsp.self, from: resp.data)
-                            var result = [ToolHistory]()
+                            var result = [ToolConversation]()
                             rsp.data.map { item in
-                                let history = ToolHistory.sample[0]
+                                let history = ToolConversation.sample[0]
                                 result.append(history)
                             }
                             return result

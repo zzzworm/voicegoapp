@@ -37,39 +37,35 @@ extension EmailRegisterView: View {
                         .font(.system(size: 40))
                 
                 VStack {
-                    TextField(
-                        "用户名",
-                        text: $store.username
-                    )
-                    .autocapitalization(.none)
-                    .keyboardType(.emailAddress)
-                    .textContentType(.emailAddress)
-                    .textFieldStyle(.main)
-                    .focused($focusedField, equals: .username)
+                    AuthTextField(
+                                    icon: Image(systemName: "envelope"),
+                                    placeholder: "Email",
+                                    isSecure: false,
+                                    keyboardType: .emailAddress,
+                                    text: $store.email
+                                )
+                                AuthTextField(
+                                    icon: Image(systemName: "at"),
+                                    placeholder: "Username",
+                                    isSecure: false,
+                                    keyboardType: .default,
+                                    text: $store.username
+                                )
+                                AuthTextField(
+                                    icon: Image(systemName: "lock"),
+                                    placeholder: "Password",
+                                    isSecure: true,
+                                    keyboardType: .default,
+                                    text: $store.password
+                                )
                     
-                    TextField(
-                        "邮箱",
-                        text: $store.email
-                    )
-                    .autocapitalization(.none)
-                    .keyboardType(.emailAddress)
-                    .textContentType(.emailAddress)
-                    .textFieldStyle(.main)
-                    .focused($focusedField, equals: .email)
-                    
-                    SecureField(
-                        "••••••••",
-                        text: $store.password
-                    )
-                    .textFieldStyle(.main)
-                    .focused($focusedField, equals: .password)
-                    
-                    SecureField(
-                        "••••••••",
+                    AuthTextField(
+                        icon: Image(systemName: "lock"),
+                        placeholder: "Password",
+                        isSecure: true,
+                        keyboardType: .default,
                         text: $store.retypePassword
                     )
-                    .textFieldStyle(.main)
-                    .focused($focusedField, equals: .retype)
                     
                     Button("确定", action: {
                         focusedField = nil
@@ -101,5 +97,24 @@ extension EmailRegisterView: View {
 }
 
 
+// MARK: - Preview
+
+struct EmailRegisterView_Previews: PreviewProvider {
+    static var previews: some View {
+        EmailRegisterView(
+            store: Store(
+                initialState: EmailRegisterFeature.State(
+                    isActivityIndicatorVisible: false,
+                    username: "StrapiUser1",
+                    email: "StrapiUser1@example.com",
+                    password: "password123",
+                    retypePassword: "password123",
+                    alert: nil
+                )){
+                    EmailRegisterFeature()
+                }
+        )
+    }
+}
 
 

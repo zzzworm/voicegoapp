@@ -4,35 +4,55 @@
 //
 //  Created by zzzworm on 2025/3/27.
 //
+import Foundation
+import GRDB
+import SharingGRDB
 
-struct ToolHistory : Equatable, Identifiable {
-    let id : String
-    let question : String
+
+struct ToolConversation : Equatable, Identifiable,TableRecord  {
+    static var databaseTableName = "toolHistory"
+    let documentId: String
+    let id : Int
+    let updatedAt: Date
+    let query : String
     let answer : String
+    let message_id: String
+    let conversation_id: String
+    var StudyToolUsed: StudyToolUsed? = nil
 }
 
 
-extension ToolHistory: Decodable {
-    private enum ToolHistoryKeys: String, CodingKey {
-        case id
-        case question
-        case answer
+extension ToolConversation: Codable  , FetchableRecord, MutablePersistableRecord {
+    
+    func encode(to container: inout PersistenceContainer) throws {
+        container[Columns.documentId] = documentId
+        container[Columns.id] = id
+        container[Columns.updatedAt] = updatedAt
+        container[Columns.query] = query
+        container[Columns.answer] = answer
+        container[Columns.message_id] = message_id
+        container[Columns.conversation_id] = conversation_id
     }
     
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: ToolHistoryKeys.self)
-        self.id = try container.decode(String.self, forKey: .id)
-        self.question = try container.decode(String.self, forKey: .question)
-        self.answer = try container.decode(String.self, forKey: .answer)
+    enum Columns{
+        static let documentId = Column("documentId")
+        static let id = Column("id")
+        static let updatedAt = Column("updatedAt")
+        static let query = Column("query")
+        static let answer = Column("answer")
+        static let message_id = Column("message_id")
+        static let conversation_id = Column("conversation_id")
     }
 }
 
-extension ToolHistory {
-    static var sample: [ToolHistory] {
+extension ToolConversation {
+    static var sample: [ToolConversation] {
         [
             .init(
-                id: "89fc7a46-4ef5-4250-a6a0-07293a3c7056",
-                question: "apply",
+                documentId: "89fc7a46-4ef5-4250-a6a0-07293a3c7056",
+                id: 1,
+                updatedAt: Date(),
+                query: "apply",
                 answer: """
                 1. **单词类型及释义**
                     -动词
@@ -43,11 +63,15 @@ extension ToolHistory {
                 3. **音标**：[əˈplaɪ]
                 4. **音节拆分**：ap -ply，音标拆分：[ə] -[ˈplaɪ]
                 5. **记忆方法**：可以根据词缀来记忆。“ap -”可看作是ad -的变体，表示“去，朝向”，“ply”有“折叠；弯曲”的意思，朝着某个方向弯曲（自己以适应要求等），就有了“申请”“应用”等含义。
-                """
+                """,
+                message_id: "89fc7a46-4ef5-4250-a6a0-07293a3c7056",
+                conversation_id: "89fc7a46-4ef5-4250-a6a0-07293a3c7056"
             ),
             .init(
-                id: "89fc7a46-4ef5-4250-a6a0-07293a3c7057",
-                question: "wait",
+                documentId: "89fc7a46-4ef5-4250-a6a0-07293a3c7056",
+                id: 1,
+                updatedAt: Date(),
+                query: "apply",
                 answer: """
                 单词类型及释义
 
@@ -64,7 +88,9 @@ extension ToolHistory {
                 音标：/weɪt/
 
                 音节拆分：wait为一个音节，音节拆分：wait。
-                """
+                """,
+                message_id: "89fc7a46-4ef5-4250-a6a0-07293a3c7056",
+                conversation_id: "89fc7a46-4ef5-4250-a6a0-07293a3c7056"
             ),
             
         ]

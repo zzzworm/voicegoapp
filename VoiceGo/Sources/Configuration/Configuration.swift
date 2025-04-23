@@ -183,7 +183,7 @@ extension Configuration:VoiceGoConfiguration {
     }
     
     var timezoneOffset: String {
-        return "\(-TimeZone.current.secondsFromGMT()/60)"
+        return "\(TimeZone.current.secondsFromGMT()/60)"
     }
     
     var apiVersion: String {

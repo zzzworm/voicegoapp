@@ -7,6 +7,7 @@ import Moya
 // 定义Moya的Service
 enum APIService {
     case fetchStudyTools
+    case studyTool(String)
     case fetchUserProfile
     
     case loginLocal(LoginEmailRequest)
@@ -23,6 +24,8 @@ extension APIService: TargetType {
         switch self {
         case .fetchStudyTools:
             return "/api/study-tools"
+        case .studyTool(let toolId):
+            return "/api/study-tools/(\toolId)"
         case .fetchUserProfile:
             return "/api/users/me"
         case .loginLocal:
@@ -34,7 +37,7 @@ extension APIService: TargetType {
 
     var method: Moya.Method {
         switch self {
-        case .fetchStudyTools, .fetchUserProfile:
+        case .fetchStudyTools,.studyTool, .fetchUserProfile:
             return .get
         case .loginLocal, .registerLocal:
             return .post
@@ -49,7 +52,9 @@ extension APIService: TargetType {
         case .loginLocal(let request) :
             let parameters = try! DictionaryEncoder().encode(request)
             return .requestParameters(parameters: parameters, encoding: URLEncoding.default)
-
+        case .fetchStudyTools,.studyTool(_):
+            let parameters = ["populate[exampleCard][populate][0]"  : "suggestions"]
+            return.requestParameters(parameters: parameters, encoding: URLEncoding.default)
         default:
             return .requestPlain
         }
@@ -69,6 +74,10 @@ extension APIService: TargetType {
             return APIService.defaultHeaders
         }
     }
+    
+    var validationType: ValidationType {
+           return .successCodes
+       }
 }
 
 

@@ -49,7 +49,7 @@ struct StudyToolCell_Previews: PreviewProvider {
             store: Store(
                 initialState: StudyToolDomain.State(
                     id: UUID(),
-                    studyTool: .sample[0], card: QACard(isExample: true, originText:"apply", actionText: "翻译", answer: "应用")
+                    studyTool: .sample[0], card: QACard(id:0  ,isExample: true, originText:"apply", actionText: "翻译", suggestions: ["应用"])
                 ),
                 reducer: StudyToolDomain.init
             )

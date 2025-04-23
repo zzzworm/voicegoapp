@@ -1,5 +1,5 @@
 {
-  "originHash" : "b3ebb9c6f445897e0def27d86c5c3f9055bfffea77e2ebc7064ff6607af68a85",
+  "originHash" : "3b5d462fa41ca648329fd544edda094bd234e2fa0787c8fef2cbd461ab6969e0",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -287,6 +287,15 @@
       "state" : {
         "revision" : "83ad5261983c4fcc92d071610e09718ce5227e29",
         "version" : "0.1.1"
+      }
+    },
+    {
+      "identity" : "strapi-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/zzzworm/strapi-swift.git",
+      "state" : {
+        "revision" : "a62a17c0bb7faca7bac7c35c0f1e1c1cd664cdf4",
+        "version" : "1.0.0"
       }
     },
     {

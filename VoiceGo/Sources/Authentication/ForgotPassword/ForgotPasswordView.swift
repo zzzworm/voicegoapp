@@ -20,14 +20,14 @@ extension ForgotPasswordView: View {
     
     var body: some View {
         content
-            .navigationTitle("ForgotPassword.title")
+            .navigationTitle("忘记密码")
     }
     
     @ViewBuilder private var content: some View {
         VStack {
             Spacer()
 
-            Button("ForgotPassword.changePassword", action: {
+            Button("发送验证码", action: {
                 store.send(.view(.onChangePasswordButtonTap))
             })
             .buttonStyle(.cta)

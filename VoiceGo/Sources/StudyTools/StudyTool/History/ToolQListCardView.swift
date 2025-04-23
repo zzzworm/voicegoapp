@@ -10,20 +10,8 @@ import MarkdownUI
 
 
 
-
-
-
-
-struct QAListCard : Equatable{
-    var isExample : Bool = true
-    var originCaption : String = "原文"
-    var originText : String = ""
-    var actionText : String = ""
-    var suggestions: [String] = []
-}
-
 struct ToolQListCardView: View {
-    let card: QAListCard
+    let card: QACard
     let cornerRadius: CGFloat = 15.0
     var body: some View{
         ZStack(alignment: .leading) {
@@ -71,5 +59,5 @@ struct ToolQListCardView: View {
 
 
 #Preview {
-    ToolQListCardView(card: QAListCard(isExample: true, originText:"apply", actionText: "翻译", suggestions: ["hi"]))
+    ToolQListCardView(card: QACard(id:0  ,isExample: true, originText:"apply", actionText: "翻译", suggestions: ["hi"]))
 }

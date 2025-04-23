@@ -13,7 +13,7 @@ struct ToolHistoryDomain: Reducer {
     @ObservableState
     struct State: Equatable, Identifiable {
         let id: UUID
-        let history: ToolHistory
+        let history: ToolConversation
         var isSpeaking : Bool = false
     }
     

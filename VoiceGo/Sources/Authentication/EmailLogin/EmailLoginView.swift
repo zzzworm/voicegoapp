@@ -50,8 +50,14 @@ struct EmailLoginView: View {
                     .focused($focusedField, equals: .password)
                     
                     HStack {
+                        Button("账号注册", action: {
+                            focusedField = nil
+                            store.send(.view(.onSignUpButtonTap))
+                        })
+                        .buttonStyle(.linkButton)
                         Spacer()
                         Button("忘记密码", action: {
+                            focusedField = nil
                             store.send(.view(.onForgotPasswordButtonTap))
                         })
                         .buttonStyle(.linkButton)
@@ -74,18 +80,29 @@ struct EmailLoginView: View {
                             }
                         }
                 
-                Button("账号注册", action: {
-                    focusedField = nil
-                    store.send(.view(.onSignUpButtonTap))
-                })
-                .buttonStyle(.cta)
-                .padding(.top, 24)
-                
                 Spacer()
             }
-            .navigationTitle("邮箱&用户名登录")
+            .navigationTitle("登录")
         }
         .alert($store.scope(state: \.alert, action: \.alert))
+    }
+}
+
+// MARK: - Preview
+
+struct EmailLoginView_Previews: PreviewProvider {
+    static var previews: some View {
+        EmailLoginView(
+            store: Store(
+                initialState: EmailLoginFeature.State(
+                    isActivityIndicatorVisible: false,
+                    userIdentifier: "StrapiUser1",
+                    password: "password123",
+                    alert: nil
+                )){
+                    EmailLoginFeature()
+                }
+        )
     }
 }
 
