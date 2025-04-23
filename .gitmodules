@@ -1,0 +1,3 @@
+[submodule "Packages/strapi-swift"]
+	path = Packages/strapi-swift
+	url = git@git.tower.v6.army:voicego/strapi-swift.git

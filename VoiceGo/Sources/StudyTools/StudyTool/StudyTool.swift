@@ -23,6 +23,17 @@ struct StudyTool: Equatable, Identifiable, Codable,TableRecord, Sendable {
     var exampleCard : QACard? = nil
     var cardDocumentId: String? = nil
     
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case documentId
+        case title
+        case description
+        case categoryKey
+        case imageUrl
+        case exampleCard
+    }
+    
 }
 
 extension StudyTool: FetchableRecord, MutablePersistableRecord, EncodableRecord {
@@ -45,7 +56,7 @@ extension StudyTool: FetchableRecord, MutablePersistableRecord, EncodableRecord 
         static let  description  = Column(CodingKeys.description)
         static let  categoryKey  = Column(CodingKeys.categoryKey)
         static let  imageUrl  = Column(CodingKeys.imageUrl)
-        static let  cardDocumentId  = Column(CodingKeys.cardDocumentId)
+        static let  cardDocumentId  = Column("cardDocumentId")
     }
     
     static var databaseSelection: [any SQLSelectable] {
@@ -93,14 +104,19 @@ struct StudyToolUsed: Equatable, Identifiable, Sendable {
     let id: Int
     let documentId: String
     let lastUsedAt: Date
-    let userDocumentId : String
-    let studyToolDocumentId : String
+    var userDocumentId : String?
+    var studyToolDocumentId : String?
     var studyTool: StudyTool? = nil
     
 }
 
 
 extension StudyToolUsed: Codable , FetchableRecord, MutablePersistableRecord {
+    enum CodedingKeys: String, CodingKey {
+        case documentId
+        case id
+        case lastUsedAt
+    }
     func encode(to container: inout PersistenceContainer) {
         container[Column("documentId")] = documentId
         container[Column("id")] = id
@@ -113,8 +129,8 @@ extension StudyToolUsed: Codable , FetchableRecord, MutablePersistableRecord {
         static let documentId = Column(CodingKeys.documentId)
         static let id = Column(CodingKeys.id)
         static let lastUsedAt = Column(CodingKeys.lastUsedAt)
-        static let userDocumentId = Column(CodingKeys.userDocumentId)
-        static let studyToolDocumentId = Column(CodingKeys.studyToolDocumentId)
+        static let userDocumentId = Column("userDocumentId")
+        static let studyToolDocumentId = Column("studyToolDocumentId")
     }
 
 }
