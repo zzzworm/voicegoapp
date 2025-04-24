@@ -28,7 +28,7 @@ struct StudyToolListDomain: Reducer {
     
     enum Action: Equatable {
         case fetchStudyToolUsedList
-        case fetchStudyToolsResponse(TaskResult<[StudyToolUsed]>)
+        case fetchStudyToolUsedListResponse(TaskResult<[StudyToolUsed]>)
         case studyTool(id: StudyToolDomain.State.ID, action: StudyToolDomain.Action)
     }
     
@@ -48,15 +48,15 @@ struct StudyToolListDomain: Reducer {
                         let ret = try await apiClient.fetchStudyTools()
                         return await ret.data
                     }
-                    await send(.fetchStudyToolsResponse(result))
+                    await send(.fetchStudyToolUsedListResponse(result))
                 }
                 
-            case .fetchStudyToolsResponse(.success(let studyToolUsedList)):
+            case .fetchStudyToolUsedListResponse(.success(let studyToolUsedList)):
                 state.dataLoadingStatus = .success
                 state.studyToolListState = IdentifiedArrayOf(
                     uniqueElements: studyToolUsedList.map {
                         StudyToolDomain.State(
-                            id: uuid(),
+                            studyToolUsedID: $0.documentId,
                             studyTool: $0.studyTool!
                         )
                     }
@@ -80,7 +80,7 @@ struct StudyToolListDomain: Reducer {
                     
                 }
                 
-            case .fetchStudyToolsResponse(.failure(let error)):
+            case .fetchStudyToolUsedListResponse(.failure(let error)):
                 state.dataLoadingStatus = .error
                 print(error)
                 print("Error getting StudyTools, try again later.")

@@ -145,15 +145,15 @@ extension StudyToolUsed {
                 lastUsedAt: Date(),
                 userDocumentId: "user1",
                 studyToolDocumentId: "yjyt2zwv7rfscj28ms6npqf5",
-                studyTool:
-            .init(
+                studyTool:.init(
                 id: 6,
                 documentId: "yjyt2zwv7rfscj28ms6npqf5",
                 title: "AI翻译",
                 description: "支持中文翻译",
                 categoryKey: "AI翻译",
                 imageUrl: "https://voicego-image.oss-cn-shanghai.aliyuncs.com/images/ai_translation_e2c2ee1941.jpg"
-            )),
+                )
+            ),
             .init(
                 id: 7,
                 documentId: "yjyt2zwv7rfscj28ms6npqf5",
