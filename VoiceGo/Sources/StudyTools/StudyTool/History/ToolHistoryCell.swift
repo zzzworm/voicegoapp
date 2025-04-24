@@ -22,19 +22,26 @@ struct ToolHistoryCell: View {
                 VStack{
                     HStack {
                         VStack(alignment: .leading) {
-                            HStack{
-                                Text(viewStore.history.query).font(.system(.title, design: .rounded))
-                                VoiceAnimatedButton(animating: $store.isSpeaking) {
-//                                    if(viewStore.isSpeaking){
-//                                        viewStore.send(.stopSpeak)
-//                                    }
-//                                    else{
-//                                        viewStore.send(.speakAnswer(viewStore.history.question))
-//                                    }
-                                }
+                            Group{
+                                Text(viewStore.history.query).font(.system(.body, design: .rounded))
+                                    .padding(.trailing, 10)
                             }
+                            .overlay(
+                                    VoiceAnimatedButton(animating: $store.isSpeaking) {
+                                        if(viewStore.isSpeaking){
+                                            viewStore.send(.stopSpeak)
+                                        }
+                                        else{
+                                            viewStore.send(.speakAnswer(viewStore.history.query))
+                                        }
+                                    },
+                                    alignment: .topTrailing
+                                )
+                            
+                            
                             Divider()
                             Markdown("\(viewStore.history.answer)")
+                                .padding(.trailing, 10)
                                 .textSelection(.enabled)
                                 .font(.system(.body, design: .rounded))
                             

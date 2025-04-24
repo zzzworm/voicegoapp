@@ -16,7 +16,6 @@ struct StudyToolView: View {
             NavigationView {
                 Group {
                     ZStack{
-                        
                         VStack {
                             ScrollView {
                                 if viewStore.dataLoadingStatus == .loading {
@@ -24,8 +23,10 @@ struct StudyToolView: View {
                                         .frame(width: 100, height: 100)
                                 } else if viewStore.shouldShowError {
                                     ErrorView(
-                                        message: "Oops, we couldn't fetch product list",
-                                        retryAction: { viewStore.send(.fetchStudyHistory) }
+                                        message: "Oops, we couldn't fetch things",
+                                        retryAction: {
+                                            viewStore.send(.fetchStudyHistory(page: 1, pageSize: 10))
+                                        }
                                     )
                                     
                                 } else {
@@ -47,6 +48,7 @@ struct StudyToolView: View {
                                     }
                                     .padding(.bottom, viewStore.inputBarState.isKeyboardVisible ? 300 : 0)  // 动态底部间距
                                     .animation(.easeOut, value: viewStore.inputBarState.isKeyboardVisible)
+                                    
                                 }
                             }
                             
@@ -58,13 +60,12 @@ struct StudyToolView: View {
                         }
                         
                     }
-                    .task {
-                        viewStore.send(.fetchStudyHistory)
-                    }
                     .navigationTitle(viewStore.studyTool.title)
                     .navigationBarTitleDisplayMode(.inline)
                     .navigationViewStyle(.stack)
                     
+                }.task {
+                    viewStore.send(.fetchStudyHistory(page: 1, pageSize: 10))
                 }
                 
             }
@@ -77,7 +78,7 @@ struct StudyToolView_Previews: PreviewProvider {
         StudyToolView(
             store: Store(
                 initialState: StudyToolDomain.State(
-                    id: UUID(), studyTool: StudyTool.sample[0],
+                    studyToolUsedID: "xxdfsdfas", studyTool: StudyTool.sample[0],
                     card: QACard(id:0  ,
                                  isExample: true, originText: "apply", actionText: "翻译", suggestions: ["应用"])),
                 reducer: StudyToolDomain.init

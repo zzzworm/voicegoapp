@@ -7,12 +7,13 @@
 
 import Foundation
 import ComposableArchitecture
+import StrapiSwift
 
 struct StudyToolDomain: Reducer {
     @Dependency(\.uuid) var uuid
     
     struct State: Equatable, Identifiable {
-        let id: UUID
+        let studyToolUsedID: String
         let studyTool: StudyTool
         var dataLoadingStatus = DataLoadingStatus.notStarted
         var card : QACard?
@@ -21,16 +22,22 @@ struct StudyToolDomain: Reducer {
             dataLoadingStatus == .error
         }
         var inputBarState = BottomInputBarDomain.State()
+        var paginationState : Pagination?
+        var isLoadMore = false
+        var id : String {
+            studyToolUsedID
+        }
     }
     
     enum Action: Equatable {
-        case fetchStudyHistory
-        case fetchStudyHistoryResponse(TaskResult<[ToolConversation]>)
+        case fetchStudyHistory(page: Int = 1, pageSize: Int = 10)
+        case fetchStudyHistoryResponse(TaskResult<StrapiResponse<[ToolConversation]>>)
         case toolHistory(id: ToolHistoryDomain.State.ID, action: ToolHistoryDomain.Action)
         case inputBar(BottomInputBarDomain.Action)
+        case loadMore(Int)
     }
 
-    @Dependency(\.aiServiceClient) var aiServiceClient
+    @Dependency(\.apiClient) var apiClient
     
     var body: some ReducerOf<Self> {
         Scope(state: \.inputBarState, action: /Action.inputBar) {
@@ -38,43 +45,60 @@ struct StudyToolDomain: Reducer {
         }
         Reduce { state, action in
             switch action {
-            case .fetchStudyHistory:
+            case .fetchStudyHistory(let page, let pageSize):
                 if state.dataLoadingStatus == .success || state.dataLoadingStatus == .loading {
                     return .none
                 }
                 state.dataLoadingStatus = .loading
+                let studyToolUsedID = state.studyToolUsedID
                 return .run{ send in
-                    let query = ConversationQuery(user: "a5e5f0cc-6ee7-4aad-af69-56fa085ee3f6")
-                    let result = await TaskResult {
-                        let resp = try await aiServiceClient.getSessionList(query)
-                        do {
-                            let rsp = try JSONDecoder().decode(ConversationRsp.self, from: resp.data)
-                            var result = [ToolConversation]()
-                            rsp.data.map { item in
-                                let history = ToolConversation.sample[0]
-                                result.append(history)
-                            }
-                            return result
+                    do{
+                    let result =  try await apiClient.getToolConversationList(studyToolUsedID,0, 10)
+                        return await send(.fetchStudyHistoryResponse(.success(result)))
                         }
                         catch {
-                            print("Error decoding JSON: \(error)")
-                            return []
+                            return await send(.fetchStudyHistoryResponse(.failure(error)))
                         }
                        
                     }
-                    return await send(.fetchStudyHistoryResponse(result))
-                }
+            
                 
-            case .fetchStudyHistoryResponse(.success(let toolHistoryList)):
-                state.dataLoadingStatus = .success
-                state.toolHistoryListState = IdentifiedArrayOf(uniqueElements: toolHistoryList.map { history in
-                    let uuid = self.uuid() // Use the dependency for generating a unique ID
-                    return ToolHistoryDomain.State(id: uuid, history: history)
-                })
+            case .fetchStudyHistoryResponse(.success(let toolHistoryListRsp)):
+                MainActor.assumeIsolated{
+                    let toolHistoryList = toolHistoryListRsp.data
+                    state.paginationState = toolHistoryListRsp.meta?.pagination
+                    
+                    state.dataLoadingStatus = .success
+                    if let page = state.paginationState?.page, page == 1{
+                        state.toolHistoryListState = IdentifiedArrayOf(uniqueElements: toolHistoryList.map { history in
+                            let uuid = self.uuid() // Use the dependency for generating a unique ID
+                            return ToolHistoryDomain.State(id: uuid, history: history)
+                        })
+                    }
+                    else{
+                        
+                        let addIdentifiedArray = IdentifiedArrayOf(uniqueElements: toolHistoryList.map { history in
+                            let uuid = self.uuid() // Use the dependency for generating a unique ID
+                            return ToolHistoryDomain.State(id: uuid, history: history)
+                        })
+                        state.toolHistoryListState.append(contentsOf: addIdentifiedArray)
+                    }
+                }
                 return .none
             case .fetchStudyHistoryResponse(.failure(_)):
                 state.dataLoadingStatus = .error
                 return .none
+            case let .loadMore(index):
+                    guard  state.toolHistoryListState.count > 4,
+                          index == state.toolHistoryListState.count - 4, !state.isLoadMore else { return .none }
+                if let page = state.paginationState!.page, let pageSize = state.paginationState!.pageSize {
+                    return .run{ send in
+                        await send(.fetchStudyHistory(page: page+1, pageSize: pageSize))
+                    }
+                }
+                else{
+                    return .none
+                }
             case .toolHistory(id: let id, action: let action):
                 return .none
             case .inputBar(let action):
@@ -91,14 +115,14 @@ struct StudyToolDomain: Reducer {
                     }
                     let toolQuery = "[\(state.studyTool.categoryKey)]: \(query)"
                     return .run{send in
-                        let rsp = try await aiServiceClient.sendChatMessage(toolQuery,.streaming,{ eventSource in
-                            switch eventSource.event {
-                            case .message(let message):
-                                print("Received message: \(message)")
-                            case .complete(let completion):
-                                print("Stream completed with: \(completion)")
-                            }
-                        })
+//                        let rsp = try await aiServiceClient.sendChatMessage(toolQuery,.streaming,{ eventSource in
+//                            switch eventSource.event {
+//                            case .message(let message):
+//                                print("Received message: \(message)")
+//                            case .complete(let completion):
+//                                print("Stream completed with: \(completion)")
+//                            }
+//                        })
                     }
                 case .toggleSpeechMode:
                     break
