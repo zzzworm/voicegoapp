@@ -113,16 +113,21 @@ struct StudyToolDomain: Reducer {
                     if query.isEmpty {
                         return .none
                     }
-                    let toolQuery = "[\(state.studyTool.categoryKey)]: \(query)"
-                    return .run{send in
-//                        let rsp = try await aiServiceClient.sendChatMessage(toolQuery,.streaming,{ eventSource in
-//                            switch eventSource.event {
-//                            case .message(let message):
-//                                print("Received message: \(message)")
-//                            case .complete(let completion):
-//                                print("Stream completed with: \(completion)")
-//                            }
-//                        })
+                    let studyTool = state.studyTool
+            
+                    return .run{ send in
+                        let rsp = try await apiClient.streamToolConversation(studyTool,query,{ eventSource in
+                            switch eventSource.event {
+                            case .message(let message):
+                                print("Received message: \(message)")
+                            case .complete(let completion):
+                                print("Stream completed with: \(completion)")
+                                let history = ToolConversation.sample[0]
+                                let uuid = self.uuid()
+                                let toolHistory = ToolHistoryDomain.State(id: uuid, history: history)
+//                                state.toolHistoryListState.append(toolHistory)
+                            }
+                        })
                     }
                 case .toggleSpeechMode:
                     break

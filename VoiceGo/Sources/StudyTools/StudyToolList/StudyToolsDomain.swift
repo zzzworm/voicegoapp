@@ -7,6 +7,7 @@
 
 import Foundation
 import ComposableArchitecture
+import StrapiSwift
 
 struct StudyToolListDomain: Reducer {
     @Dependency(\.uuid) var uuid
@@ -28,7 +29,7 @@ struct StudyToolListDomain: Reducer {
     
     enum Action: Equatable {
         case fetchStudyToolUsedList
-        case fetchStudyToolUsedListResponse(TaskResult<[StudyToolUsed]>)
+        case fetchStudyToolsResponse(TaskResult<StrapiResponse<[StudyTool]>>)
         case studyTool(id: StudyToolDomain.State.ID, action: StudyToolDomain.Action)
     }
     
@@ -44,43 +45,54 @@ struct StudyToolListDomain: Reducer {
                 
                 state.dataLoadingStatus = .loading
                 return .run { send in
-                    let result = await TaskResult {
-                        let ret = try await apiClient.fetchStudyTools()
-                        return await ret.data
+                    do{
+                        let result = try await apiClient.fetchStudyTools()
+                        await send(.fetchStudyToolsResponse(.success(result)))
                     }
-                    await send(.fetchStudyToolUsedListResponse(result))
+                    catch{
+                        await send(.fetchStudyToolsResponse(.failure(error)))
+                    }
+                    
                 }
                 
-            case .fetchStudyToolUsedListResponse(.success(let studyToolUsedList)):
+            case .fetchStudyToolsResponse(.success(let studyToolListRsp)):
+                
+                var studyToolList : [StudyTool] = []
+                MainActor.assumeIsolated{
+                    studyToolList = studyToolListRsp.data
+                }
                 state.dataLoadingStatus = .success
                 state.studyToolListState = IdentifiedArrayOf(
-                    uniqueElements: studyToolUsedList.map {
+                    uniqueElements: studyToolList.map {
                         StudyToolDomain.State(
                             studyToolUsedID: $0.documentId,
-                            studyTool: $0.studyTool!
+                            studyTool: $0,
+                            card: $0.exampleCard,
+                            toolHistoryListState: IdentifiedArrayOf(uniqueElements: []),
+                            inputBarState: BottomInputBarDomain.State()
                         )
                     }
                 )
+                
                 return .run { _ in
                     
                     try await self.database.write { db in
-                        for studyToolUsed in studyToolUsedList {
+                        for studyTool in studyToolList {
                             
-                            if var studyToolMutable = studyToolUsed.studyTool {
+                            var studyToolMutable = studyTool
                                 var qaCard = studyToolMutable.exampleCard
                                 if var qaCard = qaCard {
                                     try qaCard.upsert(db)
                                 }
                                 let ret = try studyToolMutable.upsert(db)
-                            }
-                            var studyToolUsedMutable = studyToolUsed
-                            try studyToolUsedMutable.upsert(db)
+                            
                         }
                     }
                     
                 }
                 
-            case .fetchStudyToolUsedListResponse(.failure(let error)):
+                
+            case .fetchStudyToolsResponse(.failure(let error)):
                 state.dataLoadingStatus = .error
                 print(error)
                 print("Error getting StudyTools, try again later.")

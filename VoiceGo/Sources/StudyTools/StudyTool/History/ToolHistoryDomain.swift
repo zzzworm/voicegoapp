@@ -14,7 +14,15 @@ struct ToolHistoryDomain: Reducer {
     struct State: Equatable, Identifiable {
         let id: UUID
         let history: ToolConversation
-        var isSpeaking : Bool = false
+        var isSpeaking : Bool {
+            return speakingItem != .none
+        }
+        enum SpeakingItem {
+            case none
+            case query
+            case answer
+        }
+        var speakingItem: SpeakingItem = .none
     }
     
     @CasePathable
@@ -71,10 +79,10 @@ struct ToolHistoryDomain: Reducer {
                 
                 return .none
             case .speakQuestion(let question):
-                state.isSpeaking = true
+                state.speakingItem = .query
                 return speekText(question)
             case .speakAnswer(let answer):
-                state.isSpeaking = true
+                state.speakingItem = .answer
                 if let attString = try? AttributedString(
                     markdown:answer
                 ){
@@ -94,14 +102,12 @@ struct ToolHistoryDomain: Reducer {
                     clipboardClient.copyValue(answer) 
                 }
             case .speakFinished:
-                state.isSpeaking = false
+                state.speakingItem = .none
                 return .none
             case .speakFailed:
-                state.isSpeaking = false
+                state.speakingItem = .none
                 return .none
-                
-            case .binding(\.isSpeaking):
-                return .none
+            
             case .binding(_):
                 return .none
             }

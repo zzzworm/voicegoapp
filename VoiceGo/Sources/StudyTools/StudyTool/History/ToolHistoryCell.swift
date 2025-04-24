@@ -14,6 +14,16 @@ struct ToolHistoryCell: View {
     @State var store: StoreOf<ToolHistoryDomain>
     
     var body: some View {
+        let isSpeakingQuery = Binding<Bool>(
+            get: { store.state.isSpeaking },
+            set: { value in
+                store.state.speakingItem = value ? .query : .none}
+        )
+        let isSpeakingAnswer = Binding<Bool>(
+            get: { store.state.isSpeaking },
+            set: { value in
+                store.state.speakingItem = value ? .answer : .none}
+        )
         WithViewStore(self.store, observe: { $0 }) { viewStore in
             ZStack(alignment: .leading) {
                 RoundedRectangle(cornerRadius: 10)
@@ -24,17 +34,18 @@ struct ToolHistoryCell: View {
                         VStack(alignment: .leading) {
                             Group{
                                 Text(viewStore.history.query).font(.system(.body, design: .rounded))
-                                    .padding(.trailing, 10)
+                                    .padding(.trailing, 20)
                             }
                             .overlay(
-                                    VoiceAnimatedButton(animating: $store.isSpeaking) {
+                                
+                                VoiceAnimatedButton(animating: isSpeakingQuery) {
                                         if(viewStore.isSpeaking){
                                             viewStore.send(.stopSpeak)
                                         }
                                         else{
                                             viewStore.send(.speakAnswer(viewStore.history.query))
                                         }
-                                    },
+                                    }.frame(width:20),
                                     alignment: .topTrailing
                                 )
                             
@@ -53,7 +64,7 @@ struct ToolHistoryCell: View {
                     Divider()
                     HStack{
                         
-                        VoiceAnimatedButton( animating: $store.isSpeaking) {
+                        VoiceAnimatedButton( animating: isSpeakingAnswer) {
                             if(viewStore.isSpeaking){
                                 viewStore.send(.stopSpeak)
                             }
@@ -85,8 +96,7 @@ struct ToolHistoryCell_Previews: PreviewProvider {
             store: Store(
                 initialState: ToolHistoryDomain.State(
                     id: UUID(),
-                    history: ToolConversation.sample[0],
-                    isSpeaking: false
+                    history: ToolConversation.sample[0]
                 ),
                 reducer: ToolHistoryDomain.init
             )

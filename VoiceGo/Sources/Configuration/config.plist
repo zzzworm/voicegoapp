@@ -20,21 +20,21 @@
 		<key>build_configuration</key>
 		<string>development</string>
 		<key>base_url</key>
-		<string>http://localhost:1337</string>
+		<string>http://192.168.50.126:1337</string>
 	</dict>
 	<key>QA</key>
 	<dict>
 		<key>build_configuration</key>
 		<string>qa</string>
 		<key>base_url</key>
-		<string>https://fakestoreapi.com</string>
+		<string>http://192.168.50.126:1337</string>
 	</dict>
 	<key>Release</key>
 	<dict>
 		<key>build_configuration</key>
 		<string>release</string>
 		<key>base_url</key>
-		<string>https://fakestoreapi.com</string>
+		<string>http://192.168.50.126:1337</string>
 	</dict>
 </dict>
 </plist>
