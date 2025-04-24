@@ -144,6 +144,9 @@ struct AppFeature {
                             }
                             state = .main(RootDomain.State())
                         } else {
+                            MainActor.assumeIsolated{
+                                Strapi.configure(baseURL: Configuration.current.baseURL, token: nil)
+                            }
                             state = .join(JoinFeature.State())
                         }
                     } else {

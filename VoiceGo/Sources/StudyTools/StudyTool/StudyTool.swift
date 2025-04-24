@@ -10,7 +10,7 @@ import ComposableArchitecture
 import SharingGRDB
 import GRDB
 
-struct StudyTool: Equatable, Identifiable, Codable,TableRecord, Sendable {
+struct StudyTool: Equatable, Identifiable, Sendable {
     
     static let databaseTableName = "studyTool"
     
@@ -23,7 +23,9 @@ struct StudyTool: Equatable, Identifiable, Codable,TableRecord, Sendable {
     var exampleCard : QACard? = nil
     var cardDocumentId: String? = nil
     
-    
+}
+
+extension StudyTool: Codable, FetchableRecord ,TableRecord, MutablePersistableRecord, EncodableRecord {
     enum CodingKeys: String, CodingKey {
         case id
         case documentId
@@ -33,11 +35,6 @@ struct StudyTool: Equatable, Identifiable, Codable,TableRecord, Sendable {
         case imageUrl
         case exampleCard
     }
-    
-}
-
-extension StudyTool: FetchableRecord, MutablePersistableRecord, EncodableRecord {
-    
 
     func encode(to container: inout PersistenceContainer) throws {
         container["id"] = id
@@ -111,7 +108,7 @@ struct StudyToolUsed: Equatable, Identifiable, Sendable {
 }
 
 
-extension StudyToolUsed: Codable , FetchableRecord, MutablePersistableRecord {
+extension StudyToolUsed: Codable ,TableRecord , FetchableRecord, MutablePersistableRecord {
     enum CodedingKeys: String, CodingKey {
         case documentId
         case id

@@ -9,6 +9,7 @@ import Foundation
 import Dependencies
 import UIKit
 import GoogleSignIn
+import StrapiSwift
 
 /// A client for handling authentication operations.
 struct GoogleSignInClient {
@@ -52,9 +53,8 @@ extension GoogleSignInClient: DependencyKey {
                 let username = "strapiuser1@example.com"
                 let password = "password123"
                 
-                let request = LoginEmailRequest(identifier: username, password: password)
-                return try await VoiceGoAPIClient.provider.async.request(.loginLocal(request))
-                    .map(AuthenticationResponse.self)
+                let ret =  try await Strapi.authentication.local.login(identifier: username, password: password, as: UserProfile.self)
+                return AuthenticationResponse(jwt: ret.jwt, user: ret.user)
             },
             logout: {
                 GIDSignIn.sharedInstance.signOut()
