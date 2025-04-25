@@ -16,7 +16,7 @@ struct VoiceGoAPIClient {
     var fetchUserProfile:  @Sendable () async throws -> UserProfile
     var getToolConversationList:  @Sendable (_ studyToolId : String ,_ page: Int, _ pageSize: Int) async throws -> StrapiResponse<[ToolConversation]>
     var createToolConversation:  @Sendable (_ studyTool : StudyTool ,_ query: String) async throws -> StrapiResponse<ToolConversation>
-    var streamToolConversation:  @Sendable (_ studyTool : StudyTool ,_ query: String , @escaping (DataStreamRequest.EventSource) -> Void) async throws -> DataStreamRequest?
+    var streamToolConversation:  @Sendable (_ studyTool : StudyTool ,_ query: String , @escaping (DataStreamRequest.EventSource) -> Void) async throws -> DataStreamRequest
     struct Failure: Error, Equatable {}
 }
 
@@ -29,8 +29,8 @@ extension VoiceGoAPIClient : DependencyKey  {
             return resp
         },
         fetchUserProfile: {
-            let response = try await Strapi.contentManager.collection("users/me").getDocuments(as: UserProfile.self)
-            let profile = response.data
+            let response = try await Strapi.authentication.local.me(as: UserProfile.self)
+            let profile = response
             return profile
         },
         getToolConversationList: {studyToolId, page, pageSize in
@@ -44,10 +44,10 @@ extension VoiceGoAPIClient : DependencyKey  {
             return response
         },
         streamToolConversation: {studyTool, query, handler in
-            let data = StrapiRequestBody(["studyTool": .dictionary(["documentId":.string(studyTool.documentId)]), "query": .string(query)]);
-            let request = try await Strapi.contentManager.collection("tool-conversation/create-message").withFields(["stream"]).asPostRequest(data)
+            let data = StrapiRequestBody(["studyTool": .dictionary(["documentId":.string(studyTool.documentId),"categoryKey":.string(studyTool.categoryKey)]), "query": .string(query)]);
+            let request = try await Strapi.contentManager.collection("tool-conversation/create-message?stream").asPostRequest(data)
             
-            return Session.default.eventSourceRequest(request)
+            return Session.default.eventSourceRequest(request).responseEventSource(handler: handler)
         }
     )
 }
@@ -95,10 +95,10 @@ extension VoiceGoAPIClient {
             return response
         },
         streamToolConversation: { studyTool, query, handler in
-            let data = StrapiRequestBody(["studyTool": .dictionary(["documentId":.string(studyTool.documentId)]), "query": .string(query)]);
+            let data = StrapiRequestBody(["studyTool": .dictionary(["documentId":.string(studyTool.documentId),"categoryKey":.string(studyTool.categoryKey)]), "query": .string(query)]);
             let request = try await Strapi.contentManager.collection("tool-conversation/create-message").withFields(["stream"]).asPostRequest(data)
             
-            return Session.default.eventSourceRequest(request)
+            return Session.default.eventSourceRequest(request).responseEventSource(handler: handler)
         }
     )
 }
@@ -145,10 +145,10 @@ extension VoiceGoAPIClient : TestDependencyKey  {
             return response
         },
         streamToolConversation: { studyTool, query, handler in
-            let data = StrapiRequestBody(["studyTool": .dictionary(["documentId":.string(studyTool.documentId)]), "query": .string(query)]);
+            let data = StrapiRequestBody(["studyTool": .dictionary(["documentId":.string(studyTool.documentId),"categoryKey":.string(studyTool.categoryKey)]), "query": .string(query)]);
             let request = try await Strapi.contentManager.collection("tool-conversation/create-message").withFields(["stream"]).asPostRequest(data)
             
-            return Session.default.eventSourceRequest(request)
+            return Session.default.eventSourceRequest(request).responseEventSource(handler: handler)
         }
     )
 }

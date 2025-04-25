@@ -9,15 +9,15 @@ import SwiftUI
 import ComposableArchitecture
 
 struct StudyToolCell: View {
-    let store: StoreOf<StudyToolDomain>
+    let studyTool: StudyTool
     
     var body: some View {
-        WithViewStore(self.store, observe: { $0 }) { viewStore in
+        
             HStack {
                 VStack(alignment: .leading) {
-                    Text(viewStore.studyTool.title).font(.system(.title, design: .rounded))
+                    Text(studyTool.title).font(.system(.title, design: .rounded))
          
-                        Text("\(viewStore.studyTool.description)").font(.system(.body, design: .rounded))
+                        Text("\(studyTool.description)").font(.system(.body, design: .rounded))
 
                 }
                 .padding(10)
@@ -25,7 +25,7 @@ struct StudyToolCell: View {
                 Spacer()
                 
                 AsyncImage(
-                    url: URL(string: viewStore.studyTool.imageUrl)
+                    url: URL(string: studyTool.imageUrl)
                 ) { image in
                     image
                         .resizable()
@@ -40,19 +40,15 @@ struct StudyToolCell: View {
             .padding(20)
             
         }
-    }
+    
 }
 
 struct StudyToolCell_Previews: PreviewProvider {
     static var previews: some View {
         StudyToolCell(
-            store: Store(
-                initialState: StudyToolDomain.State(
-                    studyToolUsedID: "xxdfsdfas",
-                    studyTool: .sample[0], card: QACard(id:0  ,isExample: true, originText:"apply", actionText: "翻译", suggestions: ["应用"])
-                ),
-                reducer: StudyToolDomain.init
-            )
+           
+                    studyTool: .sample[0]
+            
         )
         .previewLayout(.fixed(width: 300, height: 300))
     }

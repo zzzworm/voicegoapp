@@ -12,6 +12,7 @@ struct RootView: View {
     @Perception.Bindable var store: StoreOf<RootDomain>
     
     var body: some View {
+        WithPerceptionTracking {
             TabView(
                 selection: $store.currentTab.sending(\.onTabChanged)
             ) {
@@ -39,7 +40,7 @@ struct RootView: View {
                 }
                 .tag(RootDomain.Tab.profile)
             }
-        
+        }
     }
 }
 

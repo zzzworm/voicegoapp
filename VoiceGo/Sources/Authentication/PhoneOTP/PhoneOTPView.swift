@@ -23,23 +23,25 @@ extension PhoneOTPView: View {
     }
     
     @ViewBuilder private var content: some View {
-        VStack(spacing: 24) {
-            Text("We sent you code via SMS. For test proposal please enter 999999.")
-                .multilineTextAlignment(.center)
-                .font(.headline)
-
-            OTPView(code: $store.code)
-                .padding([.leading, .trailing, .top], 40)
-            
-//                Button("Resend", action: {
-//                    viewStore.send(.onResendButtonTap)
-//                })
-//                .buttonStyle(.linkButton)
-
-            Spacer()
+        WithPerceptionTracking {
+            VStack(spacing: 24) {
+                Text("We sent you code via SMS. For test proposal please enter 999999.")
+                    .multilineTextAlignment(.center)
+                    .font(.headline)
+                
+                OTPView(code: $store.code)
+                    .padding([.leading, .trailing, .top], 40)
+                
+                //                Button("Resend", action: {
+                //                    viewStore.send(.onResendButtonTap)
+                //                })
+                //                .buttonStyle(.linkButton)
+                
+                Spacer()
+            }
+            .loader(isLoading: store.isActivityIndicatorVisible)
+            .padding(24)
+            .navigationTitle("Enter Code")
         }
-        .loader(isLoading: store.isActivityIndicatorVisible)
-        .padding(24)
-        .navigationTitle("Enter Code")
     }
 }
