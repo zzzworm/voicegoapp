@@ -135,41 +135,43 @@ struct SpeechRecognitionInputView: View {
     @Perception.Bindable var store: StoreOf<SpeechRecognitionInputDomain>
 #endif
     var body: some View {
-        WithViewStore(self.store, observe: { $0 }) { viewStore in
-            ZStack(alignment: .center){
-                if(viewStore.isRecording){
-                    HStack{
-                        Spacer()
+        WithPerceptionTracking {
+            WithViewStore(self.store, observe: { $0 }) { viewStore in
+                ZStack(alignment: .center){
+                    if(viewStore.isRecording){
+                        HStack{
+                            Spacer()
+                                .frame(maxWidth: .infinity)
+                            WaveMonitorView(soundSamples: $store.soundSamples)
+                                .frame(maxWidth: .infinity)
+                            Spacer()
+                                .frame(maxWidth: .infinity)
+                        }
+                    }
+                    else{
+                        Text("按住说话")
+                            .font(.caption)
+                            .foregroundColor(.black)
+                            .padding(10)
                             .frame(maxWidth: .infinity)
-                        WaveMonitorView(soundSamples: $store.soundSamples)
-                            .frame(maxWidth: .infinity)
-                        Spacer()
-                            .frame(maxWidth: .infinity)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .background(.gray.opacity(0.4))
+                            .alert($store.scope(state: \.alert, action: \.alert))
                     }
                 }
-                else{
-                    Text("按住说话")
-                        .font(.caption)
-                        .foregroundColor(.black)
-                        .padding(10)
-                        .frame(maxWidth: .infinity)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .background(.gray.opacity(0.4))
-                        .alert($store.scope(state: \.alert, action: \.alert))
-                }
+                .fixedSize(horizontal: false, vertical: true)
+                .gesture(
+                    DragGesture(minimumDistance: 0)
+                        .onChanged({ _ in
+                            if !viewStore.isRecording {
+                                store.send(.recordButtonTapped)
+                            }
+                        })
+                        .onEnded({ _ in
+                            store.send(.recordButtonReleased)
+                        })
+                )
             }
-            .fixedSize(horizontal: false, vertical: true)
-            .gesture(
-                DragGesture(minimumDistance: 0)
-                    .onChanged({ _ in
-                        if !viewStore.isRecording {
-                            store.send(.recordButtonTapped)
-                        }
-                    })
-                    .onEnded({ _ in
-                        store.send(.recordButtonReleased)
-                    })
-            )
         }
     }
 }

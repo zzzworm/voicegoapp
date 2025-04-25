@@ -24,9 +24,11 @@ extension LoadingView: View {
     }
 
     @ViewBuilder private var content: some View {
-        VStack(spacing: 10) {
-            Text("S1").font(Font.title2)
-            ProgressViewWrapper(progress: $store.progress)
+        WithPerceptionTracking {
+            VStack(spacing: 10) {
+                Text("S1").font(Font.title2)
+                ProgressViewWrapper(progress: $store.progress)
+            }
         }
     }
 }

@@ -12,17 +12,15 @@ import AVFAudio
 struct ToolHistoryDomain: Reducer {
     @ObservableState
     struct State: Equatable, Identifiable {
-        let id: UUID
-        let history: ToolConversation
-        var isSpeaking : Bool {
-            return speakingItem != .none
+        var history: ToolConversation
+        var isSpeakingQuery : Bool = false
+        var isSpeakingAnswer : Bool = false
+        var isSpeaking: Bool {
+            return isSpeakingQuery || isSpeakingAnswer
         }
-        enum SpeakingItem {
-            case none
-            case query
-            case answer
+        var id : String {
+            history.documentId
         }
-        var speakingItem: SpeakingItem = .none
     }
     
     @CasePathable
@@ -79,10 +77,10 @@ struct ToolHistoryDomain: Reducer {
                 
                 return .none
             case .speakQuestion(let question):
-                state.speakingItem = .query
+                state.isSpeakingQuery = true
                 return speekText(question)
             case .speakAnswer(let answer):
-                state.speakingItem = .answer
+                state.isSpeakingAnswer = true
                 if let attString = try? AttributedString(
                     markdown:answer
                 ){
@@ -102,10 +100,12 @@ struct ToolHistoryDomain: Reducer {
                     clipboardClient.copyValue(answer) 
                 }
             case .speakFinished:
-                state.speakingItem = .none
+                state.isSpeakingQuery = false
+                state.isSpeakingAnswer = false
                 return .none
             case .speakFailed:
-                state.speakingItem = .none
+                state.isSpeakingQuery = false
+                state.isSpeakingAnswer = false
                 return .none
             
             case .binding(_):

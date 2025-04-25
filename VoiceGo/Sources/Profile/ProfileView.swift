@@ -15,40 +15,42 @@ struct ProfileView: View {
     @Perception.Bindable var store: StoreOf<ProfileDomain>
     
     var body: some View {
-        NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
-        
-            NavigationView {
-                ZStack {
-                    List{
-
-                        HStack{
-                            Button(action: {
-                                store.send(.view(.onSettingTapped))
-                            }) {
-                                Text("设置")
+        WithPerceptionTracking {
+            NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
+                
+                NavigationView {
+                    ZStack {
+                        List{
+                            
+                            HStack{
+                                Button(action: {
+                                    store.send(.view(.onSettingTapped))
+                                }) {
+                                    Text("设置")
+                                }
+                                Spacer()
                             }
-                            Spacer()
                         }
+                        if store.state.isLoading {
+                            ProgressView()
+                        }
+                        
                     }
-                    if store.state.isLoading {
-                        ProgressView()
+                    .task {
+                        store.send(.fetchUserProfileFromDB)
+                        store.send(.fetchUserProfileFromServer)
                     }
-                    
+                    .navigationTitle("我的")
+                    .navigationBarTitleDisplayMode(.inline)
                 }
-                .task {
-                    store.send(.fetchUserProfileFromDB)
-                    store.send(.fetchUserProfileFromServer)
+                
+            } destination: { store in
+                switch store.case {
+                case let .setting(store):
+                    ProfileSettingView(store: store)
                 }
-                .navigationTitle("我的")
-                .navigationBarTitleDisplayMode(.inline)
             }
-        
-        } destination: { store in
-                    switch store.case {
-                    case let .setting(store):
-                        ProfileSettingView(store: store)
-                    }
-                }
+        }
     }
 }
 

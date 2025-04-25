@@ -23,25 +23,27 @@ extension OnboardingView: View {
     }
 
     @ViewBuilder private var content: some View {
-        VStack {
-            TabView(selection: $store.currentTab) {
-                ForEach(store.items) { viewData in
-                    OnboardingPageView(data: viewData)
-                        .tag(viewData.tab)
-                        .padding(.bottom, 50)
+        WithPerceptionTracking {
+            VStack {
+                TabView(selection: $store.currentTab) {
+                    ForEach(store.items) { viewData in
+                        OnboardingPageView(data: viewData)
+                            .tag(viewData.tab)
+                            .padding(.bottom, 50)
+                    }
                 }
+                .tabViewStyle(PageTabViewStyle())
+                .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
+                
+                Button("Get Started") {
+                    store.send(.onGetStartedTapped)
+                }
+                .buttonStyle(.cta)
+                .padding(.bottom)
+                .isHidden(!store.showGetStarted)
             }
-            .tabViewStyle(PageTabViewStyle())
-            .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
-            
-            Button("Get Started") {
-                store.send(.onGetStartedTapped)
-            }
-            .buttonStyle(.cta)
-            .padding(.bottom)
-            .isHidden(!store.showGetStarted)
+            .padding()
         }
-        .padding()
     }
 }
 

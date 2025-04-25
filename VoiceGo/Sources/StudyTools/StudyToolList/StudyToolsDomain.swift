@@ -9,14 +9,17 @@ import Foundation
 import ComposableArchitecture
 import StrapiSwift
 
-struct StudyToolListDomain: Reducer {
+@Reducer
+struct StudyToolListDomain {
     @Dependency(\.uuid) var uuid
     @Dependency(\.apiClient) var apiClient
     
+    @ObservableState
     struct State: Equatable {
+        var path = StackState<Path.State>()
         var dataLoadingStatus = DataLoadingStatus.notStarted
         var shouldOpenCart = false
-        var studyToolListState: IdentifiedArrayOf<StudyToolDomain.State> = []
+        var studyToolList: IdentifiedArrayOf<StudyTool> = []
         
         var shouldShowError: Bool {
             dataLoadingStatus == .error
@@ -27,10 +30,19 @@ struct StudyToolListDomain: Reducer {
         }
     }
     
-    enum Action: Equatable {
+    enum Action {
+        enum ViewAction: Equatable {
+            case onToolHistoryTap(StudyTool)
+        }
+        case view(ViewAction)
         case fetchStudyToolUsedList
         case fetchStudyToolsResponse(TaskResult<StrapiResponse<[StudyTool]>>)
-        case studyTool(id: StudyToolDomain.State.ID, action: StudyToolDomain.Action)
+        case path(StackActionOf<Path>)
+    }
+    
+    @Reducer(state: .equatable)
+    enum Path {
+        case studyTool(StudyToolDomain)
     }
     
     @Dependency(\.defaultDatabase) var database
@@ -62,17 +74,7 @@ struct StudyToolListDomain: Reducer {
                     studyToolList = studyToolListRsp.data
                 }
                 state.dataLoadingStatus = .success
-                state.studyToolListState = IdentifiedArrayOf(
-                    uniqueElements: studyToolList.map {
-                        StudyToolDomain.State(
-                            studyToolUsedID: $0.documentId,
-                            studyTool: $0,
-                            card: $0.exampleCard,
-                            toolHistoryListState: IdentifiedArrayOf(uniqueElements: []),
-                            inputBarState: BottomInputBarDomain.State()
-                        )
-                    }
-                )
+                state.studyToolList = IdentifiedArrayOf(uniqueElements: studyToolList)
                 
                 return .run { _ in
                     
@@ -98,15 +100,17 @@ struct StudyToolListDomain: Reducer {
                 print("Error getting StudyTools, try again later.")
                 return .none
                 
-                
-            case .studyTool:
+        
+            case let .path(pathAction):
                 return .none
+            case .view(let viewAction):
+                switch viewAction {
+                case .onToolHistoryTap(let studyTool):
+                    state.path.append(.studyTool(.init(studyTool: studyTool)))
+                    return .none
+                }
             }
-        }
-        .forEach(\.studyToolListState, action: /Action.studyTool) {
-            StudyToolDomain()
-        }
+        }.forEach(\.path, action: \.path)
     }
-    
     
 }

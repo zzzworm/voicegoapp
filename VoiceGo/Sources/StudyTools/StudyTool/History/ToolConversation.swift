@@ -15,7 +15,7 @@ struct ToolConversation : Equatable, Identifiable,TableRecord  {
     let id : Int
     let updatedAt: Date
     let query : String
-    let answer : String
+    var answer : String = ""
     let message_id: String
     let conversation_id: String
     var StudyToolUsed: StudyToolUsed? = nil

@@ -73,50 +73,52 @@ struct BottomInputBarBarView: View {
     @FocusState var isFocused : Bool // 1
     @Perception.Bindable var store: StoreOf<BottomInputBarDomain>
     var body: some View {
-        WithViewStore(self.store, observe: { $0 }) { viewStore in
-            VStack(alignment: .center) {
-                HStack {
-                    Button {
-                        store.send(.toggleSpeechMode)
-                    } label: {
-                        Image(
-                            systemName: viewStore.speechMode
-                            ? "keyboard" : "mic"
-                        )
-                        .font(.headline)
-                        .foregroundColor(.black)
-                    }
-                    .frame(width: 30)
-                
-                    if (viewStore.speechMode){
-                        
-                        SpeechRecognitionInputView(store: store.scope(state: \.speechRecognitionInputState, action: BottomInputBarDomain.Action.speechRecognitionInput))
-                            .frame(maxHeight: 30)
-                    }
-                    else{
-                        // 添加输入框
-                        
-                        TextField(
-                            "请输入内容",
-                            text: viewStore.binding(
-                                get: \.inputText,
-                                send: BottomInputBarDomain.Action.inputTextChanged
+        WithPerceptionTracking {
+            WithViewStore(self.store, observe: { $0 }) { viewStore in
+                VStack(alignment: .center) {
+                    HStack {
+                        Button {
+                            store.send(.toggleSpeechMode)
+                        } label: {
+                            Image(
+                                systemName: viewStore.speechMode
+                                ? "keyboard" : "mic"
                             )
-                        )
-                        .focused($isFocused) // 2
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .onSubmit{
-                            viewStore.send(.submitText(viewStore.inputText))
+                            .font(.headline)
+                            .foregroundColor(.black)
                         }
-                        .frame(maxHeight: 30)
+                        .frame(width: 30)
+                        
+                        if (viewStore.speechMode){
+                            
+                            SpeechRecognitionInputView(store: store.scope(state: \.speechRecognitionInputState, action: BottomInputBarDomain.Action.speechRecognitionInput))
+                                .frame(maxHeight: 30)
+                        }
+                        else{
+                            // 添加输入框
+                            
+                            TextField(
+                                "请输入内容",
+                                text: viewStore.binding(
+                                    get: \.inputText,
+                                    send: BottomInputBarDomain.Action.inputTextChanged
+                                )
+                            )
+                            .focused($isFocused) // 2
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .onSubmit{
+                                viewStore.send(.submitText(viewStore.inputText))
+                            }
+                            .frame(maxHeight: 30)
+                        }
                     }
+                    .padding(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
+                    .frame(maxHeight: 30)
+                    
                 }
-                .padding(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
-                .frame(maxHeight: 30)
-                
+                // Synchronize store focus state and local focus state.
+                .bind($store.isKeyboardVisible, to: $isFocused)
             }
-            // Synchronize store focus state and local focus state.
-            .bind($store.isKeyboardVisible, to: $isFocused)
         }
     }
 }

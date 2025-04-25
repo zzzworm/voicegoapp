@@ -38,9 +38,6 @@ struct VoiceAnimatedButton: View {
                 Image(systemName:iconName)
             }
         }
-        .onAppear {
-            animateIfNeed()
-        }
         .onChange(of: animating) { newVaule in
             animateIfNeed()
         }

@@ -27,64 +27,66 @@ struct EmailLoginView: View {
     }
     
     @ViewBuilder private var content: some View {
-        BlurredActivityIndicatorView(
-            isShowing: $store.isActivityIndicatorVisible)
-        {
-            VStack {
+        WithPerceptionTracking {
+            BlurredActivityIndicatorView(
+                isShowing: $store.isActivityIndicatorVisible)
+            {
                 VStack {
-                    TextField(
-                        "用户名或者邮箱",
-                        text: $store.userIdentifier
-                    )
-                    .autocapitalization(.none)
-                    .keyboardType(.emailAddress)
-                    .textContentType(.emailAddress)
-                    .textFieldStyle(.main)
-                    .focused($focusedField, equals: .username)
-                    
-                    SecureField(
-                        "••••••••",
-                        text: $store.password
-                    )
-                    .textFieldStyle(.main)
-                    .focused($focusedField, equals: .password)
-                    
-                    HStack {
-                        Button("账号注册", action: {
-                            focusedField = nil
-                            store.send(.view(.onSignUpButtonTap))
-                        })
-                        .buttonStyle(.linkButton)
-                        Spacer()
-                        Button("忘记密码", action: {
-                            focusedField = nil
-                            store.send(.view(.onForgotPasswordButtonTap))
-                        })
-                        .buttonStyle(.linkButton)
-                    }
-                    .padding(.top, 16)
-                    
-                    Button("确定", action: {
-                        focusedField = nil
-                        store.send(.view(.onSignInButtonTap))
-                    })
-                    .buttonStyle(.cta)
-                    .padding(.top, 24)
-                }
-                .padding(24)
-                .onSubmit {
-                            if focusedField == .username {
-                                focusedField = .password
-                            } else {
+                    VStack {
+                        TextField(
+                            "用户名或者邮箱",
+                            text: $store.userIdentifier
+                        )
+                        .autocapitalization(.none)
+                        .keyboardType(.emailAddress)
+                        .textContentType(.emailAddress)
+                        .textFieldStyle(.main)
+                        .focused($focusedField, equals: .username)
+                        
+                        SecureField(
+                            "••••••••",
+                            text: $store.password
+                        )
+                        .textFieldStyle(.main)
+                        .focused($focusedField, equals: .password)
+                        
+                        HStack {
+                            Button("账号注册", action: {
                                 focusedField = nil
-                            }
+                                store.send(.view(.onSignUpButtonTap))
+                            })
+                            .buttonStyle(.linkButton)
+                            Spacer()
+                            Button("忘记密码", action: {
+                                focusedField = nil
+                                store.send(.view(.onForgotPasswordButtonTap))
+                            })
+                            .buttonStyle(.linkButton)
                         }
-                
-                Spacer()
+                        .padding(.top, 16)
+                        
+                        Button("确定", action: {
+                            focusedField = nil
+                            store.send(.view(.onSignInButtonTap))
+                        })
+                        .buttonStyle(.cta)
+                        .padding(.top, 24)
+                    }
+                    .padding(24)
+                    .onSubmit {
+                        if focusedField == .username {
+                            focusedField = .password
+                        } else {
+                            focusedField = nil
+                        }
+                    }
+                    
+                    Spacer()
+                }
+                .navigationTitle("登录")
             }
-            .navigationTitle("登录")
+            .alert($store.scope(state: \.alert, action: \.alert))
         }
-        .alert($store.scope(state: \.alert, action: \.alert))
     }
 }
 
