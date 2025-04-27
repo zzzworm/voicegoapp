@@ -76,22 +76,22 @@ struct StudyToolListDomain {
                 state.dataLoadingStatus = .success
                 state.studyToolList = IdentifiedArrayOf(uniqueElements: studyToolList)
                 
-                return .run { _ in
-                    
+                
+                Task{
                     try await self.database.write { db in
                         for studyTool in studyToolList {
                             
                             var studyToolMutable = studyTool
-                                var qaCard = studyToolMutable.exampleCard
-                                if var qaCard = qaCard {
-                                    try qaCard.upsert(db)
-                                }
-                                let ret = try studyToolMutable.upsert(db)
+                            var qaCard = studyToolMutable.exampleCard
+                            if var qaCard = qaCard {
+                                try qaCard.upsert(db)
+                            }
+                            let ret = try studyToolMutable.upsert(db)
                             
                         }
                     }
-                    
                 }
+                return .none
                 
                 
             case .fetchStudyToolsResponse(.failure(let error)):

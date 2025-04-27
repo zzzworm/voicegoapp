@@ -8,9 +8,11 @@
 import ComposableArchitecture
 import SwiftUI
 import Perception
+import IsScrolling
 
 struct StudyToolView: View {
     @Perception.Bindable var store: StoreOf<StudyToolDomain>
+    @State private var hasScrolledToBottom = false
     var body: some View {
         WithPerceptionTracking {
             WithViewStore(self.store, observe: { $0 }) { viewStore in
@@ -35,8 +37,9 @@ struct StudyToolView: View {
                                             
                                             LazyVStack {
                                                 
-                                                if 0 == viewStore.toolHistoryListState.count , let card = viewStore.card {
+                                                if 0 == viewStore.toolHistoryListState.count , let card = viewStore.studyTool.exampleCard {
                                                     ToolQACardView(card: card)
+                                                        .padding(EdgeInsets(top: 0, leading: 10, bottom: 10, trailing: 10))
                                                 }
                                                 
                                                 ForEach(Array(viewStore.toolHistoryListState.enumerated()), id: \.element.id) { index, item in
@@ -59,17 +62,20 @@ struct StudyToolView: View {
                                             
                                         }
                                     }
-                                    if #available(iOS 17.0, *){
-                                        scrollview.defaultScrollAnchor(.bottom)
-                                    }
-                                    else {
+                                        .scrollDisabled(viewStore.dataLoadingStatus == .loading)
+                                        .scrollStatusMonitor($store.isScrolling, monitorMode: .exclusion) // add scrollStatusMonitor to get scroll status
+//                                    if #available(iOS 17.0, *){
+//                                        scrollview.defaultScrollAnchor(.bottom)
+//                                    }
+//                                    else {
                                         scrollview
                                             .onChange(of: viewStore.toolHistoryListState) { _ in
-                                                if let lastItem = viewStore.toolHistoryListState.last {
+                                                if !hasScrolledToBottom || nil != viewStore.currenttoolHistory, let lastItem = viewStore.toolHistoryListState.last {
                                                     proxy.scrollTo(lastItem.id, anchor: .bottom)
+                                                    hasScrolledToBottom = true
                                                 }
                                             }
-                                    }
+//                                    }
                                 }
                                 BottomInputBarBarView(store: store.scope(state: \.inputBarState, action: StudyToolDomain.Action.inputBar))
                                 
@@ -99,9 +105,8 @@ struct StudyToolView_Previews: PreviewProvider {
         StudyToolView(
             store: Store(
                 initialState: StudyToolDomain.State(
-                     studyTool: StudyTool.sample[0],
-                    card: QACard(id:0  ,
-                                 isExample: true, originText: "apply", actionText: "翻译", suggestions: ["应用"])),
+                    studyTool: StudyTool.sample[0]
+                ),
                 reducer: StudyToolDomain.init
             )
         )

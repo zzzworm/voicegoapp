@@ -15,9 +15,10 @@ struct StudyToolCell: View {
         
             HStack {
                 VStack(alignment: .leading) {
-                    Text(studyTool.title).font(.system(.title, design: .rounded))
+                    Text(studyTool.title).font(.headline)
          
-                        Text("\(studyTool.description)").font(.system(.body, design: .rounded))
+                    Text("\(studyTool.description)").font(.body)
+                        .foregroundColor(.gray)
 
                 }
                 .padding(10)
@@ -30,10 +31,10 @@ struct StudyToolCell: View {
                     image
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(height: 100)
+                        .frame(height: 40)
                 } placeholder: {
                     ProgressView()
-                        .frame(height: 100)
+                        .frame(height: 40)
                 }
                 
             }
