@@ -74,6 +74,8 @@ let project = Project(
                 .external(name: "SwiftKeychainWrapper"),
                 .external(name: "SharingGRDB"),
                 .external(name: "StrapiSwift"),
+                .external(name: "IsScrolling"),
+                .external(name: "SwiftUIIntrospect"),
             ],
             settings: .settings(base: [
                 "OTHER_LDFLAGS": "-all_load",

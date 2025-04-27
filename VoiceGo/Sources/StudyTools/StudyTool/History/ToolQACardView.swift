@@ -33,7 +33,7 @@ struct ToolQACardView: View {
                 }
                 Spacer()
             }
-            VStack {
+            VStack(alignment: .leading){
                 GroundedCaptionView(caption: card.originCaption)
                 Text(card.originText).padding(EdgeInsets(top: 5, leading: 5, bottom: 10, trailing: 5))
                 GroundedCaptionView(caption:card.actionText)

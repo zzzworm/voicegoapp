@@ -35,3 +35,12 @@ extension View {
         modifier(LoaderModifier(isLoading: isLoading))
     }
 }
+
+
+// 定义一个PreferenceKey
+struct UIRefreshedPreferenceKey: PreferenceKey {
+    static var defaultValue: Bool = false
+    static func reduce(value: inout Bool, nextValue: () -> Bool) {
+        value = nextValue()
+    }
+}

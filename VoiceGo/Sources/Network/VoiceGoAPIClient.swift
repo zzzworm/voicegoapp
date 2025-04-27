@@ -16,7 +16,7 @@ struct VoiceGoAPIClient {
     var fetchUserProfile:  @Sendable () async throws -> UserProfile
     var getToolConversationList:  @Sendable (_ studyToolId : String ,_ page: Int, _ pageSize: Int) async throws -> StrapiResponse<[ToolConversation]>
     var createToolConversation:  @Sendable (_ studyTool : StudyTool ,_ query: String) async throws -> StrapiResponse<ToolConversation>
-    var streamToolConversation:  @Sendable (_ studyTool : StudyTool ,_ query: String , @escaping (DataStreamRequest.EventSource) -> Void) async throws -> DataStreamRequest
+    var streamToolConversation:  @Sendable (_ studyTool : StudyTool ,_ query: String) async throws -> AsyncThrowingStream<DataStreamRequest.EventSourceEvent, Error>
     struct Failure: Error, Equatable {}
 }
 
@@ -34,7 +34,7 @@ extension VoiceGoAPIClient : DependencyKey  {
             return profile
         },
         getToolConversationList: {studyToolId, page, pageSize in
-            let response = try await Strapi.contentManager.collection("tool-conversation/my-list").filter("study_tool_user_used",operator: .equal, value:["studyTool":studyToolId]).paginate(page: page, pageSize: pageSize).getDocuments(as: [ToolConversation].self)
+            let response = try await Strapi.contentManager.collection("tool-conversation/my-list").filter("[study_tool_user_used][studyTool][documentId]",operator: .equal, value:studyToolId).paginate(page: page, pageSize: pageSize).getDocuments(as: [ToolConversation].self)
             return response
         },
         createToolConversation: {studyTool, query in
@@ -43,11 +43,35 @@ extension VoiceGoAPIClient : DependencyKey  {
             let response = try await Strapi.contentManager.collection("tool-conversation").postData(data, as: ToolConversation.self)
             return response
         },
-        streamToolConversation: {studyTool, query, handler in
-            let data = StrapiRequestBody(["studyTool": .dictionary(["documentId":.string(studyTool.documentId),"categoryKey":.string(studyTool.categoryKey)]), "query": .string(query)]);
-            let request = try await Strapi.contentManager.collection("tool-conversation/create-message?stream").asPostRequest(data)
-            
-            return Session.default.eventSourceRequest(request).responseEventSource(handler: handler)
+        streamToolConversation: {studyTool, query in
+    
+            return AsyncThrowingStream() { continuation in
+                Task {
+                    let data = StrapiRequestBody(["studyTool": .dictionary(["documentId":.string(studyTool.documentId),"categoryKey":.string(studyTool.categoryKey)]), "query": .string(query)]);
+                    let request = try await Strapi.contentManager.collection("tool-conversation/create-message?stream").asPostRequest(data)
+                    
+                    Session.default.eventSourceRequest(request).responseEventSource(handler: { eventSource in
+                        continuation.yield(eventSource.event)
+                        switch eventSource.event {
+                        case .message(let message):
+                            break;
+                        case .complete(let completion):
+                            guard let httpResponse = completion.response else {
+                                let errorMessage = "Bad Response"
+                                return continuation.finish( throwing: StrapiSwiftError.badResponse(statusCode: 503, message: errorMessage))
+                            }
+                                if httpResponse.statusCode != 200 && httpResponse.statusCode != 201 && httpResponse.statusCode != 204 {
+                                    let errorMessage = "Bad Response"
+                                    continuation.finish( throwing: StrapiSwiftError.badResponse(statusCode: httpResponse.statusCode, message: errorMessage))
+                                }
+                                else{
+                                    continuation.finish()
+                                }
+                            
+                        }
+                    })
+                }
+            }
         }
     )
 }
@@ -94,11 +118,31 @@ extension VoiceGoAPIClient {
             )
             return response
         },
-        streamToolConversation: { studyTool, query, handler in
-            let data = StrapiRequestBody(["studyTool": .dictionary(["documentId":.string(studyTool.documentId),"categoryKey":.string(studyTool.categoryKey)]), "query": .string(query)]);
-            let request = try await Strapi.contentManager.collection("tool-conversation/create-message").withFields(["stream"]).asPostRequest(data)
-            
-            return Session.default.eventSourceRequest(request).responseEventSource(handler: handler)
+        streamToolConversation: {studyTool, query in
+            return AsyncThrowingStream { continuation in
+                Task {
+                    let data = StrapiRequestBody(["studyTool": .dictionary(["documentId":.string(studyTool.documentId),"categoryKey":.string(studyTool.categoryKey)]), "query": .string(query)]);
+                    let request = try await Strapi.contentManager.collection("tool-conversation/create-message?stream").asPostRequest(data)
+                    
+                    Session.default.eventSourceRequest(request).responseEventSource(handler: { eventSource in
+                        continuation.yield(eventSource.event)
+                        switch eventSource.event {
+                        case .message(let message):
+                            break;
+                        case .complete(let completion):
+                            if let httpResponse = completion.response, let request = completion.request{
+                                if httpResponse.statusCode != 200 && httpResponse.statusCode != 201 && httpResponse.statusCode != 204 {
+                                    let errorMessage = "Bad Response"
+                                    continuation.finish( throwing: StrapiSwiftError.badResponse(statusCode: httpResponse.statusCode, message: errorMessage))
+                                }
+                                else{
+                                    continuation.finish()
+                                }
+                            }
+                        }
+                    })
+                }
+            }
         }
     )
 }
@@ -144,11 +188,31 @@ extension VoiceGoAPIClient : TestDependencyKey  {
             )
             return response
         },
-        streamToolConversation: { studyTool, query, handler in
-            let data = StrapiRequestBody(["studyTool": .dictionary(["documentId":.string(studyTool.documentId),"categoryKey":.string(studyTool.categoryKey)]), "query": .string(query)]);
-            let request = try await Strapi.contentManager.collection("tool-conversation/create-message").withFields(["stream"]).asPostRequest(data)
-            
-            return Session.default.eventSourceRequest(request).responseEventSource(handler: handler)
+        streamToolConversation: {studyTool, query in
+            return AsyncThrowingStream { continuation in
+                Task {
+                    let data = StrapiRequestBody(["studyTool": .dictionary(["documentId":.string(studyTool.documentId),"categoryKey":.string(studyTool.categoryKey)]), "query": .string(query)]);
+                    let request = try await Strapi.contentManager.collection("tool-conversation/create-message?stream").asPostRequest(data)
+                    
+                    Session.default.eventSourceRequest(request).responseEventSource(handler: { eventSource in
+                        continuation.yield(eventSource.event)
+                        switch eventSource.event {
+                        case .message(let message):
+                            break;
+                        case .complete(let completion):
+                            if let httpResponse = completion.response, let request = completion.request{
+                                if httpResponse.statusCode != 200 && httpResponse.statusCode != 201 && httpResponse.statusCode != 204 {
+                                    let errorMessage = "Bad Response"
+                                    continuation.finish( throwing: StrapiSwiftError.badResponse(statusCode: httpResponse.statusCode, message: errorMessage))
+                                }
+                                else{
+                                    continuation.finish()
+                                }
+                            }
+                        }
+                    })
+                }
+            }
         }
     )
 }
