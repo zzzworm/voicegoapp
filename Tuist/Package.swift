@@ -26,7 +26,6 @@ import PackageDescription
             "AliyunOSSSDK":.framework,
             "FBLPromises":.framework,
             "nanopb":.framework,
-            "Get":.framework,
          ]
     )
 #endif

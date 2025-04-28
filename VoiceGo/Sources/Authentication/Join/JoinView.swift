@@ -35,6 +35,7 @@ extension JoinView: View {
                         Text("您的英语AI伴读工具")
                             .multilineTextAlignment(.center)
                             .font(.headline)
+                            .padding()
                         
                         VStack{
                             Button {
@@ -43,8 +44,7 @@ extension JoinView: View {
                                 Text("一键登录")
                                     .font(.headline)
                                     .fontWeight(.bold)
-                                    .foregroundColor(.black)
-                            }.background(Color.white)
+                            }
                                 .cornerRadius(8)
                                 .padding(.horizontal, 24)
                                 .padding(.vertical, 10)
@@ -58,8 +58,7 @@ extension JoinView: View {
                                 Text("微信登录")
                                     .font(.headline)
                                     .fontWeight(.bold)
-                                    .foregroundColor(.black)
-                            }.background(Color.white)
+                            }
                                 .cornerRadius(8)
                                 .padding(.horizontal, 24)
                                 .padding(.vertical, 10)
@@ -80,7 +79,7 @@ extension JoinView: View {
                 }
                 .padding(24)
                 .navigationTitle("晨读AI英语")
-                .modifier(NavigationBarModifier())
+                .navigationBarTitleDisplayMode(.inline)
             } destination: { store in
                 switch store.case {
                 case let .emailLogin(store):
