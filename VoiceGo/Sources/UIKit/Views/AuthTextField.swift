@@ -20,22 +20,27 @@ public struct AuthTextField: View {
 		self._text = text
 	}
 	public var body: some View {
-		HStack {
-			icon
-				.fontWeight(.semibold)
-				.frame(width: 30)
-			if isSecure {
-				SecureField(placeholder, text: $text)
-					.keyboardType(keyboardType)
-			} else {
-				TextField(placeholder, text: $text)
-					.keyboardType(keyboardType)
-			}
-		}
-		.foregroundStyle(.black)
-		.padding()
-		.background(Color.white.opacity(0.3))
-		.clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-		.padding(.horizontal, 32)
+        
+            HStack {
+                icon
+                    .fontWeight(.semibold)
+                    .frame(width: 30)
+                VStack{
+                if isSecure {
+                    SecureField(placeholder, text: $text)
+                        .keyboardType(keyboardType)
+                } else {
+                    TextField(placeholder, text: $text)
+                        .keyboardType(keyboardType)
+                }
+                    Divider()
+                }
+            }
+            .foregroundStyle(.black)
+            .padding()
+            .background(Color.white.opacity(0.3))
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .padding(.horizontal, 32)
+           
 	}
 }

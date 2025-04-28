@@ -33,21 +33,21 @@ struct EmailLoginView: View {
             {
                 VStack {
                     VStack {
-                        TextField(
-                            "用户名或者邮箱",
+                        AuthTextField(
+                            icon: Image(systemName: "at"),
+                            placeholder: "Username",
+                            isSecure: false,
+                            keyboardType: .emailAddress,
                             text: $store.userIdentifier
                         )
-                        .autocapitalization(.none)
-                        .keyboardType(.emailAddress)
-                        .textContentType(.emailAddress)
-                        .textFieldStyle(.main)
                         .focused($focusedField, equals: .username)
-                        
-                        SecureField(
-                            "••••••••",
+                        AuthTextField(
+                            icon: Image(systemName: "lock"),
+                            placeholder: "Password",
+                            isSecure: true,
+                            keyboardType: .default,
                             text: $store.password
                         )
-                        .textFieldStyle(.main)
                         .focused($focusedField, equals: .password)
                         
                         HStack {
@@ -94,17 +94,36 @@ struct EmailLoginView: View {
 
 struct EmailLoginView_Previews: PreviewProvider {
     static var previews: some View {
-        EmailLoginView(
-            store: Store(
-                initialState: EmailLoginFeature.State(
-                    isActivityIndicatorVisible: false,
-                    userIdentifier: "StrapiUser1",
-                    password: "password123",
-                    alert: nil
-                )){
-                    EmailLoginFeature()
-                }
-        )
+        Group{
+            EmailLoginView(
+                store: Store(
+                    initialState: EmailLoginFeature.State(
+                        isActivityIndicatorVisible: false,
+                        userIdentifier: "StrapiUser1",
+                        password: "password123",
+                        alert: nil
+                    )){
+                        EmailLoginFeature()
+                    }
+            )
+            .preferredColorScheme(.light)
+            .previewDisplayName("Light Mode")
+            
+            EmailLoginView(
+                store: Store(
+                    initialState: EmailLoginFeature.State(
+                        isActivityIndicatorVisible: false,
+                        userIdentifier: "StrapiUser1",
+                        password: "password123",
+                        alert: nil
+                    )){
+                        EmailLoginFeature()
+                    }
+            )
+            .preferredColorScheme(.dark)
+            .previewDisplayName("Dark Mode")
+        }
+            
     }
 }
 

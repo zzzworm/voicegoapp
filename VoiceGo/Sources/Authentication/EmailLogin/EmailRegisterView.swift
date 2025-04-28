@@ -103,19 +103,39 @@ extension EmailRegisterView: View {
 
 struct EmailRegisterView_Previews: PreviewProvider {
     static var previews: some View {
-        EmailRegisterView(
-            store: Store(
-                initialState: EmailRegisterFeature.State(
-                    isActivityIndicatorVisible: false,
-                    username: "StrapiUser1",
-                    email: "StrapiUser1@example.com",
-                    password: "password123",
-                    retypePassword: "password123",
-                    alert: nil
-                )){
-                    EmailRegisterFeature()
-                }
-        )
+        Group{
+            EmailRegisterView(
+                store: Store(
+                    initialState: EmailRegisterFeature.State(
+                        isActivityIndicatorVisible: false,
+                        username: "StrapiUser1",
+                        email: "StrapiUser1@example.com",
+                        password: "password123",
+                        retypePassword: "password123",
+                        alert: nil
+                    )){
+                        EmailRegisterFeature()
+                    }
+            )
+            .preferredColorScheme(.light)
+            .previewDisplayName("Light Mode")
+            
+            EmailRegisterView(
+                store: Store(
+                    initialState: EmailRegisterFeature.State(
+                        isActivityIndicatorVisible: false,
+                        username: "StrapiUser1",
+                        email: "StrapiUser1@example.com",
+                        password: "password123",
+                        retypePassword: "password123",
+                        alert: nil
+                    )){
+                        EmailRegisterFeature()
+                    }
+            )
+            .preferredColorScheme(.dark)
+            .previewDisplayName("Dark Mode")
+        }
     }
 }
 
