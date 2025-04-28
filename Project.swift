@@ -29,6 +29,8 @@ let project = Project(
                     "NSBonjourServices" : [
                         "_pulse._tcp",
                     ],
+                    "CFBundleShortVersionString": "1.0.0",
+                    "LSApplicationCategoryType": "public.app-category.education",
                 ]
             ),
             sources: ["VoiceGo/Sources/**"],
@@ -78,11 +80,10 @@ let project = Project(
                 .external(name: "SwiftUIIntrospect"),
             ],
             settings: .settings(base: [
-                "OTHER_LDFLAGS": "-all_load",
-            "DEVELOPMENT_ASSET_PATHS": ["VoiceGo/Resources/PreviewContent/Sources", "VoiceGo/Resources/PreviewContent/PreviewAssets.xcassets"],
+                // "OTHER_LDFLAGS": "-force_load",
+            "DEVELOPMENT_ASSET_PATHS": ["VoiceGo/Resources/PreviewContent/PreviewAssets.xcassets"],
             "DEVELOPMENT_TEAM": "S75X4J33FV",
             "CODE_SIGN_STYLE": "Automatic",
-            "GENERATE_MASTER_OBJECT_FILE": "YES",
             ])
         ),
         // .target(

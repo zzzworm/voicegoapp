@@ -32,7 +32,7 @@ public struct AuthTextField: View {
 					.keyboardType(keyboardType)
 			}
 		}
-		.foregroundStyle(.white)
+		.foregroundStyle(.black)
 		.padding()
 		.background(Color.white.opacity(0.3))
 		.clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
