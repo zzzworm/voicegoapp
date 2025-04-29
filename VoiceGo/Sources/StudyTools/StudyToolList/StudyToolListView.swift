@@ -53,7 +53,12 @@ struct StudyToolListView: View {
                 }
             }
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 struct StudyToolListView_Previews: PreviewProvider {

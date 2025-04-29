@@ -36,7 +36,12 @@ struct StackNavigationView<RootContent>: View where RootContent: View {
             .transition(.move(edge: .trailing))
             }
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
 }
 
@@ -60,7 +65,12 @@ private struct StackNavigationSubview<Content>: View where Content: View {
                 })
             }
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 

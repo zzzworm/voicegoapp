@@ -53,7 +53,12 @@ struct ProfileCell : View {
             .background(Color(UIColor.systemBackground))
             .cornerRadius(8)
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 

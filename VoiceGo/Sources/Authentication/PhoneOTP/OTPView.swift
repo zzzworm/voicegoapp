@@ -64,7 +64,12 @@ public struct OTPView: View {
             }
         }
         .frame(height: 50)
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     // MARK: Heleprs
     

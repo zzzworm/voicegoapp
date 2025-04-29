@@ -10,17 +10,17 @@ import ComposableArchitecture
 
 // MARK: - PhoneOTPView
 
-struct PhoneOTPView {
+struct PhoneOTPView : View {
     @Perception.Bindable var store: StoreOf<PhoneOTPFeature>
-}
-
-// MARK: - Views
-
-extension PhoneOTPView: View {
     
     var body: some View {
         content
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     @ViewBuilder private var content: some View {
         WithPerceptionTracking {

@@ -10,18 +10,19 @@ import ComposableArchitecture
 
 // MARK: - LoadingView
 
-struct LoadingView {
+struct LoadingView  : View {
     @Perception.Bindable var store: StoreOf<LoadingFeature>
-}
 
-// MARK: - Views@Perception.
-
-extension LoadingView: View {
 
     var body: some View {
         content
             .onAppear { store.send(.view(.onViewAppear)) }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 
     @ViewBuilder private var content: some View {
         WithPerceptionTracking {

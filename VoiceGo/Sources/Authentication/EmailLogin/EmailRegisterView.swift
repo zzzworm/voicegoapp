@@ -10,7 +10,7 @@ import ComposableArchitecture
 
 // MARK: - LoginView
 
-struct EmailRegisterView {
+struct EmailRegisterView : View {
     @Perception.Bindable var store: StoreOf<EmailRegisterFeature>
     
     enum FocusedField {
@@ -18,15 +18,16 @@ struct EmailRegisterView {
         }
 
     @FocusState private var focusedField: FocusedField?
-}
 
-// MARK: - Views
-
-extension EmailRegisterView: View {
     
     var body: some View {
         content
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     @ViewBuilder private var content: some View {
         WithPerceptionTracking {

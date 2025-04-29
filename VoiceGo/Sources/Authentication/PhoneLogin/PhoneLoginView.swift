@@ -11,20 +11,20 @@ import iPhoneNumberField
 
 // MARK: - PhoneLoginView
 
-struct PhoneLoginView {
+struct PhoneLoginView : View{
     @Perception.Bindable var store: StoreOf<PhoneLoginFeature>
     @FocusState private var focused: Bool
-}
-
-// MARK: - Views
-
-extension PhoneLoginView: View {
     
     var body: some View {
         content.onAppear {
             self.focused = true
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     @ViewBuilder private var content: some View {
         WithPerceptionTracking {

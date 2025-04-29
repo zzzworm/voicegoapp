@@ -10,13 +10,9 @@ import ComposableArchitecture
 
 // MARK: - DevelopedByView
 
-struct DevelopedByView {
+struct DevelopedByView  : View{
     let store: StoreOf<DevelopedByFeature>
-}
 
-// MARK: - Views
-
-extension DevelopedByView: View {
     
     var body: some View {
         content
@@ -44,5 +40,10 @@ extension DevelopedByView: View {
         })
         .buttonStyle(.cta)
         .padding(24)
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }

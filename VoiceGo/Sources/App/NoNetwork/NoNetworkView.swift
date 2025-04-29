@@ -10,17 +10,18 @@ import ComposableArchitecture
 
 // MARK: - NoNetworkView
 
-struct NoNetworkView {
+struct NoNetworkView : View {
     let store: StoreOf<NoNetwork>
-}
 
-// MARK: - Body
-
-extension NoNetworkView: View {
     
     var body: some View {
         content
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     @ViewBuilder private var content: some View {
         VStack(spacing: 30) {

@@ -16,5 +16,10 @@ struct ProgressViewWrapper: View {
             .tint(Color.black)
             .scaleEffect(0.5, anchor: .center)
             .frame(width: 202, height: 2, alignment: .center)
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }

@@ -64,17 +64,23 @@ struct StudyToolView: View {
                                     }
                                         .scrollDisabled(viewStore.dataLoadingStatus == .loading)
                                         .scrollStatusMonitor($store.isScrolling, monitorMode: .exclusion) // add scrollStatusMonitor to get scroll status
+                                        .onChange(of: viewStore.currenttoolHistory) { newValue  in
+                                            if nil != newValue, !viewStore.isScrolling, let lastItem = viewStore.toolHistoryListState.last {
+                                                proxy.scrollTo(lastItem.id, anchor: .bottom)
+                                            }
+                                        }
 //                                    if #available(iOS 17.0, *){
 //                                        scrollview.defaultScrollAnchor(.bottom)
 //                                    }
 //                                    else {
                                         scrollview
                                             .onChange(of: viewStore.toolHistoryListState) { _ in
-                                                if !hasScrolledToBottom || nil != viewStore.currenttoolHistory, let lastItem = viewStore.toolHistoryListState.last {
+                                                if !hasScrolledToBottom , let lastItem = viewStore.toolHistoryListState.last {
                                                     proxy.scrollTo(lastItem.id, anchor: .bottom)
                                                     hasScrolledToBottom = true
                                                 }
                                             }
+                                            
 //                                    }
                                 }
                                 BottomInputBarBarView(store: store.scope(state: \.inputBarState, action: StudyToolDomain.Action.inputBar))

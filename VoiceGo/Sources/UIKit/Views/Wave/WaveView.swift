@@ -36,7 +36,12 @@ struct WaveView: View {
         .onChange(of: power) {
             data.update(power: $0)
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 #if DEBUG

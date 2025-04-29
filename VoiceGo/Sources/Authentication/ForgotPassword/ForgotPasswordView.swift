@@ -10,18 +10,18 @@ import ComposableArchitecture
 
 // MARK: - ForgotPasswordView
 
-struct ForgotPasswordView {
+struct ForgotPasswordView : View {
     @Perception.Bindable var store: StoreOf<ForgotPasswordFeature>
-}
-
-// MARK: - Views
-
-extension ForgotPasswordView: View {
     
     var body: some View {
         content
             .navigationTitle("忘记密码")
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     @ViewBuilder private var content: some View {
         WithPerceptionTracking {
