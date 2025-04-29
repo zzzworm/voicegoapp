@@ -56,7 +56,7 @@ struct EmailLoginView: View {
                         .focused($focusedField, equals: .password)
                         
                         HStack {
-                            Button("账号注册", action: {
+                            Button("账号注册1", action: {
                                 focusedField = nil
                                 store.send(.view(.onSignUpButtonTap))
                             })

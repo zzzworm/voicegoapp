@@ -85,6 +85,18 @@ let project = Project(
                 "VoiceGo/Resources/**",
                 "VoiceGo/Sources/Configuration/config.plist"
             ],
+            scripts: [
+                .post(
+                    script: """
+                    export RESOURCES="/Applications/InjectionNext.app/Contents/Resources"
+                    if [ -f "$RESOURCES/copy_bundle.sh" ]; then
+                        "$RESOURCES/copy_bundle.sh"
+                    fi
+                    """,
+                    name: "Injection Next Script",
+                    basedOnDependencyAnalysis: false
+                )
+            ],
             dependencies: Environment.skipDependencies.getBoolean(default: false) ? commonDependencies : commonDependencies + debugDependencies ,
             settings: .settings(base: [
             "OTHER_LDFLAGS": "$(inherited) -ObjC -force_load",
