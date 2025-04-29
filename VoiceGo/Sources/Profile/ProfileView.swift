@@ -51,7 +51,12 @@ struct ProfileView: View {
                 }
             }
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 struct ProfileView_Previews: PreviewProvider {

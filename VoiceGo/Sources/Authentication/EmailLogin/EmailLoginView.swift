@@ -21,10 +21,15 @@ struct EmailLoginView: View {
         }
 
     @FocusState private var focusedField: FocusedField?
+
     
     var body: some View {
-        content
+        content.enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     @ViewBuilder private var content: some View {
         WithPerceptionTracking {

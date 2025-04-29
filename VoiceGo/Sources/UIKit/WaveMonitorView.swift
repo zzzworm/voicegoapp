@@ -25,7 +25,12 @@ struct BarView: View {
             .frame(maxHeight: .infinity) // 关键点
         }
         
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 struct WaveMonitorView: View {
@@ -45,7 +50,12 @@ struct WaveMonitorView: View {
                 }
             }
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 struct ContentView_Previews: PreviewProvider {

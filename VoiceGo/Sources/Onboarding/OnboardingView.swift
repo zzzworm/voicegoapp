@@ -10,17 +10,18 @@ import ComposableArchitecture
 
 // MARK: - HelpView
 
-struct OnboardingView {
+struct OnboardingView : View {
     @Perception.Bindable var store: StoreOf<OnboardingFeature>
-}
 
-// MARK: - Views
-
-extension OnboardingView: View {
 
     var body: some View {
         content
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 
     @ViewBuilder private var content: some View {
         WithPerceptionTracking {
@@ -83,7 +84,12 @@ struct OnboardingPageView: View {
                 self.isAnimating = true
             }
         })
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 

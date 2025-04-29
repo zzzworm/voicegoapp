@@ -32,5 +32,10 @@ struct BlurredActivityIndicatorView<Content>: View where Content: View {
                 .cornerRadius(20)
             }
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }

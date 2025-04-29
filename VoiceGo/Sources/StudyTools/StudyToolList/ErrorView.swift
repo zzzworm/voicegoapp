@@ -31,7 +31,12 @@ struct ErrorView: View {
             .padding()
 
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 struct ErrorView_Previews: PreviewProvider {

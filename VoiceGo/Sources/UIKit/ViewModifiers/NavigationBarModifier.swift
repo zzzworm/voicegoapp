@@ -43,7 +43,12 @@ struct NavigationBarModifier: ViewModifier {
         ZStack {
             content
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 extension View {

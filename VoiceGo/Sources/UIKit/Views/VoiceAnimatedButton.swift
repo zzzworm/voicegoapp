@@ -41,7 +41,12 @@ struct VoiceAnimatedButton: View {
         .onChange(of: animating) { newVaule in
             animateIfNeed()
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 @available(iOS 17.0, *)

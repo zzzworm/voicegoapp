@@ -13,17 +13,17 @@ import GoogleSignIn
 
 // MARK: - LoginOptionsView
 
-struct LoginOptionsView {
+struct LoginOptionsView  : View{
     let store: StoreOf<LoginOptionsFeature>
-}
-
-// MARK: - Views
-
-extension LoginOptionsView: View {
     
     var body: some View {
         content
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     @ViewBuilder private var content: some View {
         VStack(spacing: 12) {

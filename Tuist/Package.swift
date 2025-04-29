@@ -62,6 +62,8 @@ let package = Package(
         .package(url: "https://github.com/pointfreeco/sharing-grdb", from: "0.1.0"),
         .package(url: "https://github.com/fatbobman/IsScrolling.git", from: "1.2.0"),
         .package(url: "https://github.com/siteline/swiftui-introspect.git", from: "1.3.0"),
+        .package(url:"https://github.com/johnno1962/InjectionNext.git", from: "1.3.0"),
+        .package(url :"https://github.com/johnno1962/HotSwiftUI.git", from:"1.2.1"),
         .package(path: "../Packages/strapi-swift"),
     ]
 )

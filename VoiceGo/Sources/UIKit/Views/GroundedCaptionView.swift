@@ -22,7 +22,12 @@ struct GroundedCaptionView: View {
                 .font(.callout)
                 .bold()
         }.fixedSize(horizontal: true, vertical: true)
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 
@@ -43,7 +48,12 @@ struct GroundedCaptionItemView: View {
                 Image(systemName: "chevron.right")
             }.padding()
         }.fixedSize(horizontal: false, vertical: true)
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 

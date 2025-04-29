@@ -43,7 +43,12 @@ struct ProfileSettingView: View {
                 .navigationBarTitleDisplayMode(.inline)
             }
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 struct ProfileSettingView_Previews: PreviewProvider {

@@ -10,17 +10,17 @@ import ComposableArchitecture
 
 // MARK: - HelpView
 
-struct AppView {
+struct AppView : View {
     let store: StoreOf<AppFeature>
-}
-
-// MARK: - Views
-
-extension AppView: View {
     
     var body: some View {
         content
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 
     @ViewBuilder private var content: some View {
         switch store.state {

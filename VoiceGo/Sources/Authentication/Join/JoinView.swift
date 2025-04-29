@@ -10,17 +10,17 @@ import ComposableArchitecture
 
 // MARK: - LoginOptionsView
 
-struct JoinView {
+struct JoinView : View {
     @Perception.Bindable var store: StoreOf<JoinFeature>
-}
-
-// MARK: - Views
-
-extension JoinView: View {
     
     var body: some View {
         content
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     @ViewBuilder private var content: some View {
         WithPerceptionTracking {

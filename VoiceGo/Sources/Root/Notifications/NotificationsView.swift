@@ -10,17 +10,18 @@ import ComposableArchitecture
 
 // MARK: - NotificationsFeatureView
 
-struct NotificationsView {
+struct NotificationsView : View {
     @Perception.Bindable var store: StoreOf<NotificationsFeature>
-}
 
-// MARK: - Views
-
-extension NotificationsView: View {
     
     var body: some View {
         content
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     @ViewBuilder private var content: some View {
         WithPerceptionTracking {

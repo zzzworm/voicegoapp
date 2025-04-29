@@ -41,7 +41,12 @@ struct RootView: View {
                 .tag(RootDomain.Tab.profile)
             }
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 struct RootView_Previews: PreviewProvider {

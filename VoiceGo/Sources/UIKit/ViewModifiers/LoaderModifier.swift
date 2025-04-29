@@ -27,7 +27,12 @@ struct LoaderModifier: ViewModifier {
                 .opacity(isLoading ? 1 : 0)
             }
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 extension View {

@@ -120,7 +120,12 @@ struct BottomInputBarBarView: View {
                 .bind($store.isKeyboardVisible, to: $isFocused)
             }
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 struct BottomInputBarBarView_Previews: PreviewProvider {
