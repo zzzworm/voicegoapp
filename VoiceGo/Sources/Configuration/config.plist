@@ -20,7 +20,7 @@
 		<key>build_configuration</key>
 		<string>development</string>
 		<key>base_url</key>
-		<string>http://192.168.50.126:1337</string>
+		<string>http://localhost:1337</string>
 	</dict>
 	<key>QA</key>
 	<dict>

@@ -15,7 +15,7 @@ struct StudyToolCell: View {
         
             HStack {
                 VStack(alignment: .leading) {
-                    Text(studyTool.title).font(.headline)
+                    Text(studyTool.title).font(.headline).padding(EdgeInsets(top: 0, leading: 0, bottom: 5, trailing: 0))
          
                     Text("\(studyTool.description)").font(.body)
                         .foregroundColor(.gray)
@@ -37,8 +37,7 @@ struct StudyToolCell: View {
                         .frame(height: 40)
                 }
                 
-            }
-            .padding(20)
+            }.padding(10)
             
         }
     
