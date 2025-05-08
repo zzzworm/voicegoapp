@@ -40,7 +40,11 @@ public struct AuthTextField: View {
             .padding()
             .background(Color.white.opacity(0.3))
             .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-            .padding(.horizontal, 32)
-           
-	}
+            .padding(.horizontal, 15)
+            .enableInjection()
+        }
+
+        #if DEBUG
+        @ObserveInjection var forceRedraw
+        #endif
 }
