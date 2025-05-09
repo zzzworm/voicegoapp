@@ -44,7 +44,7 @@ let commonDependencies : [TargetDependency] = [
                 .external(name: "StrapiSwift"),
                 .external(name: "IsScrolling"),
                 .external(name: "SwiftUIIntrospect"),
-
+                .external(name: "PopupView"),
             ]
 
 let project = Project(
@@ -103,6 +103,9 @@ let project = Project(
             "DEVELOPMENT_ASSET_PATHS": ["VoiceGo/Resources/PreviewContent/PreviewAssets.xcassets"],
             "DEVELOPMENT_TEAM": "S75X4J33FV",
             "CODE_SIGN_STYLE": "Automatic",
+            "ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": "YES",
+            "LOCALIZATION_PREFERS_STRING_CATALOGS": "YES",
+            "ASSETCATALOG_COMPILER_LOCALIZATION": "zh-Hans",
             ],
             debug : [
                 "OTHER_LDFLAGS": "-Xlinker -interposable",
