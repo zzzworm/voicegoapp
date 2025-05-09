@@ -20,7 +20,7 @@ struct StudyTool: Equatable, Identifiable, Sendable {
     let description: String
     let categoryKey: String // Update to enum
     let categoryTag: ToolTag
-    let imageUrl: String
+    let imageUrl: String?
     var exampleCard : QACard? = nil
     var cardDocumentId: String? = nil
     
