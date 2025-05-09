@@ -26,7 +26,7 @@ struct StudyToolCell: View {
                 Spacer()
                 
                 AsyncImage(
-                    url: URL(string: studyTool.imageUrl)
+                    url: URL(string: studyTool.imageUrl ?? "https://js.design/special/img/figma.png")
                 ) { image in
                     image
                         .resizable()
