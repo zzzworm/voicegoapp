@@ -20,14 +20,51 @@ struct VoiceGoAPIClient {
     struct Failure: Error, Equatable {}
 }
 
+func handleStrapiRequest<T: Decodable & Sendable>(_ action: @Sendable () async throws -> StrapiResponse<T>) async rethrows -> StrapiResponse<T> {
+    do {
+        let response = try await action()
+        return response
+    } catch {
+        switch error {
+        case let strapiError as StrapiSwiftError:
+
+                switch strapiError {
+                case .badResponse(let statusCode, let message):
+                    if statusCode > 400 && statusCode < 500 {
+                        @Dependency(\.notificationCenter) var notificationCenter
+                        print("Bad response: \(statusCode)")
+                        notificationCenter.post(.signOut, nil, nil)
+                    }
+                    print("Bad response: \(message)")
+                case .decodingError(let decodingError):
+                    print("Unauthorized")
+                case .unknownError(let unknownError):
+                    print("Unknown error: \(unknownError)")
+                case .noDataAvailable:
+                    print("No data available")
+                default:
+                    print("Strapi Error: \(strapiError)")
+                }
+            
+        default:
+            print("request Error: \(error)")
+        }
+        throw error
+    }
+}
+
+
 // 使用Moya实现APIClient的liveValue
 extension VoiceGoAPIClient : DependencyKey  {
     
+    
+    
     static let liveValue = Self(
         fetchStudyTools: {
+            return try await handleStrapiRequest{
             let resp =  try await Strapi.contentManager.collection("study-tools").populate("exampleCard").getDocuments(as: [StudyTool].self)
             return resp
-        },
+        }},
         fetchUserProfile: {
             let response = try await Strapi.authentication.local.me(as: UserProfile.self)
             let profile = response

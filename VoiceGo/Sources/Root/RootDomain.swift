@@ -28,7 +28,7 @@ struct RootDomain {
     
     enum Action: BindableAction {
         case onTabChanged(Tab)
-        case addNotifications(Notification)
+        case addNotifications(NotificationItem)
                 
         case studytoolList(StudyToolListDomain.Action)
         case profile(ProfileDomain.Action)

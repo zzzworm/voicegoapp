@@ -9,17 +9,17 @@ import SwiftUI
 import ComposableArchitecture
 
 @Reducer
-struct OnboardingFeature {
+public struct OnboardingFeature {
     
     @ObservableState
-    struct State: Equatable, Hashable {
+    public struct State: Equatable, Hashable {
         var items: [Onboarding] = Onboarding.pages
         var currentTab: Onboarding.Tab = .page1
         var showGetStarted = false
     }
     
-    enum Action: Equatable, BindableAction {
-        enum Delegate {
+    public enum Action: Equatable, BindableAction {
+        public enum Delegate {
             case didOnboardingFinished
         }
         
@@ -31,7 +31,7 @@ struct OnboardingFeature {
     
     @Dependency(\.userDefaults) var userDefaultsClient
     
-    var body: some Reducer<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
 
         Reduce { state, action in

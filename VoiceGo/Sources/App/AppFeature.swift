@@ -26,8 +26,8 @@ struct AppFeature {
         public init() { self = .loading(LoadingFeature.State()) }
     }
 
-    enum Action {
-        enum AppDelegateAction: Equatable {
+    public enum Action {
+        public enum AppDelegateAction: Equatable {
             case didFinishLaunching
             case didRegisterForRemoteNotifications(TaskResult<Data>)
             case userNotifications(UserNotificationClient.DelegateEvent)
@@ -36,7 +36,7 @@ struct AppFeature {
         
         case appDelegate(AppDelegateAction)
         case didChangeScenePhase(ScenePhase)
-        
+        case digSignOut
         case loading(LoadingFeature.Action)
         case onboarding(OnboardingFeature.Action)
         case join(JoinFeature.Action)
@@ -47,6 +47,18 @@ struct AppFeature {
     @Dependency(\.userKeychainClient) var userKeychainClient
     @Dependency(\.googleSignInClient) var googleSignInClient
     @Dependency(\.userNotificationClient) var userNotificationClient
+    
+    fileprivate func doLogout(_ state: inout AppFeature.State) {
+        self.googleSignInClient.logout()
+        self.userKeychainClient.removeToken()
+        MainActor.assumeIsolated{
+            Strapi.configure(baseURL: Configuration.current.baseURL, token: nil)
+        }
+        state = .loading(LoadingFeature.State())
+        Task{
+            await self.userDefaultsClient.setCurrentUserID(nil);
+        }
+    }
     
     var body: some Reducer<State, Action> {
         Reduce { state, action in
@@ -95,7 +107,7 @@ struct AppFeature {
                     return .run { send in
                         completionHandler(.banner)
                         
-                        let notification = Notification(title: "Test", description: "Description", type: .checkout)
+                        let notification = NotificationItem(title: "Test", description: "Description", type: .checkout)
                         await send(.main(.addNotifications(notification)))
                     }
                     
@@ -172,19 +184,14 @@ struct AppFeature {
             case let .main(action: .delegate(mainAction)):
                 switch mainAction {
                 case .didLogout:
-                    self.googleSignInClient.logout()
-                    self.userKeychainClient.removeToken()
-                    MainActor.assumeIsolated{
-                        Strapi.configure(baseURL: Configuration.current.baseURL, token: nil)
-                    }
-                    state = .loading(LoadingFeature.State())
-                    Task{
-                        await self.userDefaultsClient.setCurrentUserID(nil);
-                    }
-                    return .none
+                    doLogout(&state)
                 }
-        
-            case .loading, .onboarding, .join, .main:
+                return .none
+            case .digSignOut:
+                doLogout(&state)
+                return .none
+            
+            default:
                 return .none
             }
         }
@@ -200,5 +207,6 @@ struct AppFeature {
         .ifCaseLet(/State.main, action: /Action.main) {
             RootDomain()
         }
+        AuthLogic()
     }
 }

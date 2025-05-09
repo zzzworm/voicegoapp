@@ -15,21 +15,44 @@ struct StudyToolListView: View {
         WithPerceptionTracking {
             NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
                 WithViewStore(self.store, observe: { $0 }) { viewStore in
-                    NavigationView {
+                    VStack {
+                        // 切换数据源的按钮
+                        HStack {
+                            Button(action: {
+                                viewStore.send(.switchToUsedTools)
+                            }) {
+                                Text("已使用工具")
+                                    .padding()
+                                    .background(viewStore.isShowingUsedTools ? Color.blue : Color.gray)
+                                    .foregroundColor(.white)
+                                    .cornerRadius(8)
+                            }
+                            
+                            Button(action: {
+                                viewStore.send(.switchToAvailableTools)
+                            }) {
+                                Text("可用工具")
+                                    .padding()
+                                    .background(!viewStore.isShowingUsedTools ? Color.blue : Color.gray)
+                                    .foregroundColor(.white)
+                                    .cornerRadius(8)
+                            }
+                        }
+                        .padding()
+
+                        // 主内容
                         Group {
                             if viewStore.dataLoadingStatus == .loading {
                                 ProgressView()
                                     .frame(width: 100, height: 100)
                             } else if viewStore.shouldShowError {
                                 ErrorView(
-                                    message: "Oops, we couldn't fetch product list",
-                                    retryAction: { viewStore.send(.fetchStudyToolUsedList) }
+                                    message: "Oops, we couldn't fetch the tool list",
+                                    retryAction: { viewStore.send(.fetchCurrentToolList) }
                                 )
-                                
-                            }
-                            else {
+                            } else {
                                 List {
-                                    ForEach(viewStore.studyToolList) { studyTool in
+                                    ForEach(viewStore.currentToolList) { studyTool in
                                         StudyToolCell(studyTool: studyTool)
                                             .onTapGesture {
                                                 viewStore.send(.view(.onToolHistoryTap(studyTool)))
@@ -42,8 +65,8 @@ struct StudyToolListView: View {
                     .navigationTitle("学习工具")
                     .navigationViewStyle(.stack)
                     .navigationBarTitleDisplayMode(.inline)
-                    .onAppear() {
-                        store.send(.fetchStudyToolUsedList)
+                    .onAppear {
+                        viewStore.send(.fetchCurrentToolList)
                     }
                 }
             } destination: { store in

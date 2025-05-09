@@ -19,9 +19,22 @@ struct StudyTool: Equatable, Identifiable, Sendable {
     let title: String
     let description: String
     let categoryKey: String // Update to enum
+    let categoryTag: ToolTag
     let imageUrl: String
     var exampleCard : QACard? = nil
     var cardDocumentId: String? = nil
+    
+    enum ToolTag: String, CaseIterable, Codable {
+        case language_study
+        case official_language
+        case funny_study
+        case role_play
+        
+        // 返回本地化描述
+        var localizedDescription: String {
+            return String(localized: "ToolTag_\(rawValue)", comment: "")
+        }
+    }
     
 }
 
@@ -32,6 +45,7 @@ extension StudyTool: Codable, FetchableRecord ,TableRecord, MutablePersistableRe
         case title
         case description
         case categoryKey
+        case categoryTag
         case imageUrl
         case exampleCard
     }
@@ -42,6 +56,7 @@ extension StudyTool: Codable, FetchableRecord ,TableRecord, MutablePersistableRe
         container["title"] = title
         container["description"] = description
         container["categoryKey"] = categoryKey
+        container["categoryTag"] = categoryTag.rawValue
         container["imageUrl"] = imageUrl
         container["cardDocumentId"] = cardDocumentId
     }
@@ -52,6 +67,7 @@ extension StudyTool: Codable, FetchableRecord ,TableRecord, MutablePersistableRe
         static let title = Column(CodingKeys.title)
         static let  description  = Column(CodingKeys.description)
         static let  categoryKey  = Column(CodingKeys.categoryKey)
+        static let  categoryTag  = Column(CodingKeys.categoryTag)
         static let  imageUrl  = Column(CodingKeys.imageUrl)
         static let  cardDocumentId  = Column("cardDocumentId")
     }
@@ -72,6 +88,7 @@ extension StudyTool {
                 title: "AI翻译",
                 description: "支持中文翻译",
                 categoryKey: "AI翻译",
+                categoryTag: .language_study,
                 imageUrl: "https://voicego-image.oss-cn-shanghai.aliyuncs.com/images/ai_translation_e2c2ee1941.jpg"
             ),
             .init(
@@ -80,6 +97,7 @@ extension StudyTool {
                 title: "单词记忆助手",
                 description: "单词记忆助手",
                 categoryKey: "单词记忆",
+                categoryTag: .language_study,
                 imageUrl: "bag"
             ),
             .init(
@@ -88,6 +106,7 @@ extension StudyTool {
                 title: "AI润色",
                 description: "AI润色",
                 categoryKey: "AI润色",
+                categoryTag: .language_study,
                 imageUrl: "jacket"
             )
         ]
@@ -148,6 +167,7 @@ extension StudyToolUsed {
                 title: "AI翻译",
                 description: "支持中文翻译",
                 categoryKey: "AI翻译",
+                categoryTag: .language_study,
                 imageUrl: "https://voicego-image.oss-cn-shanghai.aliyuncs.com/images/ai_translation_e2c2ee1941.jpg"
                 )
             ),
@@ -163,6 +183,7 @@ extension StudyToolUsed {
                 title: "AI润色",
                 description: "AI润色",
                 categoryKey: "AI润色",
+                categoryTag: .language_study,
                 imageUrl: "jacket"
                 )
             )

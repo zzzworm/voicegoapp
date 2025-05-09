@@ -13,13 +13,13 @@ struct NotificationsFeature {
     
     @ObservableState
     struct State: Equatable {
-        var items: [Notification] = []        
+        var items: [NotificationItem] = []        
         @Presents var alert: AlertState<Action.AlertAction>?
     }
     
     enum Action: Equatable {
         enum ViewAction:  Equatable {
-            case onNotificationTap(notification: Notification)
+            case onNotificationTap(notification: NotificationItem)
         }
         
         enum Delegate: Equatable {
@@ -27,11 +27,11 @@ struct NotificationsFeature {
         }
         
         enum InternalAction: Equatable {
-            case deleteNotification(Notification)
+            case deleteNotification(NotificationItem)
         }
         
         enum AlertAction: Equatable {
-            case viewNotification(Notification)
+            case viewNotification(NotificationItem)
         }
         
         case view(ViewAction)

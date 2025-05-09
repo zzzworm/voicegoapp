@@ -10,10 +10,10 @@
 		"swift"
 	],
 	"argv": [
-		"/opt/homebrew/bin/xcode-build-server"
+		"/usr/local/bin/xcode-build-server"
 	],
-	"workspace": "/Users/zzzworm/Documents/studyspace/iOSProjects/VoiceGo/VoiceGo.xcworkspace",
-	"build_root": "/Users/zzzworm/Library/Developer/Xcode/DerivedData/VoiceGo-dnlvpbwdmadjlpdpkcnhkinmnvfn",
+	"workspace": "/Users/admin/Documents/workspace/voiceGo/voicegoapp/VoiceGo.xcworkspace",
+	"build_root": "/Users/admin/Library/Developer/Xcode/DerivedData/VoiceGo-dfohrxuolcblabebnpjvqtzswwdl",
 	"scheme": "VoiceGo",
 	"kind": "xcode"
 }

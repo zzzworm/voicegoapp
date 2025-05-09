@@ -1,7 +1,81 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "" : {
 
+    },
+    ":(" : {
+
+    },
+    "%@" : {
+
+    },
+    "AI生成内容，仅供参考" : {
+
+    },
+    "Base.noNetworkConnection" : {
+
+    },
+    "Base.oops" : {
+
+    },
+    "Console" : {
+
+    },
+    "Developed By" : {
+
+    },
+    "Please note that you need to type at least one number for it to pass validation." : {
+
+    },
+    "Please wait" : {
+
+    },
+    "Retry" : {
+
+    },
+    "S1" : {
+
+    },
+    "We sent you code via SMS. For test proposal please enter 999999." : {
+
+    },
+    "一键登录" : {
+
+    },
+    "可用工具" : {
+
+    },
+    "学习" : {
+
+    },
+    "已使用工具" : {
+
+    },
+    "微信登录" : {
+
+    },
+    "您的英语AI伴读工具" : {
+
+    },
+    "我的" : {
+
+    },
+    "按住说话" : {
+
+    },
+    "示例" : {
+
+    },
+    "立即开通" : {
+
+    },
+    "设置" : {
+
+    },
+    "退出登录" : {
+
+    }
   },
   "version" : "1.0"
 }

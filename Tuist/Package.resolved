@@ -1,5 +1,5 @@
 {
-  "originHash" : "5f7e159f4696a46bcdd089a7ad1714388d292726612bd83d50d675099ee6659b",
+  "originHash" : "abaf920427e1133d55678b2e852f63fd9396062c6e36106ad25718196db566d9",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -260,6 +260,15 @@
       "state" : {
         "revision" : "c107075aa8d394be7aced273a46e944afe8b321b",
         "version" : "3.8.0"
+      }
+    },
+    {
+      "identity" : "popupview",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/exyte/PopupView.git",
+      "state" : {
+        "revision" : "53b9a5ae0e96cdd9ade22cf8b0693291c2aa91b3",
+        "version" : "4.1.7"
       }
     },
     {

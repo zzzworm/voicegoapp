@@ -20,13 +20,15 @@ struct StudyToolListDomain {
         var dataLoadingStatus = DataLoadingStatus.notStarted
         var shouldOpenCart = false
         var studyToolList: IdentifiedArrayOf<StudyTool> = []
-        
+        var availableToolList: IdentifiedArrayOf<StudyTool> = [] // 可用工具列表
+        var isShowingUsedTools = true // 当前是否展示已使用工具
+
+        var currentToolList: IdentifiedArrayOf<StudyTool> {
+            isShowingUsedTools ? studyToolList : availableToolList
+        }
+
         var shouldShowError: Bool {
             dataLoadingStatus == .error
-        }
-        
-        var isLoading: Bool {
-            dataLoadingStatus == .loading
         }
     }
     
@@ -35,7 +37,11 @@ struct StudyToolListDomain {
             case onToolHistoryTap(StudyTool)
         }
         case view(ViewAction)
+        case fetchCurrentToolList
+        case switchToUsedTools
+        case switchToAvailableTools
         case fetchStudyToolUsedList
+        case fetchAvailableToolList
         case fetchStudyToolsResponse(TaskResult<StrapiResponse<[StudyTool]>>)
         case path(StackActionOf<Path>)
     }
@@ -100,6 +106,18 @@ struct StudyToolListDomain {
                 print("Error getting StudyTools, try again later.")
                 return .none
                 
+            case .switchToUsedTools:
+                state.isShowingUsedTools = true
+                return .send(.fetchCurrentToolList)
+
+            case .switchToAvailableTools:
+                state.isShowingUsedTools = false
+                return .send(.fetchCurrentToolList)
+
+            case .fetchCurrentToolList:
+                return state.isShowingUsedTools
+                    ? .send(.fetchStudyToolUsedList)
+                    : .send(.fetchAvailableToolList)
         
             case let .path(pathAction):
                 return .none
@@ -109,6 +127,8 @@ struct StudyToolListDomain {
                     state.path.append(.studyTool(.init(studyTool: studyTool)))
                     return .none
                 }
+            case .fetchAvailableToolList:
+                return .none
             }
         }.forEach(\.path, action: \.path)
     }
