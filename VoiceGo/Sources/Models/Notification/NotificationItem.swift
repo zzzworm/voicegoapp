@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Notification: Equatable, Identifiable, Hashable {    
+struct NotificationItem: Equatable, Identifiable, Hashable {
     enum NotificationType: CaseIterable {
         case account, checkout
     }
@@ -18,12 +18,12 @@ struct Notification: Equatable, Identifiable, Hashable {
     let type: NotificationType
 }
 
-extension Notification {
-    static var checkout = Notification(title: "Checkout",
+extension NotificationItem {
+    static var checkout = NotificationItem(title: "Checkout",
                                        description: "You have successfully checkout products.",
                                        type: .checkout)
     
-    static var account = Notification(title: "Account",
+    static var account = NotificationItem(title: "Account",
                                       description: "Tap to add account details.",
                                       type: .account)
 }
