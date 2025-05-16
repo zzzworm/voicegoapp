@@ -63,6 +63,7 @@ struct VoiceGoApp: App {
                 table.column("title", .text).notNull()
                 table.column("description", .text).notNull()
                 table.column("categoryKey", .text).notNull()
+                table.column("categoryTag", .text).notNull()
                 table.column("imageUrl", .text)
                 table.column("cardDocumentId", .text).references(QACard.databaseTableName,column: "id", onDelete: .cascade)
             }

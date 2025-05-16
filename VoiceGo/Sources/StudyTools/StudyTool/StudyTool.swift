@@ -32,7 +32,16 @@ struct StudyTool: Equatable, Identifiable, Sendable {
         
         // 返回本地化描述
         var localizedDescription: String {
-            return String(localized: "ToolTag_\(rawValue)", comment: "")
+            switch self {
+            case .language_study:
+                return String(localized: "ToolTag_language_study", comment: "")
+            case .official_language:
+                return String(localized: "ToolTag_official_language", comment: "")
+            case .funny_study:
+                return String(localized: "ToolTag_funny_study", comment: "")
+            case .role_play:
+                return String(localized: "ToolTag_role_play", comment: "")
+            }
         }
     }
     
@@ -184,7 +193,7 @@ extension StudyToolUsed {
                 description: "AI润色",
                 categoryKey: "AI润色",
                 categoryTag: .language_study,
-                imageUrl: "jacket"
+                imageUrl: "https://voicego-image.oss-cn-shanghai.aliyuncs.com/images/memory_word_25f17a5e3e.png"
                 )
             )
         ]

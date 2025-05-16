@@ -13,16 +13,74 @@
     "AI生成内容，仅供参考" : {
 
     },
+    "An error occurred while transcribing. Please try again." : {
+
+    },
+    "back" : {
+
+    },
+    "Base.areYouSure" : {
+
+    },
     "Base.noNetworkConnection" : {
+
+    },
+    "Base.ok" : {
 
     },
     "Base.oops" : {
 
     },
+    "Cancel" : {
+
+    },
     "Console" : {
 
     },
+    "continue" : {
+
+    },
+    "Continue with Apple" : {
+
+    },
+    "Continue with Email" : {
+
+    },
+    "Continue with Google" : {
+
+    },
+    "Continue with Phone" : {
+
+    },
     "Developed By" : {
+
+    },
+    "Enter Code" : {
+
+    },
+    "ForgotPassword.changePassword" : {
+
+    },
+    "Get Started" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开始吧"
+          }
+        }
+      }
+    },
+    "Join" : {
+
+    },
+    "Login with phone" : {
+
+    },
+    "Mark as read" : {
+
+    },
+    "Notifications (%lld)" : {
 
     },
     "Please note that you need to type at least one number for it to pass validation." : {
@@ -31,28 +89,128 @@
     "Please wait" : {
 
     },
+    "Problem with audio device. Please try again." : {
+
+    },
     "Retry" : {
 
     },
     "S1" : {
 
     },
+    "ToolTag_funny_study" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Funny Study"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "趣味游戏"
+          }
+        }
+      }
+    },
+    "ToolTag_language_study" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Language Study"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "语言学习"
+          }
+        }
+      }
+    },
+    "ToolTag_official_language" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Official Use"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "专业职场"
+          }
+        }
+      }
+    },
+    "ToolTag_role_play" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Role Play"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "角色扮演"
+          }
+        }
+      }
+    },
+    "View" : {
+
+    },
     "We sent you code via SMS. For test proposal please enter 999999." : {
+
+    },
+    "You denied access to speech recognition. This app needs access to transcribe your speech." : {
+
+    },
+    "You don't have any notifications." : {
+
+    },
+    "Your device does not allow speech recognition." : {
 
     },
     "一键登录" : {
 
     },
+    "与AI对话,让学习更轻松" : {
+
+    },
+    "两次输入的密码不一致" : {
+
+    },
+    "从翻译到写作,无论是学习还是工作,让你事半功倍." : {
+
+    },
+    "发送验证码" : {
+
+    },
     "可用工具" : {
 
     },
+    "多种AI工具,工作学习更轻松" : {
+
+    },
     "学习" : {
+
+    },
+    "学习工具" : {
 
     },
     "已使用工具" : {
 
     },
     "微信登录" : {
+
+    },
+    "忘记密码" : {
 
     },
     "您的英语AI伴读工具" : {
@@ -64,6 +222,21 @@
     "按住说话" : {
 
     },
+    "摆脱尴尬,社恐福音.与AI外教随时对话,让你轻松练口语." : {
+
+    },
+    "晨读AI英语" : {
+
+    },
+    "注册" : {
+
+    },
+    "登录" : {
+
+    },
+    "确定" : {
+
+    },
     "示例" : {
 
     },
@@ -73,7 +246,19 @@
     "设置" : {
 
     },
+    "请输入内容" : {
+
+    },
+    "账号注册" : {
+
+    },
+    "趣味和专项练习,让学习更高效" : {
+
+    },
     "退出登录" : {
+
+    },
+    "通过趣味和专项练习,让你在轻松中提升英语水平." : {
 
     }
   },
