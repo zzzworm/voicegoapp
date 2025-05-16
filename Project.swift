@@ -104,7 +104,10 @@ let project = Project(
             "DEVELOPMENT_TEAM": "S75X4J33FV",
             "CODE_SIGN_STYLE": "Automatic",
             "ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": "YES",
+            "LOCALIZATION_EXPORT_SUPPORTED": "YES",
+            "LOCALIZED_STRING_SWIFTUI_SUPPORT": "YES",
             "LOCALIZATION_PREFERS_STRING_CATALOGS": "YES",
+            "SWIFT_EMIT_LOC_STRINGS": "YES",
             "ASSETCATALOG_COMPILER_LOCALIZATION": "zh-Hans",
             ],
             debug : [
