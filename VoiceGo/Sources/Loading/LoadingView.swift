@@ -8,6 +8,7 @@
 import SwiftUI
 import ComposableArchitecture
 
+
 // MARK: - LoadingView
 
 struct LoadingView  : View {
@@ -17,6 +18,7 @@ struct LoadingView  : View {
     var body: some View {
         content
             .onAppear { store.send(.view(.onViewAppear)) }
+            .background()
         .enableInjection()
     }
 
@@ -26,10 +28,34 @@ struct LoadingView  : View {
 
     @ViewBuilder private var content: some View {
         WithPerceptionTracking {
-            VStack(spacing: 10) {
-                Text("S1").font(Font.title2)
+            VStack(spacing: 50) {
+                Image("splash_logo")
+                    .resizable()
+                    .frame(width: 200, height: 200)
+                
                 ProgressViewWrapper(progress: $store.progress)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(
+                
+                LinearGradient(
+                    colors: [.blue, .white],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+            )
         }
+    }
+}
+
+//add preview
+struct LoadingView_Previews: PreviewProvider {
+    static var previews: some View {
+        LoadingView(
+            store: Store(
+                initialState: LoadingFeature.State(),
+                reducer: LoadingFeature.init
+            )
+        )
     }
 }

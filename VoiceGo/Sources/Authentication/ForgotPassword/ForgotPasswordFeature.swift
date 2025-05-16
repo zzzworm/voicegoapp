@@ -14,9 +14,10 @@ struct ForgotPasswordFeature {
     @ObservableState
     struct State: Equatable {
         @Presents var alert: AlertState<Action.AlertAction>?
+        var userIdentifier = ""
     }
     
-    enum Action: Equatable {        
+    enum Action: Equatable, BindableAction {
         enum ViewAction: Equatable {
             case onChangePasswordButtonTap
         }
@@ -32,6 +33,7 @@ struct ForgotPasswordFeature {
         case view(ViewAction)
         case alert(PresentationAction<AlertAction>)
         case delegate(DelegateAction)
+        case binding(BindingAction<State>)
     }
     
     var body: some Reducer<State, Action> {
@@ -41,10 +43,10 @@ struct ForgotPasswordFeature {
                 switch viewAction {
                 case .onChangePasswordButtonTap:
                     state.alert = AlertState {
-                        TextState("Base.areYouSure")
+                        TextState("Are you sure?")
                     } actions: {
                         ButtonState(role: .destructive, action: .confirmPasswordChange) {
-                            TextState("ForgotPassword.changePassword")
+                            TextState(String(localized:"Forgot Password", comment: "Forgot Password Alert"))
                         }
                     }
                     return .none
@@ -54,6 +56,8 @@ struct ForgotPasswordFeature {
                 return .send(.delegate(.didPasswordChanged))
                 
             case .delegate, .alert:
+                return .none
+            case .binding:
                 return .none
             }
         }

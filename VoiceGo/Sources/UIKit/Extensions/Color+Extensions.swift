@@ -9,7 +9,20 @@ import SwiftUI
 import UIKit
 
 extension Color {
-     
+    init(hex: String) {
+        var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        if hexSanitized.hasPrefix("#") {
+            hexSanitized.removeFirst()
+        }
+        var rgbValue: UInt64 = 0
+        Scanner(string: hexSanitized).scanHexInt64(&rgbValue)
+        let r = Double((rgbValue & 0xFF0000) >> 16) / 255.0
+        let g = Double((rgbValue & 0xFF00) >> 8) / 255.0
+        let b = Double(rgbValue & 0xFF) / 255.0
+        self.init(red: r, green: g, blue: b)
+    }
+
+    static let appMainColor = Color(hex:"0x09b1fc")
     // MARK: - Text Colors
     static let lightText = Color(UIColor.lightText)
     static let darkText = Color(UIColor.darkText)
