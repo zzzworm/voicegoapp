@@ -16,10 +16,10 @@
     "An error occurred while transcribing. Please try again." : {
 
     },
-    "back" : {
+    "Are you sure?" : {
 
     },
-    "Base.areYouSure" : {
+    "back" : {
 
     },
     "Base.noNetworkConnection" : {
@@ -58,8 +58,8 @@
     "Enter Code" : {
 
     },
-    "ForgotPassword.changePassword" : {
-
+    "Forgot Password" : {
+      "comment" : "Forgot Password Alert"
     },
     "Get Started" : {
       "localizations" : {
@@ -70,9 +70,6 @@
           }
         }
       }
-    },
-    "Join" : {
-
     },
     "Login with phone" : {
 
@@ -93,9 +90,6 @@
 
     },
     "Retry" : {
-
-    },
-    "S1" : {
 
     },
     "ToolTag_funny_study" : {
@@ -187,6 +181,9 @@
 
     },
     "从翻译到写作,无论是学习还是工作,让你事半功倍." : {
+
+    },
+    "其他登录" : {
 
     },
     "发送验证码" : {

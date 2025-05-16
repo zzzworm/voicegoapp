@@ -45,6 +45,7 @@ let commonDependencies : [TargetDependency] = [
                 .external(name: "IsScrolling"),
                 .external(name: "SwiftUIIntrospect"),
                 .external(name: "PopupView"),
+                .external(name: "RswiftLibrary"),
             ]
 
 let project = Project(

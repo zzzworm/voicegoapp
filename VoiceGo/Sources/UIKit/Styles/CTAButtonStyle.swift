@@ -15,8 +15,8 @@ struct CTAButtonStyle: ButtonStyle {
         configuration.label
             .font(.title3)
             .frame(minWidth: 200, maxWidth: .infinity, minHeight: 52)
-            .foregroundColor(Color.lightText)
-            .background(isEnabled ? Color.black : .gray)
+            .foregroundColor(Color.black)
+            .background(isEnabled ? Color.systemBackground : .gray)
             .clipShape(Capsule())
     }
 }
