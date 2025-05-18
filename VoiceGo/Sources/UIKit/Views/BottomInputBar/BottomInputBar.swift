@@ -8,7 +8,7 @@
 import SwiftUI
 import ComposableArchitecture
 
-struct BottomInputBarDomain : Reducer{
+struct BottomInputBarFeature : Reducer{
     @ObservableState
     struct State : Equatable {
         var inputText: String = ""
@@ -71,7 +71,7 @@ struct BottomInputBarDomain : Reducer{
 
 struct BottomInputBarBarView: View {
     @FocusState var isFocused : Bool // 1
-    @Perception.Bindable var store: StoreOf<BottomInputBarDomain>
+    @Perception.Bindable var store: StoreOf<BottomInputBarFeature>
     var body: some View {
         WithPerceptionTracking {
             WithViewStore(self.store, observe: { $0 }) { viewStore in
@@ -91,7 +91,7 @@ struct BottomInputBarBarView: View {
                         
                         if (viewStore.speechMode){
                             
-                            SpeechRecognitionInputView(store: store.scope(state: \.speechRecognitionInputState, action: BottomInputBarDomain.Action.speechRecognitionInput))
+                            SpeechRecognitionInputView(store: store.scope(state: \.speechRecognitionInputState, action: BottomInputBarFeature.Action.speechRecognitionInput))
                                 .frame(maxHeight: 30)
                         }
                         else{
@@ -101,7 +101,7 @@ struct BottomInputBarBarView: View {
                                 "请输入内容",
                                 text: viewStore.binding(
                                     get: \.inputText,
-                                    send: BottomInputBarDomain.Action.inputTextChanged
+                                    send: BottomInputBarFeature.Action.inputTextChanged
                                 )
                             )
                             .focused($isFocused) // 2
@@ -133,7 +133,7 @@ struct BottomInputBarBarView_Previews: PreviewProvider {
     @FocusState var focus: Bool
     static var previews: some View {
         BottomInputBarBarView(store: Store(
-            initialState:BottomInputBarDomain.State(), reducer: BottomInputBarDomain.init))
+            initialState:BottomInputBarFeature.State(), reducer: BottomInputBarFeature.init))
         .previewLayout(.sizeThatFits)
         .padding()
         .background(Color.white)

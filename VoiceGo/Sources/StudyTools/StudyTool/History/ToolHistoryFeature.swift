@@ -9,7 +9,7 @@ import ComposableArchitecture
 import AVFAudio
 
 
-struct ToolHistoryDomain: Reducer {
+struct ToolHistoryFeature: Reducer {
     @ObservableState
     struct State: Equatable, Identifiable {
         var history: ToolConversation
@@ -38,7 +38,7 @@ struct ToolHistoryDomain: Reducer {
     @Dependency(\.speechSynthesizer) var speechSynthesizer
     @Dependency(\.clipboardClient) var clipboardClient
     
-    fileprivate func speekText(_ answer: String) -> Effect<ToolHistoryDomain.Action> {
+    fileprivate func speekText(_ answer: String) -> Effect<ToolHistoryFeature.Action> {
         return .run { send in
             // Create an utterance.
             let utterance = AVSpeechUtterance(string: answer)

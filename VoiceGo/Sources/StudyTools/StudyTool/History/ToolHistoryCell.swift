@@ -11,7 +11,7 @@ import MarkdownUI
 
 
 struct ToolHistoryCell: View {
-    @State var store: StoreOf<ToolHistoryDomain>
+    @State var store: StoreOf<ToolHistoryFeature>
     
     var body: some View {
         
@@ -87,10 +87,10 @@ struct ToolHistoryCell_Previews: PreviewProvider {
     static var previews: some View {
         ToolHistoryCell(
             store: Store(
-                initialState: ToolHistoryDomain.State(
+                initialState: ToolHistoryFeature.State(
                     history: ToolConversation.sample[0]
                 ),
-                reducer: ToolHistoryDomain.init
+                reducer: ToolHistoryFeature.init
             )
             
         )

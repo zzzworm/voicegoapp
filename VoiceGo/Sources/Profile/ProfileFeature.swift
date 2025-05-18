@@ -11,7 +11,7 @@ import SharingGRDB
 import SwiftUI
 
 @Reducer
-struct ProfileDomain {
+struct ProfileFeature {
     @Dependency(\.apiClient) var apiClient
     @Dependency(\.defaultDatabase) var database
     @Dependency(\.userDefaults) var userDefaultsClient
@@ -30,7 +30,7 @@ struct ProfileDomain {
     
     @Reducer(state: .equatable)
     enum Path {
-        case setting(ProfileSettingDomain)
+        case setting(ProfileSettingFeature)
         }
     
     fileprivate enum DataState {

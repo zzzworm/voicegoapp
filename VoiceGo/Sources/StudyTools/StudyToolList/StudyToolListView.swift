@@ -9,7 +9,7 @@ import SwiftUI
 import ComposableArchitecture
 
 struct StudyToolListView: View {
-    @Perception.Bindable var store: StoreOf<StudyToolListDomain>
+    @Perception.Bindable var store: StoreOf<StudyToolsFeature>
     
     var body: some View {
         WithPerceptionTracking {
@@ -88,8 +88,8 @@ struct StudyToolListView_Previews: PreviewProvider {
     static var previews: some View {
         StudyToolListView(
             store: Store(
-                initialState: StudyToolListDomain.State(),
-                reducer: StudyToolListDomain.init
+                initialState: StudyToolsFeature.State(),
+                reducer: StudyToolsFeature.init
             )
         )
     }

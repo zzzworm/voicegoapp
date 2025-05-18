@@ -11,7 +11,7 @@ import Perception
 import IsScrolling
 
 struct StudyToolView: View {
-    @Perception.Bindable var store: StoreOf<StudyToolDomain>
+    @Perception.Bindable var store: StoreOf<StudyToolFeature>
     @State private var hasScrolledToBottom = false
     var body: some View {
         WithPerceptionTracking {
@@ -83,7 +83,7 @@ struct StudyToolView: View {
                                             
 //                                    }
                                 }
-                                BottomInputBarBarView(store: store.scope(state: \.inputBarState, action: StudyToolDomain.Action.inputBar))
+                                BottomInputBarBarView(store: store.scope(state: \.inputBarState, action: StudyToolFeature.Action.inputBar))
                                 
                                 Text("AI生成内容，仅供参考").padding(.bottom, 5)
                             }
@@ -110,10 +110,10 @@ struct StudyToolView_Previews: PreviewProvider {
     static var previews: some View {
         StudyToolView(
             store: Store(
-                initialState: StudyToolDomain.State(
+                initialState: StudyToolFeature.State(
                     studyTool: StudyTool.sample[0]
                 ),
-                reducer: StudyToolDomain.init
+                reducer: StudyToolFeature.init
             )
         )
     }

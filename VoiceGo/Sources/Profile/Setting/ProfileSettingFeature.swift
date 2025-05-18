@@ -8,7 +8,7 @@
 import Foundation
 import ComposableArchitecture
 
-struct ProfileSettingDomain: Reducer {
+struct ProfileSettingFeature: Reducer {
     @Dependency(\.apiClient) var apiClient
 
     struct State: Equatable {

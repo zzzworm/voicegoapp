@@ -12,7 +12,7 @@ import PulseUI
 #endif
 
 struct ProfileSettingView: View {
-    let store: StoreOf<ProfileSettingDomain>
+    let store: StoreOf<ProfileSettingFeature>
     
     var body: some View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
@@ -55,8 +55,8 @@ struct ProfileSettingView_Previews: PreviewProvider {
     static var previews: some View {
         ProfileSettingView(
             store: Store(
-                initialState: ProfileSettingDomain.State(),
-                reducer: ProfileSettingDomain.init
+                initialState: ProfileSettingFeature.State(),
+                reducer: ProfileSettingFeature.init
             )
         )
     }

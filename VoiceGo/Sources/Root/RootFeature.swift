@@ -9,13 +9,13 @@ import Foundation
 import ComposableArchitecture
 
 @Reducer
-struct RootDomain {
+struct RootFeature {
 
     @ObservableState
     struct State : Equatable {
         var currentTab = Tab.studytools
-        var studytoolListState = StudyToolListDomain.State()
-        var profileState = ProfileDomain.State()
+        var studytoolListState = StudyToolsFeature.State()
+        var profileState = ProfileFeature.State()
         var notifications = NotificationsFeature.State()
     }
     
@@ -30,8 +30,8 @@ struct RootDomain {
         case onTabChanged(Tab)
         case addNotifications(NotificationItem)
                 
-        case studytoolList(StudyToolListDomain.Action)
-        case profile(ProfileDomain.Action)
+        case studytoolList(StudyToolsFeature.Action)
+        case profile(ProfileFeature.Action)
         case notifications(NotificationsFeature.Action)
                 
         enum Delegate: Equatable {
@@ -44,10 +44,10 @@ struct RootDomain {
     var body: some Reducer<State, Action> {
         BindingReducer()
         Scope(state: \.studytoolListState, action: /Action.studytoolList) {
-            StudyToolListDomain()
+            StudyToolsFeature()
         }
         Scope(state: \.profileState, action: /Action.profile) {
-            ProfileDomain()
+            ProfileFeature()
         }
         Scope(state: \.notifications, action: /Action.notifications) {
                     NotificationsFeature()
