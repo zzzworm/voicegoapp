@@ -45,12 +45,27 @@ let commonDependencies : [TargetDependency] = [
                 .external(name: "IsScrolling"),
                 .external(name: "SwiftUIIntrospect"),
                 .external(name: "PopupView"),
-                .external(name: "RswiftLibrary"),
+                .package(product: "SwiftLintBuildToolPlugin", type: .plugin)
             ]
+
+let targetActions: [TargetScript] = [
+
+    .post(script: """
+export RESOURCES="/Applications/InjectionNext.app/Contents/Resources"
+if [ -f "$RESOURCES/copy_bundle.sh" ]; then
+    "$RESOURCES/copy_bundle.sh"
+fi
+""",
+        name: "Injection Next Script",
+        basedOnDependencyAnalysis: false)
+]
 
 let project = Project(
     name: "VoiceGo",
     organizationName: "Shanghai Souler Information Technology Co., Ltd.",
+    packages:[
+        .remote(url: "https://github.com/SimplyDanny/SwiftLintPlugins", requirement: .upToNextMajor(from: "0.59.1")),
+    ],
     targets: [
         .target(
             name: "VoiceGo",
@@ -86,18 +101,7 @@ let project = Project(
                 "VoiceGo/Resources/**",
                 "VoiceGo/Sources/Configuration/config.plist"
             ],
-            scripts: [
-                .post(
-                    script: """
-                    export RESOURCES="/Applications/InjectionNext.app/Contents/Resources"
-                    if [ -f "$RESOURCES/copy_bundle.sh" ]; then
-                        "$RESOURCES/copy_bundle.sh"
-                    fi
-                    """,
-                    name: "Injection Next Script",
-                    basedOnDependencyAnalysis: false
-                )
-            ],
+            scripts : targetActions,
             dependencies: Environment.skipDependencies.getBoolean(default: false) ? commonDependencies : commonDependencies + debugDependencies ,
             settings: .settings(base: [
             "OTHER_LDFLAGS": "$(inherited) -ObjC -force_load",
@@ -110,6 +114,7 @@ let project = Project(
             "LOCALIZATION_PREFERS_STRING_CATALOGS": "YES",
             "SWIFT_EMIT_LOC_STRINGS": "YES",
             "ASSETCATALOG_COMPILER_LOCALIZATION": "zh-Hans",
+            "ENABLE_USER_SCRIPT_SANDBOXING": "NO",
             ],
             debug : [
                 "OTHER_LDFLAGS": "-Xlinker -interposable",

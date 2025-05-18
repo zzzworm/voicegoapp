@@ -1,4 +1,4 @@
-git_url "git@git.tower.v6.army:voicego/voicegoapp_certificates.git"
+git_url "git@git.tower.v6.army:voicego/ios/voicegoapp_certificates.git"
 
 
 type "adhoc" # The default type, can be: appstore, adhoc, enterprise or development

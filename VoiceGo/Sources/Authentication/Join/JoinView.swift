@@ -7,7 +7,6 @@
 
 import SwiftUI
 import ComposableArchitecture
-import RswiftResources
 
 // MARK: - LoginOptionsView
 
@@ -76,7 +75,7 @@ struct JoinView : View {
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(
-                        Image("login_background")
+                        Image(VoiceGoAsset.Assets.loginBackground.name)
                             .resizable()
                             .scaledToFill()
                             .ignoresSafeArea()

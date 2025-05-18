@@ -71,7 +71,10 @@ extension VoiceGoAPIClient : DependencyKey  {
             return profile
         },
         getToolConversationList: {studyToolId, page, pageSize in
-            let response = try await Strapi.contentManager.collection("tool-conversation/my-list").filter("[study_tool_user_used][studyTool][documentId]",operator: .equal, value:studyToolId).paginate(page: page, pageSize: pageSize).getDocuments(as: [ToolConversation].self)
+            let response = try await Strapi.contentManager.collection("tool-conversation/my-list")
+                .filter("[study_tool_user_used][studyTool][documentId]",operator: .equal, value:studyToolId)
+                .paginate(page: page, pageSize: pageSize)
+                .getDocuments(as: [ToolConversation].self)
             return response
         },
         createToolConversation: {studyTool, query in

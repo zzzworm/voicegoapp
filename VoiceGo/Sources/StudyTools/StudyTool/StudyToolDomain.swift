@@ -140,7 +140,13 @@ struct StudyToolDomain {
                         return .none
                     }
                     let studyTool = state.studyTool
-                    let toolHistoryState = ToolHistoryDomain.State(history: ToolConversation(documentId:self.uuid().uuidString,id:0,updatedAt: .now, query: query, answer: "", message_id: "", conversation_id: ""))
+                    let toolHistoryState = ToolHistoryDomain.State(history: ToolConversation(documentId:self.uuid().uuidString,
+                                                                                             id:0,
+                                                                                             updatedAt: .now,
+                                                                                             query: query,
+                                                                                             answer: "",
+                                                                                             message_id: "",
+                                                                                             conversation_id: ""))
                     state.currenttoolHistory = toolHistoryState
                     let (inserted, index) = state.toolHistoryListState.append(toolHistoryState)
                     state.lastIndex = index
