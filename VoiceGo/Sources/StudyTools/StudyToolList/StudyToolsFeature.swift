@@ -10,7 +10,7 @@ import ComposableArchitecture
 import StrapiSwift
 
 @Reducer
-struct StudyToolListDomain {
+struct StudyToolsFeature {
     @Dependency(\.uuid) var uuid
     @Dependency(\.apiClient) var apiClient
     
@@ -48,7 +48,7 @@ struct StudyToolListDomain {
     
     @Reducer(state: .equatable)
     enum Path {
-        case studyTool(StudyToolDomain)
+        case studyTool(StudyToolFeature)
     }
     
     @Dependency(\.defaultDatabase) var database

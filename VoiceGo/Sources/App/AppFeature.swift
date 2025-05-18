@@ -21,7 +21,7 @@ struct AppFeature {
         case loading(LoadingFeature.State)
         case onboarding(OnboardingFeature.State)
         case join(JoinFeature.State)
-        case main(RootDomain.State)
+        case main(RootFeature.State)
 
         public init() { self = .loading(LoadingFeature.State()) }
     }
@@ -40,7 +40,7 @@ struct AppFeature {
         case loading(LoadingFeature.Action)
         case onboarding(OnboardingFeature.Action)
         case join(JoinFeature.Action)
-        case main(RootDomain.Action)
+        case main(RootFeature.Action)
     }
     
     @Dependency(\.userDefaults) var userDefaultsClient
@@ -131,9 +131,9 @@ struct AppFeature {
                     let action = QuickAction(shortcutItem: shortcutItem)
                     switch action {
                     case .favourites:
-                        state = .main(RootDomain.State(currentTab: .favourites))
+                        state = .main(RootFeature.State(currentTab: .favourites))
                     case .chat:
-                        state = .main(RootDomain.State(currentTab: .chat))
+                        state = .main(RootFeature.State(currentTab: .chat))
                     default:
                         break
                     }
@@ -154,7 +154,7 @@ struct AppFeature {
                             MainActor.assumeIsolated{
                                 Strapi.configure(baseURL: Configuration.current.baseURL, token: token)
                             }
-                            state = .main(RootDomain.State())
+                            state = .main(RootFeature.State())
                         } else {
                             MainActor.assumeIsolated{
                                 Strapi.configure(baseURL: Configuration.current.baseURL, token: nil)
@@ -177,7 +177,7 @@ struct AppFeature {
             case let .join(action: .delegate(joinAction)):
                 switch joinAction {
                 case .didAuthenticated:
-                    state = .main(RootDomain.State())
+                    state = .main(RootFeature.State())
                     return .none
                 }
                 
@@ -205,7 +205,7 @@ struct AppFeature {
             JoinFeature()
         }
         .ifCaseLet(/State.main, action: /Action.main) {
-            RootDomain()
+            RootFeature()
         }
         AuthLogic()
     }

@@ -9,7 +9,7 @@ import SwiftUI
 import ComposableArchitecture
 
 struct RootView: View {
-    @Perception.Bindable var store: StoreOf<RootDomain>
+    @Perception.Bindable var store: StoreOf<RootFeature>
     
     var body: some View {
         WithPerceptionTracking {
@@ -19,7 +19,7 @@ struct RootView: View {
                 StudyToolListView(
                     store: self.store.scope(
                         state: \.studytoolListState,
-                        action: RootDomain.Action
+                        action: RootFeature.Action
                             .studytoolList
                     )
                 )
@@ -27,7 +27,7 @@ struct RootView: View {
                     Image(systemName: "list.bullet")
                     Text("学习")
                 }
-                .tag(RootDomain.Tab.studytools)
+                .tag(RootFeature.Tab.studytools)
                 ProfileView(
                     store: self.store.scope(
                         state: \.profileState,
@@ -38,7 +38,7 @@ struct RootView: View {
                     Image(systemName: "person.fill")
                     Text("我的")
                 }
-                .tag(RootDomain.Tab.profile)
+                .tag(RootFeature.Tab.profile)
             }
         }
         .enableInjection()
@@ -53,8 +53,8 @@ struct RootView_Previews: PreviewProvider {
     static var previews: some View {
         RootView(
             store: Store(
-                initialState: RootDomain.State(),
-                reducer: RootDomain.init
+                initialState: RootFeature.State(),
+                reducer: RootFeature.init
             )
         )
     }

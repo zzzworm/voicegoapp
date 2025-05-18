@@ -1,5 +1,5 @@
 //
-//  ProductDomain.swift
+//  ProductFeature.swift
 //  OnlineStoreTCA
 //
 //  Created by Pedro Rojas on 21/08/22.
@@ -11,20 +11,20 @@ import StrapiSwift
 import SwiftyJSON
 
 @Reducer
-struct StudyToolDomain {
+struct StudyToolFeature {
     @Dependency(\.uuid) var uuid
     
     @ObservableState
     struct State: Equatable, Identifiable {
         let studyTool: StudyTool
         var dataLoadingStatus = DataLoadingStatus.notStarted
-        var toolHistoryListState: IdentifiedArrayOf<ToolHistoryDomain.State> = []
-        var currenttoolHistory: ToolHistoryDomain.State?
+        var toolHistoryListState: IdentifiedArrayOf<ToolHistoryFeature.State> = []
+        var currenttoolHistory: ToolHistoryFeature.State?
         var lastIndex = 0;
         var shouldShowError: Bool {
             dataLoadingStatus == .error
         }
-        var inputBarState = BottomInputBarDomain.State()
+        var inputBarState = BottomInputBarFeature.State()
         var paginationState : Pagination?
         var isLoadMore = false
         var isScrolling = false
@@ -36,8 +36,8 @@ struct StudyToolDomain {
     enum Action: Equatable , BindableAction {
         case fetchStudyHistory(page: Int = 1, pageSize: Int = 10)
         case fetchStudyHistoryResponse(TaskResult<StrapiResponse<[ToolConversation]>>)
-        case toolHistory(id: ToolHistoryDomain.State.ID, action: ToolHistoryDomain.Action)
-        case inputBar(BottomInputBarDomain.Action)
+        case toolHistory(id: ToolHistoryFeature.State.ID, action: ToolHistoryFeature.Action)
+        case inputBar(BottomInputBarFeature.Action)
         case streamAnswer(String)
         case complete(ToolConversation)
         case binding(BindingAction<State>)
@@ -51,7 +51,7 @@ struct StudyToolDomain {
     var body: some ReducerOf<Self> {
         BindingReducer()
         Scope(state: \.inputBarState, action: /Action.inputBar) {
-            BottomInputBarDomain()
+            BottomInputBarFeature()
         }
         Reduce { state, action in
             switch action {
@@ -83,13 +83,13 @@ struct StudyToolDomain {
                     state.dataLoadingStatus = .success
                     if let page = state.paginationState?.page, page == 1{
                         state.toolHistoryListState = IdentifiedArrayOf(uniqueElements: toolHistoryList.reversed().map { history in
-                            return ToolHistoryDomain.State( history: history)
+                            return ToolHistoryFeature.State( history: history)
                         })
                     }
                     else{
                         
                         let addIdentifiedArray = IdentifiedArrayOf(uniqueElements: toolHistoryList.reversed().map { history in
-                            return ToolHistoryDomain.State( history: history)
+                            return ToolHistoryFeature.State( history: history)
                         })
                         //新到的下一页内容往前插入
                         state.toolHistoryListState.insert(contentsOf: addIdentifiedArray, at: 0)
@@ -140,7 +140,7 @@ struct StudyToolDomain {
                         return .none
                     }
                     let studyTool = state.studyTool
-                    let toolHistoryState = ToolHistoryDomain.State(history: ToolConversation(documentId:self.uuid().uuidString,
+                    let toolHistoryState = ToolHistoryFeature.State(history: ToolConversation(documentId:self.uuid().uuidString,
                                                                                              id:0,
                                                                                              updatedAt: .now,
                                                                                              query: query,
@@ -197,7 +197,7 @@ struct StudyToolDomain {
             }
         }
         .forEach(\.toolHistoryListState, action: /Action.toolHistory) {
-            ToolHistoryDomain()
+            ToolHistoryFeature()
         }
         
     }

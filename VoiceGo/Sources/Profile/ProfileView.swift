@@ -12,7 +12,7 @@ import PulseUI
 #endif
 
 struct ProfileView: View {
-    @Perception.Bindable var store: StoreOf<ProfileDomain>
+    @Perception.Bindable var store: StoreOf<ProfileFeature>
     
     var body: some View {
         WithPerceptionTracking {
@@ -63,8 +63,8 @@ struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
         ProfileView(
             store: Store(
-                initialState: ProfileDomain.State(),
-                reducer: ProfileDomain.init
+                initialState: ProfileFeature.State(),
+                reducer: ProfileFeature.init
             )
         )
     }
