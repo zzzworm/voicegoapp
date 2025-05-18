@@ -45,6 +45,7 @@ extension ToolConversation: Codable  , FetchableRecord, MutablePersistableRecord
     }
 }
 
+// swiftlint:disable line_length
 extension ToolConversation {
     static var sample: [ToolConversation] {
         [

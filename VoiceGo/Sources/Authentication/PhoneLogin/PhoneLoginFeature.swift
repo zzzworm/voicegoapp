@@ -50,7 +50,7 @@ struct PhoneLoginFeature {
                 }
 
             case .binding(\.number):
-                state.isContinueButtonDisabled = !(state.number.count > 0)
+                state.isContinueButtonDisabled = state.number.isEmpty
                 return .none
                 
             case .binding:

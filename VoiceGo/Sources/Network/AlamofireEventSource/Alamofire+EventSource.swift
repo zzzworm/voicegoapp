@@ -11,7 +11,13 @@ import Moya
 
 extension Session {
     
-    public func eventSourceRequest<Parameters: Encodable & Sendable>(_ convertible: URLConvertible, method: HTTPMethod = .get,parameters: Parameters? = nil, encoder: any ParameterEncoder = URLEncodedFormParameterEncoder.default, headers: HTTPHeaders? = nil, lastEventID: String? = nil, interceptor: RequestInterceptor? = nil) -> DataStreamRequest {
+    public func eventSourceRequest<Parameters: Encodable & Sendable>(_ convertible: URLConvertible,
+                                                                     method: HTTPMethod = .get,
+                                                                     parameters: Parameters? = nil,
+                                                                     encoder: any ParameterEncoder = URLEncodedFormParameterEncoder.default,
+                                                                     headers: HTTPHeaders? = nil,
+                                                                     lastEventID: String? = nil,
+                                                                     interceptor: RequestInterceptor? = nil) -> DataStreamRequest {
         return streamRequest(convertible, method: method,parameters: parameters, encoder: encoder, headers: headers, interceptor: interceptor) { request in
             request.timeoutInterval = TimeInterval(Int32.max)
             request.headers.add(name: "Accept", value: "text/event-stream")
@@ -55,7 +61,9 @@ extension DataStreamRequest {
         
     }
 
-    @discardableResult public func responseEventSource(using serializer: EventSourceSerializer = EventSourceSerializer(), on queue: DispatchQueue = .main, handler: @escaping (EventSource) -> Void) -> DataStreamRequest {
+    @discardableResult public func responseEventSource(using serializer: EventSourceSerializer = EventSourceSerializer(),
+                                                       on queue: DispatchQueue = .main,
+                                                       handler: @escaping (EventSource) -> Void) -> DataStreamRequest {
         return responseStream(using: serializer, on: queue) { stream in
             switch stream.event {
             case .stream(let result):
@@ -92,7 +100,9 @@ extension DataStreamRequest {
         
     }
 
-    @discardableResult public func responseDecodableEventSource<T: Decodable>(using serializer: DecodableEventSourceSerializer<T> = DecodableEventSourceSerializer(), on queue: DispatchQueue = .main, handler: @escaping (DecodableEventSource<T>) -> Void) -> DataStreamRequest {
+    @discardableResult public func responseDecodableEventSource<T: Decodable>(using serializer: DecodableEventSourceSerializer<T> = DecodableEventSourceSerializer(),
+                                                                              on queue: DispatchQueue = .main,
+                                                                              handler: @escaping (DecodableEventSource<T>) -> Void) -> DataStreamRequest {
         return responseStream(using: serializer, on: queue) { stream in
             switch stream.event {
             case .stream(let result):

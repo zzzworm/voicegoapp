@@ -37,7 +37,7 @@ struct StudyToolView: View {
                                             
                                             LazyVStack {
                                                 
-                                                if 0 == viewStore.toolHistoryListState.count , let card = viewStore.studyTool.exampleCard {
+                                                if  viewStore.toolHistoryListState.isEmpty , let card = viewStore.studyTool.exampleCard {
                                                     ToolQACardView(card: card)
                                                         .padding(EdgeInsets(top: 0, leading: 10, bottom: 10, trailing: 10))
                                                 }

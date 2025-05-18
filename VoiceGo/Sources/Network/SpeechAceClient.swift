@@ -18,7 +18,7 @@ import DependenciesMacros
 struct SpeechAceClient {
     var scorePronunciation: (String, URL) async throws -> Double
 }
-
+// swiftlint:disable line_length
 extension SpeechAceClient : DependencyKey{
     static let liveValue = Self(
         scorePronunciation: { word, audioFileURL in
