@@ -18,14 +18,10 @@ struct StudyToolsFeature {
     struct State: Equatable {
         var path = StackState<Path.State>()
         var dataLoadingStatus = DataLoadingStatus.notStarted
-        var shouldOpenCart = false
+        var currentTag : StudyTool.ToolTag = .language_study
         var studyToolList: IdentifiedArrayOf<StudyTool> = []
-        var availableToolList: IdentifiedArrayOf<StudyTool> = [] // 可用工具列表
-        var isShowingUsedTools = true // 当前是否展示已使用工具
 
-        var currentToolList: IdentifiedArrayOf<StudyTool> {
-            isShowingUsedTools ? studyToolList : availableToolList
-        }
+        var cachedToolList: [ StudyTool.ToolTag :IdentifiedArrayOf<StudyTool>] = [:]
 
         var shouldShowError: Bool {
             dataLoadingStatus == .error
@@ -37,11 +33,8 @@ struct StudyToolsFeature {
             case onToolHistoryTap(StudyTool)
         }
         case view(ViewAction)
-        case fetchCurrentToolList
-        case switchToUsedTools
-        case switchToAvailableTools
-        case fetchStudyToolUsedList
-        case fetchAvailableToolList
+        case switchTools(StudyTool.ToolTag)
+        case fetchStudyToolUsedList(StudyTool.ToolTag)
         case fetchStudyToolsResponse(TaskResult<StrapiResponse<[StudyTool]>>)
         case path(StackActionOf<Path>)
     }
@@ -56,15 +49,15 @@ struct StudyToolsFeature {
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
-            case .fetchStudyToolUsedList:
-                if state.dataLoadingStatus == .success || state.dataLoadingStatus == .loading {
+            case .fetchStudyToolUsedList(let categoryTag):
+                if state.dataLoadingStatus == .loading {
                     return .none
                 }
                 
                 state.dataLoadingStatus = .loading
                 return .run { send in
                     do{
-                        let result = try await apiClient.fetchStudyTools()
+                        let result = try await apiClient.fetchStudyTools(categoryTag.rawValue)
                         await send(.fetchStudyToolsResponse(.success(result)))
                     }
                     catch{
@@ -81,6 +74,7 @@ struct StudyToolsFeature {
                 }
                 state.dataLoadingStatus = .success
                 state.studyToolList = IdentifiedArrayOf(uniqueElements: studyToolList)
+                state.cachedToolList[state.currentTag] = state.studyToolList
                 
                 
                 Task{
@@ -106,18 +100,17 @@ struct StudyToolsFeature {
                 print("Error getting StudyTools, try again later.")
                 return .none
                 
-            case .switchToUsedTools:
-                state.isShowingUsedTools = true
-                return .send(.fetchCurrentToolList)
 
-            case .switchToAvailableTools:
-                state.isShowingUsedTools = false
-                return .send(.fetchCurrentToolList)
-
-            case .fetchCurrentToolList:
-                return state.isShowingUsedTools
-                    ? .send(.fetchStudyToolUsedList)
-                    : .send(.fetchAvailableToolList)
+            case .switchTools(let category):
+                state.currentTag = category
+                if let tools = state.cachedToolList[category]{
+                    state.studyToolList = tools
+                    return .none
+                }
+                else{
+                    return .send(.fetchStudyToolUsedList(category))
+                }
+                
         
             case let .path(pathAction):
                 return .none
@@ -127,8 +120,6 @@ struct StudyToolsFeature {
                     state.path.append(.studyTool(.init(studyTool: studyTool)))
                     return .none
                 }
-            case .fetchAvailableToolList:
-                return .none
             }
         }.forEach(\.path, action: \.path)
     }

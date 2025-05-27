@@ -65,6 +65,7 @@ let package = Package(
         .package(url:"https://github.com/johnno1962/InjectionNext.git", from: "1.3.0"),
         .package(url :"https://github.com/johnno1962/HotSwiftUI.git", from:"1.2.1"),
         .package(url: "https://github.com/exyte/PopupView.git", from: "4.1.0"),
+        .package(url: "https://github.com/yanyin1986/WechatOpenSDK.git", from: "2.0.4"),
         .package(path: "../Packages/strapi-swift"),
     ]
 )
