@@ -12,7 +12,7 @@ import StrapiSwift
 import Alamofire
 
 struct VoiceGoAPIClient {
-    var fetchStudyTools:  @Sendable () async throws -> StrapiResponse<[StudyTool]>
+    var fetchStudyTools:  @Sendable (String) async throws -> StrapiResponse<[StudyTool]>
     var fetchUserProfile:  @Sendable () async throws -> UserProfile
     var getToolConversationList:  @Sendable (_ studyToolId : String ,_ page: Int, _ pageSize: Int) async throws -> StrapiResponse<[ToolConversation]>
     var createToolConversation:  @Sendable (_ studyTool : StudyTool ,_ query: String) async throws -> StrapiResponse<ToolConversation>
@@ -60,9 +60,12 @@ extension VoiceGoAPIClient : DependencyKey  {
     
     
     static let liveValue = Self(
-        fetchStudyTools: {
+        fetchStudyTools: { category in
             return try await handleStrapiRequest{
-            let resp =  try await Strapi.contentManager.collection("study-tools").populate("exampleCard").getDocuments(as: [StudyTool].self)
+                let resp =  try await Strapi.contentManager.collection("study-tools")
+                    .filter("categoryTag", operator: .equal, value: category)
+                    .populate("exampleCard")
+                    .getDocuments(as: [StudyTool].self)
             return resp
         }},
         fetchUserProfile: {
@@ -120,7 +123,7 @@ extension VoiceGoAPIClient : DependencyKey  {
 
 extension VoiceGoAPIClient {
     static var previewValue = Self(
-        fetchStudyTools: {
+        fetchStudyTools: { _ in
 
             // 构造 Pagination 实例
             let pagination = Pagination(page: 1, pageSize: 10, pageCount: 1, limit: 10, start: 0, total: 1)
@@ -189,7 +192,7 @@ extension VoiceGoAPIClient {
 
 extension VoiceGoAPIClient : TestDependencyKey  {
     static var testValue = Self(
-        fetchStudyTools: {
+        fetchStudyTools: { _ in
             // 构造 Pagination 实例
             let pagination = Pagination(page: 1, pageSize: 10, pageCount: 1, limit: 10, start: 0, total: 1)
 

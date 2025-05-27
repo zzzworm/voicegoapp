@@ -13,36 +13,43 @@ import PulseUI
 
 struct ProfileView: View {
     @Perception.Bindable var store: StoreOf<ProfileFeature>
-    
+    private enum BackgroudID { case backgroud1 }
     var body: some View {
         WithPerceptionTracking {
             NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
                 
-                NavigationView {
-                    ZStack {
-                        List{
-                            
-                            HStack{
-                                Button(action: {
-                                    store.send(.view(.onSettingTapped))
-                                }) {
-                                    Text("设置")
-                                }
-                                Spacer()
-                            }
-                        }
-                        if store.state.isLoading {
-                            ProgressView()
-                        }
+                ZStack {
+                    List{
                         
+                        HStack{
+                            Button(action: {
+                                store.send(.view(.onSettingTapped))
+                            }) {
+                                Text("设置")
+                            }
+                            Spacer()
+                        }
                     }
-                    .task {
-                        store.send(.fetchUserProfileFromDB)
-                        store.send(.fetchUserProfileFromServer)
+                    if store.state.isLoading {
+                        ProgressView()
                     }
-                    .navigationTitle("我的")
-                    .navigationBarTitleDisplayMode(.inline)
+                    
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(
+                    LinearGradient(
+                    gradient: Gradient(colors: [Color.blue.opacity(0.3), .white]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                    ).id(BackgroudID.backgroud1)
+                        .ignoresSafeArea()
+                )
+                .task {
+                    store.send(.fetchUserProfileFromDB)
+                    store.send(.fetchUserProfileFromServer)
+                }
+                .navigationTitle("我的")
+                .navigationBarTitleDisplayMode(.inline)
                 
             } destination: { store in
                 switch store.case {
@@ -53,10 +60,10 @@ struct ProfileView: View {
         }
         .enableInjection()
     }
-
-    #if DEBUG
+    
+#if DEBUG
     @ObserveInjection var forceRedraw
-    #endif
+#endif
 }
 
 struct ProfileView_Previews: PreviewProvider {

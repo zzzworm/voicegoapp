@@ -4,9 +4,6 @@
     "" : {
 
     },
-    ":(" : {
-
-    },
     "%@" : {
 
     },
@@ -14,9 +11,6 @@
 
     },
     "An error occurred while transcribing. Please try again." : {
-
-    },
-    "Are you sure?" : {
 
     },
     "back" : {
@@ -58,9 +52,6 @@
     "Enter Code" : {
 
     },
-    "Forgot Password" : {
-      "comment" : "Forgot Password Alert"
-    },
     "Get Started" : {
       "localizations" : {
         "zh-Hans" : {
@@ -87,9 +78,6 @@
 
     },
     "Problem with audio device. Please try again." : {
-
-    },
-    "Retry" : {
 
     },
     "ToolTag_funny_study" : {
@@ -189,9 +177,6 @@
     "发送验证码" : {
 
     },
-    "可用工具" : {
-
-    },
     "多种AI工具,工作学习更轻松" : {
 
     },
@@ -201,14 +186,11 @@
     "学习工具" : {
 
     },
-    "已使用工具" : {
-
-    },
     "微信登录" : {
 
     },
     "忘记密码" : {
-
+      "comment" : "Forgot Password Alert"
     },
     "您的英语AI伴读工具" : {
 
@@ -234,6 +216,9 @@
     "确定" : {
 
     },
+    "确认重置？" : {
+
+    },
     "示例" : {
 
     },
@@ -256,6 +241,9 @@
 
     },
     "通过趣味和专项练习,让你在轻松中提升英语水平." : {
+
+    },
+    "重试" : {
 
     }
   },

@@ -119,7 +119,10 @@ let project = Project(
             debug : [
                 "OTHER_LDFLAGS": "-Xlinker -interposable",
             ]
-            )
+            ),
+            additionalFiles: [
+                "VoiceGo/VoiceGo.entitlements"
+            ]
         ),
         // .target(
         //     name: "VoiceGoMac",

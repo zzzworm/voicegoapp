@@ -13,15 +13,13 @@ struct ErrorView: View {
     
     var body: some View {
         VStack {
-            Text(":(")
-                .font(.custom("AmericanTypewriter", size: 50))
-            Text("")
+            
             Text(message)
                 .font(.custom("AmericanTypewriter", size: 25))
             Button {
                 retryAction()
             } label: {
-                Text("Retry")
+                Text("重试")
                     .font(.custom("AmericanTypewriter", size: 25))
                     .foregroundColor(.white)
             }

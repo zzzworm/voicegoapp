@@ -10,7 +10,7 @@ import ComposableArchitecture
 
 struct StudyToolListView: View {
     @Perception.Bindable var store: StoreOf<StudyToolsFeature>
-    
+    private enum BackgroudID { case backgroud }
     var body: some View {
         WithPerceptionTracking {
             NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
@@ -18,55 +18,63 @@ struct StudyToolListView: View {
                     VStack {
                         // 切换数据源的按钮
                         HStack {
-                            Button(action: {
-                                viewStore.send(.switchToUsedTools)
-                            }) {
-                                Text("已使用工具")
-                                    .padding()
-                                    .background(viewStore.isShowingUsedTools ? Color.blue : Color.gray)
-                                    .foregroundColor(.white)
-                                    .cornerRadius(8)
+                            ForEach(StudyTool.ToolTag.allCases, id:\.self){ tag in
+                                Button(action: {
+                                    viewStore.send(.switchTools(tag))
+                                }) {
+                                    Text(tag.localizedDescription)
+                                        .padding(EdgeInsets(top: 4, leading: 6, bottom: 4, trailing: 6))
+                                        .background(viewStore.currentTag == tag ? Color.blue.opacity(0.3) : Color.white)
+                                        .foregroundColor(.black)
+                                        .cornerRadius(4)
+                                }
                             }
                             
-                            Button(action: {
-                                viewStore.send(.switchToAvailableTools)
-                            }) {
-                                Text("可用工具")
-                                    .padding()
-                                    .background(!viewStore.isShowingUsedTools ? Color.blue : Color.gray)
-                                    .foregroundColor(.white)
-                                    .cornerRadius(8)
-                            }
-                        }
-                        .padding()
-
+                        }.padding(EdgeInsets(top: 0, leading: 0, bottom: 6, trailing: 0))
+                        
                         // 主内容
-                        Group {
+                        
                             if viewStore.dataLoadingStatus == .loading {
+                                Spacer()
                                 ProgressView()
                                     .frame(width: 100, height: 100)
                             } else if viewStore.shouldShowError {
                                 ErrorView(
-                                    message: "Oops, we couldn't fetch the tool list",
-                                    retryAction: { viewStore.send(.fetchCurrentToolList) }
+                                    message: "服务器正在开小差，请重试",
+                                    retryAction: { viewStore.send(.fetchStudyToolUsedList(viewStore.currentTag))
+                                    }
                                 )
                             } else {
-                                List {
-                                    ForEach(viewStore.currentToolList) { studyTool in
+                                LazyVStack {
+                                    ForEach(viewStore.studyToolList) { studyTool in
                                         StudyToolCell(studyTool: studyTool)
                                             .onTapGesture {
                                                 viewStore.send(.view(.onToolHistoryTap(studyTool)))
-                                            }
+                                            }.padding(EdgeInsets(top: 0, leading: 10, bottom: 10, trailing: 10))
+                                            .id(studyTool.id)
                                     }
+                                    
                                 }
+                                .listRowInsets(EdgeInsets())
                             }
-                        }
+                        
+                        Spacer()
                     }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(
+                        
+                        LinearGradient(
+                        gradient: Gradient(colors: [Color.blue.opacity(0.3), .white]),
+                        startPoint: .top,
+                        endPoint: .bottom
+                        ).id(BackgroudID.backgroud)
+                            .ignoresSafeArea()
+                    )
                     .navigationTitle("学习工具")
                     .navigationViewStyle(.stack)
                     .navigationBarTitleDisplayMode(.inline)
-                    .onAppear {
-                        viewStore.send(.fetchCurrentToolList)
+                    .task {
+                        viewStore.send(.fetchStudyToolUsedList(.language_study))
                     }
                 }
             } destination: { store in
@@ -78,10 +86,10 @@ struct StudyToolListView: View {
         }
         .enableInjection()
     }
-
-    #if DEBUG
+    
+#if DEBUG
     @ObserveInjection var forceRedraw
-    #endif
+#endif
 }
 
 struct StudyToolListView_Previews: PreviewProvider {

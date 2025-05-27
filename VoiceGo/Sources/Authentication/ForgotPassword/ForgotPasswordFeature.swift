@@ -43,10 +43,10 @@ struct ForgotPasswordFeature {
                 switch viewAction {
                 case .onChangePasswordButtonTap:
                     state.alert = AlertState {
-                        TextState("Are you sure?")
+                        TextState("确认重置？")
                     } actions: {
                         ButtonState(role: .destructive, action: .confirmPasswordChange) {
-                            TextState(String(localized:"Forgot Password", comment: "Forgot Password Alert"))
+                            TextState(String(localized:"忘记密码", comment: "Forgot Password Alert"))
                         }
                     }
                     return .none
