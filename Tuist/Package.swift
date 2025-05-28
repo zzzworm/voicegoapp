@@ -66,6 +66,8 @@ let package = Package(
         .package(url :"https://github.com/johnno1962/HotSwiftUI.git", from:"1.2.1"),
         .package(url: "https://github.com/exyte/PopupView.git", from: "4.1.0"),
         .package(url: "https://github.com/yanyin1986/WechatOpenSDK.git", from: "2.0.4"),
+        .package(url: "https://github.com/agisilaos/ColorKit.git", from: "1.6.0"),
+        .package(url: "https://github.com/yannickl/DynamicColor.git", from: "5.0.0"),
         .package(path: "../Packages/strapi-swift"),
     ]
 )

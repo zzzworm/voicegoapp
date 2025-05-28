@@ -13,7 +13,6 @@ import PulseUI
 
 struct ProfileView: View {
     @Perception.Bindable var store: StoreOf<ProfileFeature>
-    private enum BackgroudID { case backgroud1 }
     var body: some View {
         WithPerceptionTracking {
             NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
@@ -30,20 +29,13 @@ struct ProfileView: View {
                             Spacer()
                         }
                     }
+                    .scrollContentBackground(.hidden)
                     if store.state.isLoading {
                         ProgressView()
                     }
                     
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(
-                    LinearGradient(
-                    gradient: Gradient(colors: [Color.blue.opacity(0.3), .white]),
-                    startPoint: .top,
-                    endPoint: .bottom
-                    ).id(BackgroudID.backgroud1)
-                        .ignoresSafeArea()
-                )
+                .commonBackground()
                 .task {
                     store.send(.fetchUserProfileFromDB)
                     store.send(.fetchUserProfileFromServer)

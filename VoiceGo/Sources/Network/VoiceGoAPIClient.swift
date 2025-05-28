@@ -63,7 +63,7 @@ extension VoiceGoAPIClient : DependencyKey  {
         fetchStudyTools: { category in
             return try await handleStrapiRequest{
                 let resp =  try await Strapi.contentManager.collection("study-tools")
-                    .filter("categoryTag", operator: .equal, value: category)
+                    .filter("[categoryTag]", operator: .equal, value: category)
                     .populate("exampleCard")
                     .getDocuments(as: [StudyTool].self)
             return resp

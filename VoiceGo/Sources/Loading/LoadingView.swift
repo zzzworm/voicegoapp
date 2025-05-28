@@ -28,22 +28,19 @@ struct LoadingView  : View {
 
     @ViewBuilder private var content: some View {
         WithPerceptionTracking {
-            VStack(spacing: 50) {
-                Image("splash_logo")
+            ZStack{
+                Image(VoiceGoAsset.Assets.splashBackground.name)
                     .resizable()
-                    .frame(width: 200, height: 200)
-                
-                ProgressViewWrapper(progress: $store.progress)
+                    .scaledToFill()
+                    .ignoresSafeArea()
+                VStack(spacing: 50) {
+                    Image("splash_logo")
+                        .resizable()
+                        .frame(width: 200, height: 200)
+                    
+                    ProgressViewWrapper(progress: $store.progress)
+                }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(
-                
-                LinearGradient(
-                    colors: [.blue, .white],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-            )
         }
     }
 }

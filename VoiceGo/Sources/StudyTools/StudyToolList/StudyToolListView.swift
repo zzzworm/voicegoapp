@@ -10,7 +10,6 @@ import ComposableArchitecture
 
 struct StudyToolListView: View {
     @Perception.Bindable var store: StoreOf<StudyToolsFeature>
-    private enum BackgroudID { case backgroud }
     var body: some View {
         WithPerceptionTracking {
             NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
@@ -60,16 +59,7 @@ struct StudyToolListView: View {
                         
                         Spacer()
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(
-                        
-                        LinearGradient(
-                        gradient: Gradient(colors: [Color.blue.opacity(0.3), .white]),
-                        startPoint: .top,
-                        endPoint: .bottom
-                        ).id(BackgroudID.backgroud)
-                            .ignoresSafeArea()
-                    )
+                    .commonBackground()
                     .navigationTitle("学习工具")
                     .navigationViewStyle(.stack)
                     .navigationBarTitleDisplayMode(.inline)

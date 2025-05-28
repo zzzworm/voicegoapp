@@ -92,11 +92,8 @@ struct EmailRegisterView : View {
                     
                     Spacer()
                 }
+                .commonBackground()
                 .navigationTitle("注册")
-                .background(
-                    
-                    Image("splash_background")
-                )
             }
             .alert($store.scope(state: \.alert, action: \.alert))
         }

@@ -1,5 +1,5 @@
 {
-  "originHash" : "6b7e79ac21854dbbdf02c50cf71ee3cb8fe57a2f64d4e4c37c725ce51b3af159",
+  "originHash" : "9fab06f084307858c19870ced69a00b144bd8c8acc2fcf0de8a195de05f605d9",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -56,12 +56,30 @@
       }
     },
     {
+      "identity" : "colorkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/agisilaos/ColorKit.git",
+      "state" : {
+        "revision" : "18bd1572474d1c1cc84f7f4c09618407e55f7cbc",
+        "version" : "1.6.0"
+      }
+    },
+    {
       "identity" : "combine-schedulers",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/combine-schedulers",
       "state" : {
         "revision" : "5928286acce13def418ec36d05a001a9641086f2",
         "version" : "1.0.3"
+      }
+    },
+    {
+      "identity" : "dynamiccolor",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/yannickl/DynamicColor.git",
+      "state" : {
+        "revision" : "d9beca13ca85baa50ee29832d0db5129fba69630",
+        "version" : "5.0.1"
       }
     },
     {
@@ -476,6 +494,15 @@
       "state" : {
         "revision" : "185a3165346a03767101c4f62e9a545a0fe0530f",
         "version" : "4.0.1"
+      }
+    },
+    {
+      "identity" : "swiftlintplugins",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/SimplyDanny/SwiftLintPlugins",
+      "state" : {
+        "revision" : "8545ddf4de043e6f2051c5cf204f39ef778ebf6b",
+        "version" : "0.59.1"
       }
     },
     {

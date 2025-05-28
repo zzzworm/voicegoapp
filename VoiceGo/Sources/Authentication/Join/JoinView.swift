@@ -28,26 +28,28 @@ struct JoinView : View {
 
                     
                     VStack {
-                        
+                        Text("您的英语AI伴读工具")
+                            .foregroundColor(.appMainColor)
+                            .multilineTextAlignment(.center)
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .stroke(color: .white, lineWidth: 2)
+                            .padding()
                         Spacer()
                         VStack(spacing: 6) {
-                            Text("您的英语AI伴读工具")
-                                .foregroundColor(.appMainColor)
-                                .multilineTextAlignment(.center)
-                                .font(.title)
-                                .fontWeight(.bold)
-                                .stroke(color: .white, lineWidth: 2)
-                                .padding()
+                            
                             
                             VStack{
+                                let selectedStyle = CTAButtonStyle(isSelected: true)
                                 Button {
                                     store.send(.view(.onClickAuthByTap))
                                 } label: {
                                     Text("一键登录")
                                         .font(.headline)
                                 }
-                                .buttonStyle(.cta)
+                                .buttonStyle(selectedStyle)
                                 .padding(EdgeInsets(top: 0, leading: 24, bottom: 0, trailing: 24))
+                                
                                 
                                 Button {
                                     store.send(.view(.onWechatAuthByTap))
@@ -77,8 +79,8 @@ struct JoinView : View {
                     .background(
                         Image(VoiceGoAsset.Assets.loginBackground.name)
                             .resizable()
+                            .edgesIgnoringSafeArea(.all)
                             .scaledToFill()
-                            .ignoresSafeArea()
                     )
                 
                 .navigationTitle("晨读AI英语")
