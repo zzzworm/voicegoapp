@@ -25,6 +25,7 @@ public struct AuthTextField: View {
                 icon
                     .fontWeight(.semibold)
                     .frame(width: 30)
+                    .padding()
                 VStack{
                 if isSecure {
                     SecureField(placeholder, text: $text)
@@ -37,8 +38,7 @@ public struct AuthTextField: View {
                 }
             }
             .foregroundStyle(.black)
-            .padding()
-            .background(Color.white.opacity(0.3))
+            .background(Color.white)
             .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             .padding(.horizontal, 15)
             .enableInjection()

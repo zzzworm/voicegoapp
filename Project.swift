@@ -45,7 +45,9 @@ let commonDependencies : [TargetDependency] = [
                 .external(name: "IsScrolling"),
                 .external(name: "SwiftUIIntrospect"),
                 .external(name: "PopupView"),
-                .package(product: "SwiftLintBuildToolPlugin", type: .plugin)
+                .package(product: "SwiftLintBuildToolPlugin", type: .plugin),
+                .external(name: "ColorKit"),   
+                .external(name: "DynamicColor"),
             ]
 
 let targetActions: [TargetScript] = [

@@ -10,13 +10,14 @@ import SwiftUI
 struct CTAButtonStyle: ButtonStyle {
     
     @Environment(\.isEnabled) private var isEnabled
+    @State var isSelected : Bool = false
     
     func makeBody(configuration: Self.Configuration) -> some View {
         configuration.label
             .font(.title3)
             .frame(minWidth: 200, maxWidth: .infinity, minHeight: 52)
-            .foregroundColor(Color.black)
-            .background(isEnabled ? Color.systemBackground : .gray)
+            .foregroundColor(isSelected ? Color.white: Color.black)
+            .background(isEnabled ? (isSelected ? .appMainColor : Color.systemBackground ): .gray)
             .clipShape(Capsule())
     }
 }

@@ -6,6 +6,7 @@ import Pulse
 import GRDB
 import SharingGRDB
 import SwiftUI
+import DynamicColor
 
 @main
 struct VoiceGoApp: App {
@@ -93,6 +94,11 @@ struct VoiceGoApp: App {
             // 自动清理过期日志（默认保留7天）
             LoggerStore.shared.configuration.saveInterval = .seconds(3600 * 24 * 3)  // 3天
         #endif
+        
+        let appearance = UINavigationBarAppearance()
+                appearance.configureWithOpaqueBackground()
+        appearance.titleTextAttributes = [.foregroundColor: UIColor(hexString: "#F7FAFC")]
+                appearance.largeTitleTextAttributes = [.foregroundColor: UIColor(hexString: "#F7FAFC")]
     }
 
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate

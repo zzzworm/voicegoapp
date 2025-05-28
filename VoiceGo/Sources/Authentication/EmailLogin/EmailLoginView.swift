@@ -88,11 +88,8 @@ struct EmailLoginView: View {
                     
                     Spacer()
                 }
+                .commonBackground()
                 .navigationTitle("登录")
-                .background(
-                    
-                    Image("splash_background")
-                )
             }
             .alert($store.scope(state: \.alert, action: \.alert))
         }
