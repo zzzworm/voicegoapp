@@ -34,9 +34,9 @@ struct EmailRegisterView : View {
             BlurredActivityIndicatorView(
                 isShowing: $store.isActivityIndicatorVisible)
             {
-                VStack {
-                    Image(systemName: "pencil.slash")
-                        .font(.system(size: 40))
+                VStack() {
+                    Image("splash_logo").padding(42)
+                      
                     
                     VStack {
                         AuthTextField(
@@ -68,15 +68,16 @@ struct EmailRegisterView : View {
                             keyboardType: .default,
                             text: $store.retypePassword
                         )
+                        Spacer()
                         
                         Button("确定", action: {
                             focusedField = nil
                             store.send(.view(.onConfirmButtonTap))
                         })
-                        .buttonStyle(.cta)
-                        .padding(.top, 24)
+                        .buttonStyle(CTAButtonStyle(isSelected: true))
+                        .padding(.bottom, 12)
                     }
-                    .padding(24)
+                    .padding(20)
                     .onSubmit {
                         if focusedField == .username {
                             focusedField = .email

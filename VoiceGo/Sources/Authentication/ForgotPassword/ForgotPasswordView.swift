@@ -28,8 +28,18 @@ struct ForgotPasswordView : View {
     @ViewBuilder private var content: some View {
         WithPerceptionTracking {
             VStack {
-                Image(systemName: "pencil.slash")
-                    .font(.system(size: 40))
+                Image("splash_logo").padding(42)
+                AuthTextField(
+                    icon: Image(systemName: "envelope"),
+                    placeholder: "Email",
+                    isSecure: false,
+                    keyboardType: .emailAddress,
+                    text: $store.userIdentifier
+                )
+                HStack{
+                    Text("OR").font(.caption).padding(6)
+                    Spacer()
+                }
                 AuthTextField(
                     icon: Image(systemName: "at"),
                     placeholder: "Username",
@@ -42,9 +52,10 @@ struct ForgotPasswordView : View {
                 Button("发送验证码", action: {
                     store.send(.view(.onChangePasswordButtonTap))
                 })
-                .buttonStyle(.cta)
+                .buttonStyle(CTAButtonStyle(isSelected: true))
+                    .padding(.bottom, 12)
             }
-            .padding(24)
+            .padding(20)
             .alert($store.scope(state: \.alert, action: \.alert))
             .commonBackground()
         }
