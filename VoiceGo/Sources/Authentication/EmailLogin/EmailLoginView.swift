@@ -37,6 +37,7 @@ struct EmailLoginView: View {
                 isShowing: $store.isActivityIndicatorVisible)
             {
                 VStack {
+                    Image("splash_logo").padding(42)
                     VStack {
                         AuthTextField(
                             icon: Image(systemName: "at"),
@@ -68,16 +69,16 @@ struct EmailLoginView: View {
                             })
                             .buttonStyle(.linkButton)
                         }
-                        .padding(.top, 16)
-                        
+                        .padding(.top, 20)
+                        Spacer()
                         Button("确定", action: {
                             focusedField = nil
                             store.send(.view(.onSignInButtonTap))
                         })
-                        .buttonStyle(.cta)
-                        .padding(.top, 24)
+                        .buttonStyle(CTAButtonStyle(isSelected: true))
+                        .padding(.bottom, 12)
                     }
-                    .padding(24)
+                    .padding(20)
                     .onSubmit {
                         if focusedField == .username {
                             focusedField = .password

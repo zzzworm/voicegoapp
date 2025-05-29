@@ -35,12 +35,11 @@ public struct AuthTextField: View {
                         .keyboardType(keyboardType)
                 }
                     Divider()
-                }
+                }.padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 10))
             }
             .foregroundStyle(.black)
             .background(Color.white)
             .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-            .padding(.horizontal, 15)
             .enableInjection()
         }
 

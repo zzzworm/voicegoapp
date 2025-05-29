@@ -46,7 +46,7 @@ struct ForgotPasswordFeature {
                         TextState("确认重置？")
                     } actions: {
                         ButtonState(role: .destructive, action: .confirmPasswordChange) {
-                            TextState(String(localized:"忘记密码", comment: "Forgot Password Alert"))
+                            TextState(String(localized:"确定", comment: "Forgot Password Alert"))
                         }
                     }
                     return .none

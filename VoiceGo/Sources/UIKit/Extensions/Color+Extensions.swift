@@ -11,7 +11,7 @@ import ColorKit
 
 extension Color {
 
-    static let appMainColor = Color(hex:"0x4287f5")!
+    static let appMainColor = Color(hex:"0x0d78f2")!
     // MARK: - Text Colors
     static let lightText = Color(UIColor.lightText)
     static let darkText = Color(UIColor.darkText)
