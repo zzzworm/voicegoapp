@@ -15,32 +15,34 @@ struct ProfileSettingView: View {
     let store: StoreOf<ProfileSettingFeature>
     
     var body: some View {
-        WithViewStore(self.store, observe: { $0 }) { viewStore in
-            NavigationView {
-                ZStack {
-                    List{
-
+        WithPerceptionTracking {
+            WithViewStore(self.store, observe: { $0 }) { viewStore in
+                NavigationView {
+                    ZStack {
+                        List{
+                            
 #if DEBUG
-                    NavigationLink(destination: ConsoleView()) {
-                        Text("Console")
-                    }
-#endif
-                    
-                        HStack{
-                            Button(action: {
-                                store.send(.logout)
-                            }) {
-                                Text("退出登录")
+                            NavigationLink(destination: ConsoleView()) {
+                                Text("Console")
                             }
-                            Spacer()
+#endif
+                            
+                            HStack{
+                                Button(action: {
+                                    store.send(.logout)
+                                }) {
+                                    Text("退出登录")
+                                }
+                                Spacer()
+                            }
+                        }
+                        if viewStore.isLoading {
+                            ProgressView()
                         }
                     }
-                    if viewStore.isLoading {
-                        ProgressView()
-                    }
+                    .navigationTitle("设置")
+                    .navigationBarTitleDisplayMode(.inline)
                 }
-                .navigationTitle("我的")
-                .navigationBarTitleDisplayMode(.inline)
             }
         }
         .enableInjection()

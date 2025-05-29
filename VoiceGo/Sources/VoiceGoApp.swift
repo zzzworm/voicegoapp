@@ -99,6 +99,7 @@ struct VoiceGoApp: App {
                 appearance.configureWithOpaqueBackground()
         appearance.titleTextAttributes = [.foregroundColor: UIColor(hexString: "#F7FAFC")]
                 appearance.largeTitleTextAttributes = [.foregroundColor: UIColor(hexString: "#F7FAFC")]
+        
     }
 
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
@@ -110,11 +111,13 @@ struct VoiceGoApp: App {
                 AppView(store: self.appDelegate.store).enableInjection()
             }
         }
+        wg
         if #available(iOS 17.0, *) {
             wg.onChange(of: scenePhase) { (phase, _) in
                 self.appDelegate.store.send(.didChangeScenePhase(phase))
             }
         }
+        
     }
     
 #if DEBUG

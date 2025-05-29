@@ -8,51 +8,71 @@
 import SwiftUI
 import Nuke
 import NukeUI
+import ComposableArchitecture
 
 struct ProfileCell : View {
     let profile : UserProfile
+//    @Dependency(\.clipboardClient) var clipboardClient
+    
     var action: () -> Void
     
     var body: some View {
-        Button(action: action) {
-            HStack {
+        VStack{
+            ZStack{
+                Image(systemName: "person.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 128, height: 128)
+                    .foregroundColor(.gray)
+                    .cornerRadius(64)
                 if let iconUrl = profile.userIconUrl
                 {
                     LazyImage(url: URL(string: iconUrl))
-                        .frame(width: 34, height: 34)
-                }else {
-                    Image(systemName: "person.fill")
-                        .resizable()
                         .scaledToFit()
-                        .frame(width: 34, height: 34)
+                        .frame(width: 128, height: 128)
                         .foregroundColor(.gray)
+                        .cornerRadius(64)
                 }
+            }
+            HStack {
                 
-                VStack{
-                    Spacer()
-                    if let phoneNumber = profile.phoneNumber
-                    {
+                
+                VStack(alignment: .center){
+                    
+                    if let phoneNumber = profile.displayIdenifier{
                         Text(phoneNumber)
                             .font(.headline)
                             .foregroundColor(.primary)
                     }
+                   
                     Text(profile.username)
                         .font(.headline)
                         .foregroundColor(.primary)
-                    Spacer()
                 }
-                Spacer()
-                Button(action: action) {
-                    Text("立即开通").padding(6)
-                }.background(Color.gray.opacity(0.4))
-                    .foregroundColor(.black)
-                    .cornerRadius(8)
-                    .padding(6)
+
             }
-            .padding()
-            .background(Color(UIColor.systemBackground))
-            .cornerRadius(8)
+            Button(action: action) {
+                Text("编辑资料").padding(EdgeInsets(top: 8, leading: 15, bottom: 8, trailing: 15))
+            }.background(Color.gray.opacity(0.4))
+                .foregroundColor(.black)
+                .cornerRadius(8)
+            
+            /*
+            HStack{
+                Text("用户ID：")
+                    .foregroundColor(.primary)
+                Text("\(profile.id)")
+                    .foregroundColor(.primary)
+                Spacer()
+                Image(systemName: "doc.on.clipboard")
+                    .frame(width:26)
+            }
+            .onTapGesture{
+                clipboardClient.copyValue("\(profile.id)")
+            }
+             */
         }
+        .padding()
         .enableInjection()
     }
 
