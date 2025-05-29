@@ -18,20 +18,76 @@ struct ProfileView: View {
             NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
                 
                 ZStack {
-                    List{
-                        
-                        HStack{
-                            Button(action: {
-                                store.send(.view(.onSettingTapped))
-                            }) {
-                                Text("设置")
+                    VStack{
+                        if let profile = store.state.profile{
+                            
+                            ProfileCell(profile: profile){
+                                store.send(.view(.onEditProfileTapped))
                             }
-                            Spacer()
                         }
-                    }
-                    .scrollContentBackground(.hidden)
-                    if store.state.isLoading {
-                        ProgressView()
+                        let listItems = Group{
+                            HStack{
+                                Button(action: {
+                                    store.send(.view(.onSettingTapped))
+                                }) {
+                                    HStack{
+                                        Image(systemName: "gearshape")
+                                            .foregroundColor(.primary)
+                                        Text("设置")
+                                            .foregroundColor(.primary)
+                                    }
+                                }
+                            }
+                            HStack{
+                                Button(action: {
+                                    store.send(.view(.onSettingTapped))
+                                }) {
+                                    HStack{
+                                        Image(systemName: "bell")
+                                            .foregroundColor(.primary)
+                                        Text("反馈/举报")
+                                            .foregroundColor(.primary)
+                                    }
+                                }
+                            }
+                            HStack {
+                                Spacer()
+                                Text("版本 \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0")")
+                                    .font(.footnote)
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                            }
+                        }
+                        if #available(iOS 17.0, *) {
+                            List{
+                                listItems
+                            }
+                            .scrollContentBackground(.hidden)
+                            .padding(0)
+                            .listRowInsets(EdgeInsets()) // 移除默认内边距
+                            .environment(\.defaultMinListRowHeight, 56)
+                            .contentMargins(.top, 0)
+                        }
+                        else{
+                            List{
+                                Section{
+                                    listItems
+                                }
+                                header: {
+                                    Spacer(minLength: 0).listRowInsets(EdgeInsets())
+                                }
+                            }
+                            .scrollContentBackground(.hidden)
+                            .padding(0)
+                            .listRowInsets(EdgeInsets()) // 移除默认内边距
+                            .environment(\.defaultMinListRowHeight, 56)
+                            .environment(\.defaultMinListHeaderHeight, 0)
+                        }
+                        
+                        if store.state.isLoading {
+                            ProgressView()
+                        }
+                        Spacer()
                     }
                     
                 }
@@ -47,6 +103,8 @@ struct ProfileView: View {
                 switch store.case {
                 case let .setting(store):
                     ProfileSettingView(store: store)
+                case let .edit(store):
+                    ProfileEditView(store: store)
                 }
             }
         }

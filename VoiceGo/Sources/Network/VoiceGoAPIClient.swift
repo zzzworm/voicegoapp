@@ -14,6 +14,7 @@ import Alamofire
 struct VoiceGoAPIClient {
     var fetchStudyTools:  @Sendable (String) async throws -> StrapiResponse<[StudyTool]>
     var fetchUserProfile:  @Sendable () async throws -> UserProfile
+    var updateUserProfile:  @Sendable (UserProfile) async throws -> UserProfile
     var getToolConversationList:  @Sendable (_ studyToolId : String ,_ page: Int, _ pageSize: Int) async throws -> StrapiResponse<[ToolConversation]>
     var createToolConversation:  @Sendable (_ studyTool : StudyTool ,_ query: String) async throws -> StrapiResponse<ToolConversation>
     var streamToolConversation:  @Sendable (_ studyTool : StudyTool ,_ query: String) async throws -> AsyncThrowingStream<DataStreamRequest.EventSourceEvent, Error>
@@ -72,6 +73,15 @@ extension VoiceGoAPIClient : DependencyKey  {
             let response = try await Strapi.authentication.local.me(as: UserProfile.self)
             let profile = response
             return profile
+        },
+        updateUserProfile: { profile in
+            let data = StrapiRequestBody([
+                "username": .string(profile.username),
+                "email": .string(profile.email),
+                "city": .string(profile.city ?? ""),
+                "userIconUrl": .string(profile.userIconUrl ?? "")
+            ])
+            return try await Strapi.authentication.local.updateProfile(data, userId: profile.id, as: UserProfile.self)
         },
         getToolConversationList: {studyToolId, page, pageSize in
             let response = try await Strapi.contentManager.collection("tool-conversation/my-list")
@@ -142,6 +152,9 @@ extension VoiceGoAPIClient {
             let profile = UserProfile.sample
             return profile
         },
+        updateUserProfile: { profile in
+            return profile // 在预览模式下直接返回传入的 profile
+        },
         getToolConversationList: { studyToolUsedId,  page, pageSize in
             // 构造 Pagination 实例
             let pagination = Pagination(page: 1, pageSize: 10, pageCount: 1, limit: 10, start: 0, total: 1)
@@ -209,6 +222,9 @@ extension VoiceGoAPIClient : TestDependencyKey  {
         fetchUserProfile: {
             let profile = UserProfile.sample
             return profile
+        },
+        updateUserProfile: { profile in
+            return profile // 在测试模式下直接返回传入的 profile
         },
         getToolConversationList: {studyToolUsedId, page, pageSize in
             // 构造 Pagination 实例

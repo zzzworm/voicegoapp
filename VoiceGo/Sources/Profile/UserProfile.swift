@@ -20,6 +20,10 @@ struct UserProfile: Identifiable, Equatable , FetchableRecord, MutablePersistabl
     let phoneNumber: String?
     let userIconUrl: String?
     
+    var displayIdenifier : String? {
+        return phoneNumber ?? email
+    }
+    
 }
 
 extension UserProfile: Codable, EncodableRecord {
