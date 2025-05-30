@@ -7,9 +7,12 @@ struct ProfileEditFeature {
     @ObservableState
     struct State: Equatable {
         var profile: UserProfile
+        var usernameToChange : String = ""
+        var cityToChange : String = ""
         var isLoading = false
         var selectedImage: PhotosPickerItem? = nil
         var displayImage: UIImage? = nil
+        var isSexPickerPresented = false
         @Presents var alert: AlertState<Never>?
     }
     
@@ -19,6 +22,8 @@ struct ProfileEditFeature {
             case imageSelected(PhotosPickerItem?)
             case loadImageContent
             case imageLoaded(UIImage?)
+            case sexSelected(UserProfile.Sex)
+            case toggleSexPicker(Bool)
         }
         
         enum InternalAction: Equatable {
@@ -67,6 +72,15 @@ struct ProfileEditFeature {
                 case let .imageLoaded(image):
                     state.displayImage = image
                     // TODO: 上传图片到服务器并获取URL
+                    return .none
+
+                case .toggleSexPicker(let isPresented):
+                    state.isSexPickerPresented = isPresented
+                    return .none
+                    
+                case let .sexSelected(sex):
+                    state.profile.sex = sex
+                    state.isSexPickerPresented = false
                     return .none
                 }
                 

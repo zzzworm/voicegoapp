@@ -47,7 +47,7 @@ struct ProfileCell : View {
                    
                     Text(profile.username)
                         .font(.headline)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.secondary)
                 }
 
             }
