@@ -11,11 +11,26 @@ import SharingGRDB
 struct UserProfile: Identifiable, Equatable , FetchableRecord, MutablePersistableRecord {
     static let databaseTableName = "userProfile"
 
+    public enum Sex : String, CaseIterable, Codable {
+        case male
+        case female
+        
+        var localizedDescription: String {
+            switch self {
+            case .male:
+                return "男"
+            case .female:
+                return "女"
+            }
+        }
+    }
+    
     let id : Int
     let documentId: String
     let email: String
     let city : String?
     let username: String
+    var sex : Sex = .male
     let provider : String
     let phoneNumber: String?
     let userIconUrl: String?
@@ -33,6 +48,7 @@ extension UserProfile: Codable, EncodableRecord {
         case email
         case city
         case username
+        case sex
         case provider
         case phoneNumber
         case userIconUrl

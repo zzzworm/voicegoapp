@@ -51,10 +51,20 @@ struct ProfileEditView: View {
                     }
                     
                     Section("基本信息") {
-//                        TextField("昵称", text: viewStore.profile.username)
-//                            .textContentType(.nickname)
-//                        
-//                        TextField("城市", text: viewStore.profile.city)
+                        TextField("昵称", text: $store.usernameToChange)
+                            .textContentType(.nickname)
+                        TextField("城市", text: $store.cityToChange)
+                        Button(action: {
+                            store.send(.view(.toggleSexPicker(true)))
+                        }) {
+                            HStack {
+                                Text("性别")
+                                    .foregroundColor(.primary)
+                                Spacer()
+                                Text(store.profile.sex.localizedDescription)
+                                    .foregroundColor(.gray)
+                            }
+                        }
                     }
                 }
                 .navigationTitle("编辑资料")
@@ -65,6 +75,42 @@ struct ProfileEditView: View {
                             store.send(.view(.onSaveButtonTap))
                         }
                     }
+                }
+                .sheet(isPresented: $store.isSexPickerPresented) {
+                    NavigationStack {
+                        
+                        List{
+                            Section{
+                                ForEach(UserProfile.Sex.allCases, id: \.self) { sex in
+                                    Button(action: { store.send(.view(.sexSelected(sex))) }) {
+                                        HStack {
+                                            Text(sex.localizedDescription)
+                                            Spacer()
+                                            if sex == store.profile.sex {
+                                                Image(systemName: "checkmark")
+                                                    .foregroundColor(.blue)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            header: {
+                                Spacer(minLength: 0).listRowInsets(EdgeInsets())
+                            }
+                        }
+                        .environment(\.defaultMinListHeaderHeight, 0)
+                        .navigationTitle("选择性别")
+                        .navigationBarTitleDisplayMode(.inline)
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                Button("取消") {
+                                    store.send(.view(.toggleSexPicker(false)))
+                                }
+                            }
+                        }
+                    }
+                    .presentationDetents([.height(160)]) // 设置固定高度
+                        
                 }
                 .alert($store.scope(state: \.alert, action: \.alert))
                 .disabled(store.isLoading)

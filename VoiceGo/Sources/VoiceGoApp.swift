@@ -40,6 +40,7 @@ struct VoiceGoApp: App {
                 table.column("id", .integer).notNull()
                 table.column("email", .text)
                 table.column("username", .text).notNull()
+                table.column("sex", .text).notNull().defaults(to: "male")
                 table.column("provider", .text).notNull()
                 table.column("city", .text)
                 table.column("phoneNumber", .text)
