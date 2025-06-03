@@ -15,6 +15,18 @@ struct ProfileEditFeature {
         var displayImage: UIImage? = nil
         var isSexPickerPresented = false
         @Presents var alert: AlertState<Never>?
+        
+        public init(profile: UserProfile, selectedImage: PhotosPickerItem? = nil, displayImage: UIImage? = nil) {
+            self.profile = profile
+            self.usernameToChange = profile.username
+            self.cityToChange = profile.city ?? ""
+            self.sexToChange = profile.sex
+            self.isLoading = false
+            self.selectedImage = selectedImage
+            self.displayImage = displayImage
+            self.isSexPickerPresented = false
+            self.alert = nil
+        }
     }
     
     enum Action: BindableAction {
@@ -45,6 +57,7 @@ struct ProfileEditFeature {
     @Dependency(\.apiClient) var apiClient
     
     var body: some Reducer<State, Action> {
+        BindingReducer()
         Reduce { state, action in
             switch action {
             case let .view(viewAction):
@@ -108,5 +121,6 @@ struct ProfileEditFeature {
                 return .none
             }
         }
+        .ifLet(\.$alert, action: /Action.alert)
     }
 }

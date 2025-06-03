@@ -63,6 +63,7 @@ struct ProfileFeature {
     }
     
     var body: some Reducer<State, Action> {
+        BindingReducer()
         Reduce { state, action in
             switch action {
             case let .view(viewAction):
@@ -83,9 +84,20 @@ struct ProfileFeature {
                 case let .updateProfileResponse(.success(profile)):
                     state.profile = profile
                     state.isLoading = false
-                    
-                    
-                    
+                    Task{
+                        do {
+                            try await database.write { db in
+                                var profile = profile
+                                if var studySetting = profile.study_setting {
+                                    try studySetting.upsert(db)
+                                    profile.studySettingId = studySetting.id
+                                }
+                                try profile.upsert(db)
+                            }
+                        } catch {
+                            Log.error("Failed to save user to database: \(error)")
+                        }
+                    }
                     return .none
                     
                 case let .updateProfileResponse(.failure(error)):

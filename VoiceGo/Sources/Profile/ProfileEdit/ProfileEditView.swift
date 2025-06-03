@@ -61,7 +61,7 @@ struct ProfileEditView: View {
                                 Text("性别")
                                     .foregroundColor(.primary)
                                 Spacer()
-                                Text(store.profile.sex.localizedDescription)
+                                Text(store.sexToChange.localizedDescription)
                                     .foregroundColor(.gray)
                             }
                         }

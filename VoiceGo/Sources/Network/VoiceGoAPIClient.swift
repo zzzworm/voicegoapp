@@ -24,7 +24,7 @@ struct VoiceGoAPIClient {
     struct Failure: Error, Equatable {}
 }
 
-func handleStrapiRequest<T: Decodable & Sendable>(_ action: @Sendable () async throws -> StrapiResponse<T>) async rethrows -> StrapiResponse<T> {
+func handleStrapiRequest<T: Decodable & Sendable>(_ action: @Sendable () async throws -> T) async rethrows -> T {
     do {
         let response = try await action()
         return response
@@ -73,17 +73,29 @@ extension VoiceGoAPIClient : DependencyKey  {
             return resp
         }},
         fetchUserProfile: {
-            let response = try await Strapi.authentication.local.me(as: UserProfile.self)
-            return response
+            return try await handleStrapiRequest{
+                let response = try await Strapi.authentication.local.me(as: UserProfile.self)
+                return response
+            }
         },
         updateUserProfile: { profile in
-            let data = StrapiRequestBody([
-                "username": .string(profile.username),
-                "email": .string(profile.email),
-                "city": .string(profile.city ?? ""),
-                "userIconUrl": .string(profile.userIconUrl ?? "")
-            ])
-            return try await Strapi.authentication.local.updateProfile(data, userId: profile.id, as: UserProfile.self)
+            var updateData : [String: AnyCodable] = [:]
+            if !profile.username.isEmpty {
+                updateData["username"] = .string(profile.username)
+            }
+            if !profile.email.isEmpty {
+                updateData["email"] = .string(profile.email)
+            }
+            if let city = profile.city, !city.isEmpty {
+                updateData["city"] = .string(city)
+            }
+            if let userIconUrl = profile.userIconUrl, !userIconUrl.isEmpty {
+                updateData["userIconUrl"] = .string(userIconUrl)
+            }
+            updateData["sex"] = .string(profile.sex.rawValue)
+            let data = StrapiRequestBody(updateData)
+            let response = try await Strapi.authentication.local.me(extendUrl: "", requestType: .PUT, data: data, as: UserProfile.self)
+            return profile
         },
         getAliSTS: {
             let resp = try await Strapi.contentManager.collection("ali-cloud-sts").withDocumentId("").getDocument(as: AliOSSSTS.self)
