@@ -7,11 +7,15 @@
 
 import Foundation
 import ComposableArchitecture
+import GRDB
+import SharingGRDB
+
 
 @Reducer
 struct RootFeature {
 
     @Dependency(\.apiClient) var apiClient
+    
     
     @ObservableState
     struct State : Equatable {
@@ -23,10 +27,22 @@ struct RootFeature {
         @Presents var alert: AlertState<Never>?
         
         public init(profile: UserProfile? = nil, currentTab: Tab = .studytools) {
-            self.profile = profile
+            @Dependency(\.defaultDatabase) var database
+            @Dependency(\.userDefaults) var userDefaultsClient
+            var profileFetched: UserProfile? = profile
+            
+            do {
+                try database.read({ db in
+                profileFetched = try UserProfile.find(db, key: profile?.documentId ?? userDefaultsClient.currentUserID)
+                })
+            }
+            catch{
+                
+            }
+            self.profile = profileFetched
             self.currentTab = currentTab
             self.studytoolListState = StudyToolsFeature.State()
-            self.profileState = ProfileFeature.State(profile: profile)
+            self.profileState = ProfileFeature.State(profile: profileFetched)
             self.notifications = NotificationsFeature.State()
             self.alert = nil
         }
