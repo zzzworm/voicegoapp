@@ -40,6 +40,8 @@ struct RootView: View {
                 }
                 .tag(RootFeature.Tab.profile)
             }
+            .alert($store.scope(state: \.alert, action: \.alert))
+            .task { await store.send(.task).finish() }
         }
         .enableInjection()
     }

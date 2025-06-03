@@ -162,6 +162,9 @@ struct AppFeature {
                             state = .join(JoinFeature.State())
                         }
                     } else {
+                        MainActor.assumeIsolated{
+                            Strapi.configure(baseURL: Configuration.current.baseURL, token: nil)
+                        }
                         state = .onboarding(OnboardingFeature.State())
                     }
                     return .none

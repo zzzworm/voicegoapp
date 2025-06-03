@@ -93,7 +93,6 @@ struct ProfileView: View {
                 }
                 .commonBackground()
                 .task {
-                    store.send(.fetchUserProfileFromDB)
                     store.send(.fetchUserProfileFromServer)
                 }
                 .navigationTitle("我的")
@@ -107,6 +106,7 @@ struct ProfileView: View {
                     ProfileEditView(store: store)
                 }
             }
+            .alert($store.scope(state: \.alert, action: \.alert))
         }
         .enableInjection()
     }

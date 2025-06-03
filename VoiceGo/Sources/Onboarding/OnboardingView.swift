@@ -36,10 +36,12 @@ struct OnboardingView : View {
                 .tabViewStyle(PageTabViewStyle())
                 .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
                 
+                let selectedStyle = CTAButtonStyle(isSelected: true)
+                
                 Button("Get Started") {
                     store.send(.onGetStartedTapped)
                 }
-                .buttonStyle(.cta)
+                .buttonStyle(selectedStyle)
                 .padding(.bottom)
                 .isHidden(!store.showGetStarted)
             }
