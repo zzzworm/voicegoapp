@@ -15,7 +15,7 @@ import SharingGRDB
 struct RootFeature {
 
     @Dependency(\.apiClient) var apiClient
-    
+    @Dependency(\.defaultDatabase) var database
     
     @ObservableState
     struct State : Equatable {
@@ -126,7 +126,21 @@ struct RootFeature {
             case let .internal(internalAction):
                 switch internalAction {
                 case let .updateProfileResponse(.success(profile)):
-                    
+                    state.profile = profile
+                    Task{
+                        do {
+                            try await database.write { db in
+                                var profile = profile
+                                if var studySetting = profile.study_setting {
+                                    try studySetting.upsert(db)
+                                    profile.studySettingId = studySetting.id
+                                }
+                                try profile.upsert(db)
+                            }
+                        } catch {
+                            Log.error("Failed to save user to database: \(error)")
+                        }
+                    }
                     return .none
                     
                 case let .updateProfileResponse(.failure(error)):

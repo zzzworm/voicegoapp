@@ -70,7 +70,7 @@ struct ToolHistoryFeature: Reducer {
     
     
     var body: some ReducerOf<Self> {
-        
+        BindingReducer()
         Reduce { state, action in
             switch action {
             case .deleteHistory:
@@ -96,8 +96,8 @@ struct ToolHistoryFeature: Reducer {
                     await send(.speakFailed)
                 }
             case .copyAnswer(let answer):
-                return .run { send in 
-                    clipboardClient.copyValue(answer) 
+                return .run { send in
+                    clipboardClient.copyValue(answer)
                 }
             case .speakFinished:
                 state.isSpeakingQuery = false
