@@ -48,6 +48,7 @@ let commonDependencies : [TargetDependency] = [
                 .package(product: "SwiftLintBuildToolPlugin", type: .plugin),
                 .external(name: "ColorKit"),   
                 .external(name: "DynamicColor"),
+                .external(name: "Copyable"),
             ]
 
 let targetActions: [TargetScript] = [

@@ -7,6 +7,7 @@ trigger: always_on
 
   # Project Structure
 - This is a SwiftUI project that uses tuist to organize and manage projects
+- always use `tuis generate` after create/delete files
 - The project is built based on the TCA framework and has undergone component-based design for various application features
 
   # Code Structure
