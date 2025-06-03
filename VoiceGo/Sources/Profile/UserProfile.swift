@@ -46,7 +46,7 @@ struct UserProfile: Identifiable, Equatable , FetchableRecord, MutablePersistabl
     
 }
 
-extension UserProfile: Codable, EncodableRecord {
+extension UserProfile: Codable, EncodableRecord, TableRecord {
     
     static let databaseTableName = "userProfile"
     
