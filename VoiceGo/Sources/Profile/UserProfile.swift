@@ -37,6 +37,9 @@ struct UserProfile: Identifiable, Equatable , FetchableRecord, MutablePersistabl
     let phoneNumber: String?
     let userIconUrl: String?
     
+    let study_setting : UserStudySetting?
+    var studySettingId: Int? = nil
+
     var displayIdenifier : String? {
         return phoneNumber ?? email
     }
@@ -57,8 +60,34 @@ extension UserProfile: Codable, EncodableRecord {
         case provider
         case phoneNumber
         case userIconUrl
+        case study_setting
     }
-    
+
+    func encode(to container: inout PersistenceContainer) throws {
+        container["id"] = id
+        container["documentId"] = documentId
+        container["email"] = email
+        container["city"] = city
+        container["username"] = username
+        container["sex"] = sex.rawValue
+        container["provider"] = provider
+        container["phoneNumber"] = phoneNumber
+        container["userIconUrl"] = userIconUrl
+        container["studySettingId"] = studySettingId
+    }
+
+    enum Columns {
+        static let id = Column(ProfileKeys.id)
+        static let documentId = Column(ProfileKeys.documentId)
+        static let email = Column(ProfileKeys.email)
+        static let city = Column(ProfileKeys.city)
+        static let username = Column(ProfileKeys.username)
+        static let sex = Column(ProfileKeys.sex)
+        static let provider = Column(ProfileKeys.provider)
+        static let phoneNumber = Column(ProfileKeys.phoneNumber)
+        static let userIconUrl = Column(ProfileKeys.userIconUrl)
+        static let studySettingId = Column("studySettingId")
+    }
 }
 
 extension UserProfile {
@@ -72,7 +101,8 @@ extension UserProfile {
             sex: .male,
             provider: "local",
             phoneNumber: "15618664527",
-            userIconUrl: "https://example.com/icon.png"
+            userIconUrl: "https://example.com/icon.png",
+            study_setting: UserStudySetting.sample
         )
     }
     
@@ -86,7 +116,8 @@ extension UserProfile {
             sex: .female,
             provider: "local",
             phoneNumber: "15618664527",
-            userIconUrl: "https://example.com/icon.png"
+            userIconUrl: "https://example.com/icon.png",
+            study_setting: UserStudySetting.sample
         )
     }
 }

@@ -11,12 +11,25 @@ import ComposableArchitecture
 @Reducer
 struct RootFeature {
 
+    @Dependency(\.apiClient) var apiClient
+    
     @ObservableState
     struct State : Equatable {
+        var profile: UserProfile? = nil
         var currentTab = Tab.studytools
         var studytoolListState = StudyToolsFeature.State()
         var profileState = ProfileFeature.State()
         var notifications = NotificationsFeature.State()
+        @Presents var alert: AlertState<Never>?
+        
+        public init(profile: UserProfile? = nil, currentTab: Tab = .studytools) {
+            self.profile = profile
+            self.currentTab = currentTab
+            self.studytoolListState = StudyToolsFeature.State()
+            self.profileState = ProfileFeature.State(profile: profile)
+            self.notifications = NotificationsFeature.State()
+            self.alert = nil
+        }
     }
     
     enum Tab: Int, CaseIterable {
@@ -35,10 +48,19 @@ struct RootFeature {
         case notifications(NotificationsFeature.Action)
                 
         enum Delegate: Equatable {
-                    case didLogout
+            case didLogout
         }
         case binding(BindingAction<State>)
         case delegate(Delegate)
+        
+        case alert(PresentationAction<Never>)
+        
+        enum InternalAction: Equatable {
+            case updateProfileResponse(TaskResult<UserProfile>)
+        }
+        case `internal`(InternalAction)
+        
+        case task
     }
 
     var body: some Reducer<State, Action> {
@@ -79,7 +101,27 @@ struct RootFeature {
                 return .none
             case .delegate(_):
                 return .none
+            case .task:
+                return .run { send in
+                    await send(.internal(.updateProfileResponse(
+                        TaskResult { try await apiClient.fetchUserProfile() }
+                    )))
+                }
+            case let .internal(internalAction):
+                switch internalAction {
+                case let .updateProfileResponse(.success(profile)):
+                    
+                    return .none
+                    
+                case let .updateProfileResponse(.failure(error)):
+                    state.alert = AlertState(title: TextState("更新失败"),
+                                          message: TextState(error.localizedDescription))
+                    return .none
+                }
+            case .alert(_):
+                return .none
             }
         }
+        .ifLet(\.$alert, action: /Action.alert)
     }
 }

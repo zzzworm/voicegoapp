@@ -78,17 +78,22 @@ struct StudyToolsFeature {
                 
                 
                 Task{
-                    try await self.database.write { db in
-                        for studyTool in studyToolList {
-                            
-                            var studyToolMutable = studyTool
-                            var qaCard = studyToolMutable.exampleCard
-                            if var qaCard = qaCard {
-                                try qaCard.upsert(db)
+                    do{
+                        try await self.database.write { db in
+                            for studyTool in studyToolList {
+                                
+                                var studyToolMutable = studyTool
+                                var qaCard = studyToolMutable.exampleCard
+                                if var qaCard = qaCard {
+                                    try qaCard.upsert(db)
+                                }
+                                let ret = try studyToolMutable.upsert(db)
+                                
                             }
-                            let ret = try studyToolMutable.upsert(db)
-                            
                         }
+                    }
+                    catch {
+                        print("Error saving study tools to database: \(error)")
                     }
                 }
                 return .none

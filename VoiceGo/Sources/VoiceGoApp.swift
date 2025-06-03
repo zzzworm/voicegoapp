@@ -45,6 +45,7 @@ struct VoiceGoApp: App {
                 table.column("city", .text)
                 table.column("phoneNumber", .text)
                 table.column("userIconUrl", .text)
+                table.column("studySettingId", .text).references(UserStudySetting.databaseTableName,column: "id", onDelete: .cascade)
             }
         }
         migrator.registerMigration("Create studyTool used table") { db in
@@ -77,6 +78,14 @@ struct VoiceGoApp: App {
                 table.column("lastUsedAt", .date).notNull()
                 table.column("userDocumentId", .text).references(UserProfile.databaseTableName,column: "documentId", onDelete: .cascade)
                 table.column("toolDocumentId", .text).references(StudyTool.databaseTableName,column: "documentId", onDelete: .cascade)
+            }
+
+            try db.create(table: UserStudySetting.databaseTableName) { table in
+                table.primaryKey(["id"])
+                table.column("id", .integer).notNull()
+                table.column("eng_level", .text).notNull()
+                table.column("study_goal", .text).notNull()
+                table.column("role", .text).notNull()
             }
         }
         try migrator.migrate(database)

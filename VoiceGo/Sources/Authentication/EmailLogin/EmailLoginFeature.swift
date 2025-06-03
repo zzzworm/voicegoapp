@@ -59,7 +59,7 @@ struct EmailLoginFeature {
             switch action {
             // view actions
             case let .view(viewAction):
-                switch viewAction {                    
+                switch viewAction {
                 case .onSignInButtonTap:
                     state.isActivityIndicatorVisible = true
                     return .run { [userIdentifier = state.userIdentifier, password = state.password] send in
@@ -87,17 +87,16 @@ struct EmailLoginFeature {
             case let .internal(internalAction):
                 switch internalAction {
                 case let .loginResponse(.success(data)):
-                    Log.info("loginResponse: \(data)")
                     state.isActivityIndicatorVisible = false
-                    userKeychainClient.storeToken(data.jwt)
                     
                     return .concatenate(
                         .run { _ in
-                            var account = data.user
-                            try await self.database.write { db in
-                                try account.insert(db)
-                            }
-                            try await self.userDefaultsClient.setCurrentUserID(account.documentId)
+                            await handleLoginResponse(
+                                data: data,
+                                userKeychainClient: userKeychainClient,
+                                database: database,
+                                userDefaultsClient: userDefaultsClient
+                            )
                         },
                         .send(.delegate(.didEmailAuthenticated))
                     )
@@ -115,7 +114,7 @@ struct EmailLoginFeature {
             case .binding:
                 return .none
             }
-        }        
+        }
         .ifLet(\.$alert, action: /Action.alert)
     }
 }

@@ -38,7 +38,6 @@ struct ProfileFeature {
         
         case `internal`(InternalAction)
         case alert(PresentationAction<Never>)
-        case fetchUserProfileFromDB
         case fetchUserProfileFromServer
         
         case view(ViewAction)
@@ -84,6 +83,9 @@ struct ProfileFeature {
                 case let .updateProfileResponse(.success(profile)):
                     state.profile = profile
                     state.isLoading = false
+                    
+                    
+                    
                     return .none
                     
                 case let .updateProfileResponse(.failure(error)):
@@ -104,15 +106,6 @@ struct ProfileFeature {
             case .alert:
                 return .none
                 
-            case .fetchUserProfileFromDB:
-                return .run { send in
-                    if let profile = try await database.read({ db in
-                        try UserProfile.fetchOne(db)
-                    }) {
-                        await send(.internal(.updateProfileResponse(.success(profile))))
-                    }
-                }
-                
             case .fetchUserProfileFromServer:
                 state.isLoading = true
                 return .run { send in
@@ -127,5 +120,6 @@ struct ProfileFeature {
             }
         }
         .forEach(\.path, action: \.path)
+        .ifLet(\.$alert, action: /Action.alert)
     }
 }

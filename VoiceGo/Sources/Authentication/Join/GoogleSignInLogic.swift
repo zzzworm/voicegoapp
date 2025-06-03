@@ -11,7 +11,7 @@ import ComposableArchitecture
 import SharingGRDB
 
 struct GoogleSignInLogic<State>: Reducer {
-
+    
     @Dependency(\.googleSignInClient) var googleSignInClient
     @Dependency(\.userKeychainClient) var userKeychainClient
     @Dependency(\.userDefaults) var userDefaultsClient
@@ -26,7 +26,7 @@ struct GoogleSignInLogic<State>: Reducer {
                 guard let root = UIApplication.shared.firstKeyWindow?.rootViewController else {
                     return .none
                 }
-
+                
                 return .run { send in
                     await send(
                         .internal(
@@ -40,23 +40,28 @@ struct GoogleSignInLogic<State>: Reducer {
                         )
                     )
                 }
-
+                
             default:
                 return .none
             }
             
         case let .internal(internalAction):
             switch internalAction {
-            case let .loginResponse(.success(data)):                
+            case let .loginResponse(.success(data)):
+                Log.info("loginResponse: \(data)")
                 userKeychainClient.storeToken(data.jwt)
-                return .run { send in
-                    var account = data.user
-                    try await self.database.write { db in
-                        try account.insert(db)
-                    }
-                    try await self.userDefaultsClient.setCurrentUserID(account.documentId)
-                    await send(.delegate(.didAuthenticated))
-                }
+                return .concatenate(
+                    
+                    .run { _ in
+                        await handleLoginResponse(
+                            data: data,
+                            userKeychainClient: userKeychainClient,
+                            database: database,
+                            userDefaultsClient: userDefaultsClient
+                        )
+                    },
+                    .send(.delegate(.didAuthenticated))
+                )
                 
             case let .loginResponse(.failure(error)):
                 Log.error("loginResponse: \(error)")
@@ -65,8 +70,8 @@ struct GoogleSignInLogic<State>: Reducer {
             default:
                 return .none
             }
-        
-
+            
+            
         default:
             return .none
         }
