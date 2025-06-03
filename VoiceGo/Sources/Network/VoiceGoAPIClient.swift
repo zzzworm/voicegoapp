@@ -11,10 +11,13 @@ import SwiftyJSON
 import StrapiSwift
 import Alamofire
 
+
 struct VoiceGoAPIClient {
     var fetchStudyTools:  @Sendable (String) async throws -> StrapiResponse<[StudyTool]>
     var fetchUserProfile:  @Sendable () async throws -> UserProfile
     var updateUserProfile:  @Sendable (UserProfile) async throws -> UserProfile
+    var getAliSTS: @Sendable () async throws -> AliOSSSTS
+    
     var getToolConversationList:  @Sendable (_ studyToolId : String ,_ page: Int, _ pageSize: Int) async throws -> StrapiResponse<[ToolConversation]>
     var createToolConversation:  @Sendable (_ studyTool : StudyTool ,_ query: String) async throws -> StrapiResponse<ToolConversation>
     var streamToolConversation:  @Sendable (_ studyTool : StudyTool ,_ query: String) async throws -> AsyncThrowingStream<DataStreamRequest.EventSourceEvent, Error>
@@ -71,8 +74,7 @@ extension VoiceGoAPIClient : DependencyKey  {
         }},
         fetchUserProfile: {
             let response = try await Strapi.authentication.local.me(as: UserProfile.self)
-            let profile = response
-            return profile
+            return response
         },
         updateUserProfile: { profile in
             let data = StrapiRequestBody([
@@ -82,6 +84,10 @@ extension VoiceGoAPIClient : DependencyKey  {
                 "userIconUrl": .string(profile.userIconUrl ?? "")
             ])
             return try await Strapi.authentication.local.updateProfile(data, userId: profile.id, as: UserProfile.self)
+        },
+        getAliSTS: {
+            let resp = try await Strapi.contentManager.collection("ali-cloud-sts").withDocumentId("").getDocument(as: AliOSSSTS.self)
+            return resp.data
         },
         getToolConversationList: {studyToolId, page, pageSize in
             let response = try await Strapi.contentManager.collection("tool-conversation/my-list")
@@ -155,6 +161,18 @@ extension VoiceGoAPIClient {
         updateUserProfile: { profile in
             return profile // 在预览模式下直接返回传入的 profile
         },
+        //临时禁止swift 长度检查规则，否则无法编译
+        // swiftlint:disable line_length
+        getAliSTS: {
+            return AliOSSSTS(
+                accessKeyId: "STS.NWqqtfaFDWdTjC4fcPaSbd2Wh",
+                accessKeySecret: "3tKGGb5BnjsF6xjindJL7GbycQJ65upz3VNyXAMrAjLn",
+                securityToken: "CAIS/QJ1q6Ft5B2yfSjIr5TEOs7SjJll4Ka/aGWFgmMFbdxOi/f8ijz2IHhMeXdoCOkat/4zmWlT5vYYlqZtTJ5OSEPDKNB99Y9W9gX57wh9MVXvv9I+k5SANTW5HHyShb3AAYjQSNfaZY3zCTTtnTNyxr3XbCirW0ffX7SClZ9gaKZhPGy/diEUPMpKAQFgpcQGVx7WLu3/HRP2pWDSAUF0wFse71ly8qOi2MaRxwPDhVnhsI8vqp/2P4KvYrsZXuR2WMzn2/dtJOiTknxO7BlB+ahxya1B8DjK+ZO/ewAOv0jfa7KOr4E0fF8iO/UAdvQa/KSmp5pRoffOkon78RFJMNxOXj7XLILam5OcRb3xZ49lLOynZi2WgoDVLPzvugYjemkFMwJBdtUmOpTZ6/LJx9WxwMaFj7OqCm/LI8DtuCpmS4vzBLLG124rNooiMlSIUFf5y6VGG2cCHTB4s8IvnNFIPYJiHb2pSUhbg+cXTlRqzYmM26m6sZuNEC8/15UagAE7mr6BUcv/WY1SLZ+qsMMPI2r9J2cTB29z1rXA1hOd+psMxFeibsAtQjV6VCNL4qbqNeDR/QEJcoPdDyRnw/XSXhXzMvieCpAvQZufL3qq2/Umhhphwyn9f3GVSJO5qYAmIGNsF1GbbVa2Dj+JAjlg+OXA6/5EiuVkQ+hajVbizCAA",
+                expiration: "2025-05-29T13:57:15Z",
+                region: "oss-cn-shanghai",
+                bucket: "voicego-image"
+            )
+        },
         getToolConversationList: { studyToolUsedId,  page, pageSize in
             // 构造 Pagination 实例
             let pagination = Pagination(page: 1, pageSize: 10, pageCount: 1, limit: 10, start: 0, total: 1)
@@ -226,6 +244,16 @@ extension VoiceGoAPIClient : TestDependencyKey  {
         updateUserProfile: { profile in
             return profile // 在测试模式下直接返回传入的 profile
         },
+        getAliSTS: {
+            return AliOSSSTS(
+                accessKeyId: "test-key-id",
+                accessKeySecret: "test-key-secret",
+                securityToken: "test-token",
+                expiration: "2025-05-29T13:57:15Z",
+                region: "oss-cn-shanghai",
+                bucket: "voicego-image"
+            )
+        },
         getToolConversationList: {studyToolUsedId, page, pageSize in
             // 构造 Pagination 实例
             let pagination = Pagination(page: 1, pageSize: 10, pageCount: 1, limit: 10, start: 0, total: 1)
@@ -282,3 +310,5 @@ extension DependencyValues {
         set { self[VoiceGoAPIClient.self] = newValue }
     }
 }
+
+// swiftlint:enable line_length

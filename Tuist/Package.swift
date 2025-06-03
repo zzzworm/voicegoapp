@@ -26,6 +26,7 @@ import PackageDescription
             "AliyunOSSSDK":.framework,
             "FBLPromises":.framework,
             "nanopb":.framework,
+            "Copyable":.staticFramework,
          ]
     )
 #endif
@@ -68,6 +69,7 @@ let package = Package(
         .package(url: "https://github.com/yanyin1986/WechatOpenSDK.git", from: "2.0.4"),
         .package(url: "https://github.com/agisilaos/ColorKit.git", from: "1.6.0"),
         .package(url: "https://github.com/yannickl/DynamicColor.git", from: "5.0.0"),
+        .package(url: "https://github.com/eu-digital-identity-wallet/SwiftCopyableMacro.git", from: "0.0.3"),
         .package(path: "../Packages/strapi-swift"),
     ]
 )

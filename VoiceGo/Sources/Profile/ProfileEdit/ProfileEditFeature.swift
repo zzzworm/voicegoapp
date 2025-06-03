@@ -9,6 +9,7 @@ struct ProfileEditFeature {
         var profile: UserProfile
         var usernameToChange : String = ""
         var cityToChange : String = ""
+        var sexToChange : UserProfile.Sex = .male
         var isLoading = false
         var selectedImage: PhotosPickerItem? = nil
         var displayImage: UIImage? = nil
@@ -50,9 +51,10 @@ struct ProfileEditFeature {
                 switch viewAction {
                 case .onSaveButtonTap:
                     state.isLoading = true
-                    return .run { [profile = state.profile] send in
+                    let toUpdateProfile = state.profile.copy(city: state.cityToChange, username: state.usernameToChange, sex:state.sexToChange, userIconUrl: "")
+                    return .run { send in
                         await send(.internal(.updateProfileResponse(
-                            TaskResult { try await apiClient.updateUserProfile(profile) }
+                            TaskResult { try await apiClient.updateUserProfile(toUpdateProfile) }
                         )))
                     }
                     
@@ -79,7 +81,7 @@ struct ProfileEditFeature {
                     return .none
                     
                 case let .sexSelected(sex):
-                    state.profile.sex = sex
+                    state.sexToChange = sex
                     state.isSexPickerPresented = false
                     return .none
                 }

@@ -7,11 +7,13 @@
 
 import Foundation
 import SharingGRDB
+import Copyable
 
+
+@Copyable
 struct UserProfile: Identifiable, Equatable , FetchableRecord, MutablePersistableRecord {
-    static let databaseTableName = "userProfile"
 
-    public enum Sex : String, CaseIterable, Codable {
+    public enum Sex : String, CaseIterable, Codable, Equatable {
         case male
         case female
         
@@ -30,7 +32,7 @@ struct UserProfile: Identifiable, Equatable , FetchableRecord, MutablePersistabl
     let email: String
     let city : String?
     let username: String
-    var sex : Sex = .male
+    let sex : Sex
     let provider : String
     let phoneNumber: String?
     let userIconUrl: String?
@@ -42,6 +44,9 @@ struct UserProfile: Identifiable, Equatable , FetchableRecord, MutablePersistabl
 }
 
 extension UserProfile: Codable, EncodableRecord {
+    
+    static let databaseTableName = "userProfile"
+    
     public enum ProfileKeys: String, CodingKey {
         case id
         case documentId
@@ -64,6 +69,7 @@ extension UserProfile {
             email: "hello@demo.com",
             city: "Beijing",
             username: "Changhong",
+            sex: .male,
             provider: "local",
             phoneNumber: "15618664527",
             userIconUrl: "https://example.com/icon.png"
@@ -77,6 +83,7 @@ extension UserProfile {
             email: "tophu1@163.com",
             city: "Shanghai",
             username: "changhong",
+            sex: .female,
             provider: "local",
             phoneNumber: "15618664527",
             userIconUrl: "https://example.com/icon.png"
