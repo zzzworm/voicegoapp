@@ -61,6 +61,69 @@ struct AITeacher: Codable, FetchableRecord, PersistableRecord, Equatable, Identi
     let tags: String
     let card: AITeacherCard?
     var cardId : Int? = nil
+
+    static var sample: [AITeacher] = [
+        AITeacher(
+            id: 1,
+            documentId: "teacher_doc_1",
+            name: "Dr. Emily Carter",
+            introduce: "Expert in conversational English and business terminology. Focuses on Business English.",
+            createdAt: Date(),
+            updatedAt: Date(),
+            publishedAt: Date(),
+            sex: "female",
+            difficultyLevel: 2,
+            tags: "Business,Advanced,IELTS",
+            card: AITeacherCard(id: 1,
+                                openingSpeech: "Hello! Let's talk business.",
+                                simpleReplay: "Got it.",
+                                formalReplay: "Understood.",
+                                openingLetter: "Dear Student,",
+                                assistContent: "We can practice negotiations.",
+                                categoryKey: "business"),
+            cardId: 1
+        ),
+        AITeacher(
+            id: 2,
+            documentId: "teacher_doc_2",
+            name: "Mr. John Doe",
+            introduce: "Specializes in everyday conversation and travel vocabulary. Your go-to for Travel prep.",
+            createdAt: Date(),
+            updatedAt: Date(),
+            publishedAt: Date(),
+            sex: "male",
+            difficultyLevel: 1,
+            tags: "Travel,Beginner,General",
+            card: AITeacherCard(id: 2,
+                                openingSpeech: "Hi there! Planning a trip?",
+                                simpleReplay: "Okay.",
+                                formalReplay: "Certainly.",
+                                openingLetter: "Hi,",
+                                assistContent: "Ask me about directions.",
+                                categoryKey: "travel"),
+            cardId: 2
+        ),
+        AITeacher(
+            id: 3,
+            documentId: "teacher_doc_3",
+            name: "Prof. Ada Byron",
+            introduce: "Focuses on academic discussions and formal presentations. Ideal for Academic English.",
+            createdAt: Date(),
+            updatedAt: Date(),
+            publishedAt: Date(),
+            sex: "female",
+            difficultyLevel: 3,
+            tags: "Academic,Formal,University",
+            card: AITeacherCard(id: 3,
+                                openingSpeech: "Greetings. Shall we discuss your research?",
+                                simpleReplay: "I see.",
+                                formalReplay: "Precisely.",
+                                openingLetter: "Dear Scholar,",
+                                assistContent: "Let's review your thesis statement.",
+                                categoryKey: "academic"),
+            cardId: 3
+        )
+    ]
 }
 extension AITeacher: TableRecord {
     static var databaseTableName: String { "aiTeacher" }
@@ -105,5 +168,26 @@ extension AITeacher: TableRecord {
         static let difficultyLevel = Column(CodingKeys.difficultyLevel)
         static let tags = Column(CodingKeys.tags)
         static let cardId = Column("cardId")
+    }
+}
+
+extension AITeacher {
+    enum CategoryTag: String, CaseIterable, Identifiable, Equatable {
+        case general = "General"
+        case business = "Business"
+        case travel = "Travel"
+        case academic = "Academic"
+
+        var id: String { self.rawValue }
+
+        var localizedDescription: String {
+            // In a real app, these would be localized strings
+            return self.rawValue
+        }
+
+        // A default category
+        static var defaultTag: CategoryTag {
+            .general
+        }
     }
 }
