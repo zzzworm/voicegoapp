@@ -25,6 +25,7 @@ struct VoiceGoAPIClient {
     var createAITeacherConversation:  @Sendable (_ aiTeacher : AITeacher ,_ query: String) async throws -> StrapiResponse<AITeacherConversation>
     var streamAITeacherConversation:  @Sendable (_ aiTeacher : AITeacher ,_ query: String) async throws -> AsyncThrowingStream<DataStreamRequest.EventSourceEvent, Error>
     var getAITeacherConversationList:  @Sendable (_ aiTeacherId : String ,_ page: Int, _ pageSize: Int) async throws -> StrapiResponse<[AITeacherConversation]>
+    var fetchAITeachers: @Sendable (String) async throws -> StrapiResponse<[AITeacher]>
     struct Failure: Error, Equatable {}
 }
 
@@ -193,6 +194,15 @@ extension VoiceGoAPIClient : DependencyKey  {
                 .paginate(page: page, pageSize: pageSize)
                 .getDocuments(as: [AITeacherConversation].self)
             return response
+        },
+        fetchAITeachers: { categoryRawValue in
+            return try await handleStrapiRequest {
+                let resp = try await Strapi.contentManager.collection("ai-teachers")
+                    .filter("[tags]", operator: .contains, value: categoryRawValue)
+                    .populate("card")
+                    .getDocuments(as: [AITeacher].self)
+                return resp
+            }
         }
     )
 }
