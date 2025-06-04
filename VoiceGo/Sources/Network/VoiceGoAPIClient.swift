@@ -21,6 +21,10 @@ struct VoiceGoAPIClient {
     var getToolConversationList:  @Sendable (_ studyToolId : String ,_ page: Int, _ pageSize: Int) async throws -> StrapiResponse<[ToolConversation]>
     var createToolConversation:  @Sendable (_ studyTool : StudyTool ,_ query: String) async throws -> StrapiResponse<ToolConversation>
     var streamToolConversation:  @Sendable (_ studyTool : StudyTool ,_ query: String) async throws -> AsyncThrowingStream<DataStreamRequest.EventSourceEvent, Error>
+
+    var createAITeacherConversation:  @Sendable (_ aiTeacher : AITeacher ,_ query: String) async throws -> StrapiResponse<AITeacherConversation>
+    var streamAITeacherConversation:  @Sendable (_ aiTeacher : AITeacher ,_ query: String) async throws -> AsyncThrowingStream<DataStreamRequest.EventSourceEvent, Error>
+    var getAITeacherConversationList:  @Sendable (_ aiTeacherId : String ,_ page: Int, _ pageSize: Int) async throws -> StrapiResponse<[AITeacherConversation]>
     struct Failure: Error, Equatable {}
 }
 
@@ -115,7 +119,6 @@ extension VoiceGoAPIClient : DependencyKey  {
             return response
         },
         streamToolConversation: {studyTool, query in
-    
             return AsyncThrowingStream() { continuation in
                 Task {
                     let data = StrapiRequestBody(["studyTool": .dictionary(["documentId":.string(studyTool.documentId),"categoryKey":.string(studyTool.categoryKey)]), "query": .string(query)]);
@@ -143,175 +146,53 @@ extension VoiceGoAPIClient : DependencyKey  {
                     })
                 }
             }
-        }
-    )
-}
-
-
-
-extension VoiceGoAPIClient {
-    static var previewValue = Self(
-        fetchStudyTools: { _ in
-
-            // 构造 Pagination 实例
-            let pagination = Pagination(page: 1, pageSize: 10, pageCount: 1, limit: 10, start: 0, total: 1)
-
-            // 构造 Meta 实例
-            let meta = Meta(pagination: pagination)
-
-
-            let resp =  StrapiResponse(
-                data: StudyTool.sample,
-                meta: meta
-            )
-            return resp
         },
-        fetchUserProfile: {
-            let profile = UserProfile.sample
-            return profile
-        },
-        updateUserProfile: { profile in
-            return profile // 在预览模式下直接返回传入的 profile
-        },
-        //临时禁止swift 长度检查规则，否则无法编译
-        // swiftlint:disable line_length
-        getAliSTS: {
-            return AliOSSSTS(
-                accessKeyId: "STS.NWqqtfaFDWdTjC4fcPaSbd2Wh",
-                accessKeySecret: "3tKGGb5BnjsF6xjindJL7GbycQJ65upz3VNyXAMrAjLn",
-                securityToken: "CAIS/QJ1q6Ft5B2yfSjIr5TEOs7SjJll4Ka/aGWFgmMFbdxOi/f8ijz2IHhMeXdoCOkat/4zmWlT5vYYlqZtTJ5OSEPDKNB99Y9W9gX57wh9MVXvv9I+k5SANTW5HHyShb3AAYjQSNfaZY3zCTTtnTNyxr3XbCirW0ffX7SClZ9gaKZhPGy/diEUPMpKAQFgpcQGVx7WLu3/HRP2pWDSAUF0wFse71ly8qOi2MaRxwPDhVnhsI8vqp/2P4KvYrsZXuR2WMzn2/dtJOiTknxO7BlB+ahxya1B8DjK+ZO/ewAOv0jfa7KOr4E0fF8iO/UAdvQa/KSmp5pRoffOkon78RFJMNxOXj7XLILam5OcRb3xZ49lLOynZi2WgoDVLPzvugYjemkFMwJBdtUmOpTZ6/LJx9WxwMaFj7OqCm/LI8DtuCpmS4vzBLLG124rNooiMlSIUFf5y6VGG2cCHTB4s8IvnNFIPYJiHb2pSUhbg+cXTlRqzYmM26m6sZuNEC8/15UagAE7mr6BUcv/WY1SLZ+qsMMPI2r9J2cTB29z1rXA1hOd+psMxFeibsAtQjV6VCNL4qbqNeDR/QEJcoPdDyRnw/XSXhXzMvieCpAvQZufL3qq2/Umhhphwyn9f3GVSJO5qYAmIGNsF1GbbVa2Dj+JAjlg+OXA6/5EiuVkQ+hajVbizCAA",
-                expiration: "2025-05-29T13:57:15Z",
-                region: "oss-cn-shanghai",
-                bucket: "voicego-image"
-            )
-        },
-        getToolConversationList: { studyToolUsedId,  page, pageSize in
-            // 构造 Pagination 实例
-            let pagination = Pagination(page: 1, pageSize: 10, pageCount: 1, limit: 10, start: 0, total: 1)
-
-            // 构造 Meta 实例
-            let meta = Meta(pagination: pagination)
-            let resp =  StrapiResponse(
-                data: ToolConversation.sample,
-                meta: meta
-            )
-            return resp
-        },
-        createToolConversation: { studyTool, query in
-            let response = StrapiResponse(
-                data: ToolConversation.sample[0],
-                meta: nil
-            )
+        createAITeacherConversation: { aiTeacher, query in
+            let data = StrapiRequestBody(["ai_teacher": .dictionary(["documentId":.string(aiTeacher.documentId)]), "query": .string(query)]);
+            let response = try await Strapi.contentManager.collection("tool-conversation").postData(data, as: AITeacherConversation.self)
             return response
         },
-        streamToolConversation: {studyTool, query in
-            return AsyncThrowingStream { continuation in
+        streamAITeacherConversation: { aiTeacher, query in
+            
+            return AsyncThrowingStream() { continuation in
                 Task {
-                    let data = StrapiRequestBody(["studyTool": .dictionary(["documentId":.string(studyTool.documentId),"categoryKey":.string(studyTool.categoryKey)]), "query": .string(query)]);
-                    let request = try await Strapi.contentManager.collection("tool-conversation/create-message?stream").asPostRequest(data)
-                    
+                    let categoryKey = aiTeacher.card?.categoryKey ?? "教练对话"
+                    let assist_content = aiTeacher.card?.assistContent ?? "请根据用户的提问，给出专业的回答"
+                    let data = StrapiRequestBody([
+                        "ai_teacher": .dictionary([
+                            "documentId": .string(aiTeacher.documentId),
+                            "categoryKey": .string(categoryKey),
+                            "assist_content": .string(assist_content)
+                        ]),
+                        "query": .string(query)
+                    ])
+                    let request = try await Strapi.contentManager.collection("teacher-conversation/create-message?stream").asPostRequest(data)
                     Session.default.eventSourceRequest(request).responseEventSource(handler: { eventSource in
                         continuation.yield(eventSource.event)
                         switch eventSource.event {
-                        case .message(let message):
-                            break;
+                        case .message(_): break
                         case .complete(let completion):
-                            if let httpResponse = completion.response, let request = completion.request{
-                                if httpResponse.statusCode != 200 && httpResponse.statusCode != 201 && httpResponse.statusCode != 204 {
-                                    let errorMessage = "Bad Response"
-                                    continuation.finish( throwing: StrapiSwiftError.badResponse(statusCode: httpResponse.statusCode, message: errorMessage))
-                                }
-                                else{
-                                    continuation.finish()
-                                }
+                            guard let httpResponse = completion.response else {
+                                let errorMessage = "Bad Response"
+                                return continuation.finish(throwing: StrapiSwiftError.badResponse(statusCode: 503, message: errorMessage))
+                            }
+                            if httpResponse.statusCode != 200 && httpResponse.statusCode != 201 && httpResponse.statusCode != 204 {
+                                let errorMessage = "Bad Response"
+                                continuation.finish(throwing: StrapiSwiftError.badResponse(statusCode: httpResponse.statusCode, message: errorMessage))
+                            } else {
+                                continuation.finish()
                             }
                         }
                     })
                 }
             }
-        }
-    )
-}
-
-extension VoiceGoAPIClient : TestDependencyKey  {
-    static var testValue = Self(
-        fetchStudyTools: { _ in
-            // 构造 Pagination 实例
-            let pagination = Pagination(page: 1, pageSize: 10, pageCount: 1, limit: 10, start: 0, total: 1)
-
-            // 构造 Meta 实例
-            let meta = Meta(pagination: pagination)
-
-
-            let resp =  StrapiResponse(
-                data: StudyTool.sample,
-                meta: meta
-            )
-            return resp
         },
-        fetchUserProfile: {
-            let profile = UserProfile.sample
-            return profile
-        },
-        updateUserProfile: { profile in
-            return profile // 在测试模式下直接返回传入的 profile
-        },
-        getAliSTS: {
-            return AliOSSSTS(
-                accessKeyId: "test-key-id",
-                accessKeySecret: "test-key-secret",
-                securityToken: "test-token",
-                expiration: "2025-05-29T13:57:15Z",
-                region: "oss-cn-shanghai",
-                bucket: "voicego-image"
-            )
-        },
-        getToolConversationList: {studyToolUsedId, page, pageSize in
-            // 构造 Pagination 实例
-            let pagination = Pagination(page: 1, pageSize: 10, pageCount: 1, limit: 10, start: 0, total: 1)
-
-            // 构造 Meta 实例
-            let meta = Meta(pagination: pagination)
-
-
-            let resp =  StrapiResponse(
-                data: ToolConversation.sample,
-                meta: meta
-            )
-            return resp
-        },
-        createToolConversation: { studyTool, query in
-            let response = StrapiResponse(
-                data: ToolConversation.sample[0],
-                meta: nil
-            )
+        getAITeacherConversationList: { aiTeacherId, page, pageSize in
+            let response = try await Strapi.contentManager.collection("teacher-conversation/my-list")
+                .filter("[ai_teacher][documentId]", operator: .equal, value: aiTeacherId)
+                .paginate(page: page, pageSize: pageSize)
+                .getDocuments(as: [AITeacherConversation].self)
             return response
-        },
-        streamToolConversation: {studyTool, query in
-            return AsyncThrowingStream { continuation in
-                Task {
-                    let data = StrapiRequestBody(["studyTool": .dictionary(["documentId":.string(studyTool.documentId),"categoryKey":.string(studyTool.categoryKey)]), "query": .string(query)]);
-                    let request = try await Strapi.contentManager.collection("tool-conversation/create-message?stream").asPostRequest(data)
-                    
-                    Session.default.eventSourceRequest(request).responseEventSource(handler: { eventSource in
-                        continuation.yield(eventSource.event)
-                        switch eventSource.event {
-                        case .message(let message):
-                            break;
-                        case .complete(let completion):
-                            if let httpResponse = completion.response, let request = completion.request{
-                                if httpResponse.statusCode != 200 && httpResponse.statusCode != 201 && httpResponse.statusCode != 204 {
-                                    let errorMessage = "Bad Response"
-                                    continuation.finish( throwing: StrapiSwiftError.badResponse(statusCode: httpResponse.statusCode, message: errorMessage))
-                                }
-                                else{
-                                    continuation.finish()
-                                }
-                            }
-                        }
-                    })
-                }
-            }
         }
     )
 }
