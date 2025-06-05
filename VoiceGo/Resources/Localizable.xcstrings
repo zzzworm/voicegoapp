@@ -261,6 +261,9 @@
     "确定" : {
       "comment" : "Forgot Password Alert"
     },
+    "确定要退出登录吗？" : {
+
+    },
     "确认重置？" : {
 
     },

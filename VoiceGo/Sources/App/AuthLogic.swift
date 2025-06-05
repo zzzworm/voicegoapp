@@ -9,7 +9,7 @@ struct AuthLogic {
             enum Cancel { case stateDidChange, signOut }
             return .merge(
                 .listenToNotification(notificationNames: [.signOut], mapNotificationToAction: { _ in
-                    Action.digSignOut
+                        Action.digSignOut
                 })
                 .cancellable(id: Cancel.signOut)
             )

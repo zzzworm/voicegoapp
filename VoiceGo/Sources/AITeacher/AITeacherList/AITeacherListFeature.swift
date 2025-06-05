@@ -13,9 +13,7 @@ struct AITeacherListFeature {
     struct State: Equatable {
         var path = StackState<Path.State>()
         var dataLoadingStatus = DataLoadingStatus.notStarted
-        var currentCategory: AITeacher.CategoryTag = .defaultTag // Using the new enum
         var aiTeacherList: IdentifiedArrayOf<AITeacher> = []
-        var cachedTeacherList: [AITeacher.CategoryTag: IdentifiedArrayOf<AITeacher>] = [:]
 
         var shouldShowError: Bool {
             dataLoadingStatus == .error
@@ -28,8 +26,7 @@ struct AITeacherListFeature {
             // case onAppear // If needed to load initial data
         }
         case view(ViewAction)
-        case switchCategory(AITeacher.CategoryTag)
-        case fetchAITeachers(AITeacher.CategoryTag)
+        case fetchAITeachers
         case fetchAITeachersResponse(TaskResult<StrapiResponse<[AITeacher]>>) // Assuming StrapiResponse
         case path(StackActionOf<Path>)
     }
@@ -44,18 +41,17 @@ struct AITeacherListFeature {
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
-            case .fetchAITeachers(let categoryTag):
-                if state.dataLoadingStatus == .loading && state.currentCategory == categoryTag {
-                    return .none // Avoid re-fetching if already loading for the same category
+            case .fetchAITeachers:
+                if state.dataLoadingStatus == .loading {
+                    return .none // Avoid re-fetching if already loading
                 }
                 
                 state.dataLoadingStatus = .loading
-                state.currentCategory = categoryTag // Set current category when fetch starts
                 return .run { send in
                     do {
                         // IMPORTANT: Replace "fetchAITeachers" with the actual API client method
                         // The categoryTag.rawValue might be used if your API expects a string.
-                        let result = try await apiClient.fetchAITeachers(categoryTag.rawValue)
+                        let result = try await apiClient.fetchAITeachers()
                         await send(.fetchAITeachersResponse(.success(result)))
                     } catch {
                         await send(.fetchAITeachersResponse(.failure(error)))
@@ -69,7 +65,6 @@ struct AITeacherListFeature {
                 }
                 state.dataLoadingStatus = .success
                 state.aiTeacherList = IdentifiedArrayOf(uniqueElements: fetchedTeachers)
-                state.cachedTeacherList[state.currentCategory] = state.aiTeacherList
 
                 // Save to database (similar to StudyToolsFeature)
                 return .run { [fetchedTeachers] _ in // Capture list to avoid issues with state changes
@@ -90,16 +85,6 @@ struct AITeacherListFeature {
                 // Log or handle error appropriately
                 print("Error fetching AI Teachers: \(error)")
                 return .none
-
-            case .switchCategory(let category):
-                state.currentCategory = category
-                if let cachedTeachers = state.cachedTeacherList[category] {
-                    state.aiTeacherList = cachedTeachers
-                    state.dataLoadingStatus = .success // Or .notStarted if you prefer to show empty then load
-                    return .none
-                } else {
-                    return .send(.fetchAITeachers(category))
-                }
 
             case .view(let viewAction):
                 switch viewAction {

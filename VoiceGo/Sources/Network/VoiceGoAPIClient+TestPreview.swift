@@ -142,8 +142,8 @@ extension VoiceGoAPIClient: TestDependencyKey {
         getAITeacherConversationList: { _, _, _ in
             return StrapiResponse(data: [], meta: Meta(pagination: Pagination()))
         },
-        fetchAITeachers: { categoryRawValue in
-            let filteredTeachers = AITeacher.sample.filter { $0.tags.localizedCaseInsensitiveContains(categoryRawValue) }
+        fetchAITeachers: { 
+            let filteredTeachers = AITeacher.sample
             let pagination = Pagination(page: 1, pageSize: 10, pageCount: 1, limit: 10, start: 0, total: filteredTeachers.count)
             let meta = Meta(pagination: pagination)
             return StrapiResponse(data: filteredTeachers, meta: meta)
@@ -321,8 +321,8 @@ extension VoiceGoAPIClient {
         getAITeacherConversationList: { _, _, _ in
             return StrapiResponse(data: [], meta: Meta(pagination: Pagination()))
         },
-        fetchAITeachers: { categoryRawValue in
-            let filteredTeachers = AITeacher.sample.filter { $0.tags.localizedCaseInsensitiveContains(categoryRawValue) }
+        fetchAITeachers: {
+            let filteredTeachers = AITeacher.sample
             let pagination = Pagination(page: 1, pageSize: 10, pageCount: 1, limit: 10, start: 0, total: filteredTeachers.count)
             let meta = Meta(pagination: pagination)
             return StrapiResponse(data: filteredTeachers, meta: meta)
