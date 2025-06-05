@@ -12,9 +12,18 @@ import PulseUI
 #endif
 
 struct ProfileSettingView: View {
-    let store: StoreOf<ProfileSettingFeature>
+    @Perception.Bindable var store: StoreOf<ProfileSettingFeature>
     
     var body: some View {
+        content
+            .enableInjection()
+    }
+    
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
+    
+    @ViewBuilder private var content: some View {
         WithPerceptionTracking {
             WithViewStore(self.store, observe: { $0 }) { viewStore in
                 NavigationView {
@@ -36,21 +45,14 @@ struct ProfileSettingView: View {
                                 Spacer()
                             }
                         }
-                        if viewStore.isLoading {
-                            ProgressView()
-                        }
                     }
                     .navigationTitle("设置")
                     .navigationBarTitleDisplayMode(.inline)
                 }
+                .alert($store.scope(state: \.alert, action: \.alert))
             }
         }
-        .enableInjection()
     }
-
-    #if DEBUG
-    @ObserveInjection var forceRedraw
-    #endif
 }
 
 struct ProfileSettingView_Previews: PreviewProvider {

@@ -41,9 +41,9 @@ struct ProfileFeature {
         case fetchUserProfileFromServer
         
         case view(ViewAction)
-                case path(StackActionOf<Path>)
-                case binding(BindingAction<State>)
-                case delegate(Delegate)
+        case path(StackActionOf<Path>)
+        case binding(BindingAction<State>)
+        case delegate(Delegate)
     }
     
     @Reducer(state: .equatable)
@@ -103,15 +103,20 @@ struct ProfileFeature {
                 case let .updateProfileResponse(.failure(error)):
                     state.isLoading = false
                     state.alert = AlertState(title: TextState("更新失败"),
-                                          message: TextState(error.localizedDescription))
+                                             message: TextState(error.localizedDescription))
                     return .none
                 }
                 
-            case let .path(.element(id: _, action: .edit(.delegate(.didUpdateProfile(profile))))):
+            case .path(.element(id: _, action: .edit(.delegate(.didUpdateProfile(let profile))))):
                 state.profile = profile
                 state.path.removeAll()
                 return .none
-                
+            case .path(.element(id: _, action: .setting(.delegate(.didLogout)))):
+                // Handle logout
+                state.path.removeAll()
+                return .send(.delegate(.didLogout))
+            case .path(.element(id: _, action: .setting(let settingAction))):
+                return .none
             case .path:
                 return .none
                 
