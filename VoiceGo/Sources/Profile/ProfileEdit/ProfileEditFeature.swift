@@ -88,7 +88,7 @@ struct ProfileEditFeature {
                     state.displayImage = image
                     // TODO: 上传图片到服务器并获取URL
                     return .none
-
+                    
                 case .toggleSexPicker(let isPresented):
                     state.isSexPickerPresented = isPresented
                     return .none
@@ -108,7 +108,7 @@ struct ProfileEditFeature {
                 case let .updateProfileResponse(.failure(error)):
                     state.isLoading = false
                     state.alert = AlertState(title: TextState("更新失败"),
-                                          message: TextState(error.localizedDescription))
+                                             message: TextState(error.localizedDescription))
                     return .none
                 }
                 

@@ -8,31 +8,56 @@
 import Foundation
 import ComposableArchitecture
 
-struct ProfileSettingFeature: Reducer {
+@Reducer
+struct ProfileSettingFeature {
     @Dependency(\.apiClient) var apiClient
-
-    struct State: Equatable {
-        fileprivate var dataState = DataState.notStarted
-        var isLoading: Bool {
-            dataState == .loading
+    
+    @ObservableState
+    struct State : Equatable{
+        @Presents var alert: AlertState<Action>?
+    }
+    
+    enum Action: BindableAction,Equatable {
+        
+        enum Delegate: Equatable {
+            case didLogout
         }
-    }
-    
-    fileprivate enum DataState {
-        case notStarted
-        case loading
-        case complete
-    }
-    
-    enum Action: Equatable {
-
+        
+        case confirmLogout
         case logout
+        case alert(PresentationAction<Action>)
+        case binding(BindingAction<State>)
+        case delegate(Delegate)
     }
 
-    func reduce(into state: inout State, action: Action) -> Effect<Action> {
-        switch action {
-        case .logout:
-            return .none
+    var body: some Reducer<State, Action> {
+        BindingReducer()
+        Reduce { state, action in
+            switch action {
+            case .logout:
+                state.alert = AlertState {
+                    TextState("确定要退出登录吗？")
+                } actions: {
+                    ButtonState(role: .destructive, action: .confirmLogout) {
+                        TextState("确定")
+                    }
+                    ButtonState(role: .cancel) {
+                        TextState("取消")
+                    }
+                }
+                return .none
+            case .alert(.presented(.confirmLogout)):
+                return .send(.delegate(.didLogout))
+            case .alert:
+                return .none
+            case .delegate(_):
+                return .none
+            case .binding(_):
+                return .none
+            case .confirmLogout:
+                return .none
+            }
         }
+        .ifLet(\.$alert, action: /Action.alert)
     }
 }
