@@ -9,16 +9,16 @@ import SwiftUI
 import ComposableArchitecture
 
 
-struct AITeacherPageView: View {
-    let store: StoreOf<AITeacherPageFeature>
+struct ConversationScenePageView: View {
+    let store: StoreOf<ConversationScenePageFeature>
 
     var body: some View {
         WithPerceptionTracking {
             VStack {
-                Text("AI Teacher Details: \(store.aiTeacher.name)")
+                Text("AI Teacher Details: \(store.conversationScene.name)")
                 // Add more detail view content here
             }
-            .navigationTitle(store.aiTeacher.name)
+            .navigationTitle(store.conversationScene.name)
         }
     }
 }

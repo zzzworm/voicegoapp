@@ -11,10 +11,10 @@ import ComposableArchitecture
 
 // Placeholder for the detail feature
 @Reducer
-struct AITeacherPageFeature {
+struct ConversationScenePageFeature {
     @ObservableState
     struct State: Equatable {
-        var aiTeacher: AITeacher
+        var conversationScene: ConversationScene
         // Add other state properties for the detail view if needed
     }
     @CasePathable

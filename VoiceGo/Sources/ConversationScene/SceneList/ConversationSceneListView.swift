@@ -3,8 +3,8 @@ import ComposableArchitecture
 
 
 
-struct AITeacherListView: View {
-    @Perception.Bindable var store: StoreOf<AITeacherListFeature>
+struct ConversationSceneListView: View {
+    @Perception.Bindable var store: StoreOf<ConversationSceneListFeature>
 
     var body: some View {
         WithPerceptionTracking {
@@ -12,12 +12,13 @@ struct AITeacherListView: View {
                 VStack {
                     // Category switching buttons
                     HStack {
-                        ForEach(AITeacher.CategoryTag.allCases, id: \.self) { tag in
+                        ForEach(ConversationScene.CategoryTag.allCases, id: \.self) { tag in
                             Button(action: {
                                 store.send(.switchCategory(tag))
                             }) {
                                 Text(tag.localizedDescription)
                                     .padding(EdgeInsets(top: 6, leading: 10, bottom: 6, trailing: 10))
+                                    .background(store.currentCategory == tag ? Color.blue.opacity(0.3) : Color(UIColor.systemGray6))
                                     .background(store.currentCategory == tag ? Color.blue.opacity(0.3) : Color(UIColor.systemGray6))
                                     .foregroundColor(.primary)
                                     .cornerRadius(8)
@@ -28,7 +29,7 @@ struct AITeacherListView: View {
                     .padding(.horizontal)
 
                     // Main content area
-                    if store.dataLoadingStatus == .loading && store.aiTeacherList.isEmpty {
+                    if store.dataLoadingStatus == .loading && store.ConversationSceneList.isEmpty {
                         Spacer()
                         ProgressView()
                             .scaleEffect(1.5)
@@ -37,10 +38,10 @@ struct AITeacherListView: View {
                         Spacer()
                         ErrorView(
                             message: "Could not load AI Teachers. Please try again.", // Replace with localized string
-                            retryAction: { store.send(.fetchAITeachers(store.currentCategory)) }
+                            retryAction: { store.send(.fetchConversationScenes(store.currentCategory)) }
                         )
                         Spacer()
-                    } else if store.aiTeacherList.isEmpty && store.dataLoadingStatus == .success {
+                    } else if store.ConversationSceneList.isEmpty && store.dataLoadingStatus == .success {
                         Spacer()
                         Text("No AI Teachers found in this category.") // Replace with localized string
                             .foregroundColor(.secondary)
@@ -48,10 +49,10 @@ struct AITeacherListView: View {
                     } else {
                         ScrollView {
                             LazyVStack(spacing: 12) {
-                                ForEach(store.aiTeacherList) { aiTeacher in
-                                    AITeacherCell(aiTeacher: aiTeacher)
+                                ForEach(store.ConversationSceneList) { ConversationScene in
+                                    ConversationSceneCell(ConversationScene: ConversationScene)
                                         .onTapGesture {
-                                            store.send(.view(.onAITeacherTap(aiTeacher)))
+                                            store.send(.view(.onConversationSceneTap(ConversationScene)))
                                         }
                                 }
                             }
@@ -64,15 +65,15 @@ struct AITeacherListView: View {
                 .navigationTitle("AI Teachers") // Replace with localized string
                 .navigationBarTitleDisplayMode(.inline)
                 .task {
-                    if store.aiTeacherList.isEmpty && store.dataLoadingStatus == .notStarted {
-                        store.send(.fetchAITeachers(store.currentCategory))
+                    if store.ConversationSceneList.isEmpty && store.dataLoadingStatus == .notStarted {
+                        store.send(.fetchConversationScenes(store.currentCategory))
                     }
                 }
             } destination: { store in
                 // This handles navigation to the detail view
                 switch store.case {
-                case let .aiTeacher(detailStore):
-                    AITeacherPageView(store: detailStore) // Using the placeholder detail view
+                case let .ConversationScene(detailStore):
+                    ConversationScenePageView(store: detailStore) // Using the placeholder detail view
                 }
             }
         }
@@ -85,11 +86,11 @@ struct AITeacherListView: View {
 }
 
 // Preview
-struct AITeacherListView_Previews: PreviewProvider {
+struct ConversationSceneListView_Previews: PreviewProvider {
     static var previews: some View {
         // Sample data for preview
         let sampleTeachers = [
-            AITeacher(id: 1,
+            ConversationScene(id: 1,
                       documentId: "t1",
                       name: "Dr. Emily Carter",
                       introduce: "Focuses on business English.",
@@ -101,7 +102,7 @@ struct AITeacherListView_Previews: PreviewProvider {
                       tags: "business",
                       card: nil,
                       cardId: nil),
-            AITeacher(id: 2,
+            ConversationScene(id: 2,
                       documentId: "t2",
                       name: "Mr. John Doe",
                       introduce: "Specializes in travel vocabulary.",
@@ -116,19 +117,19 @@ struct AITeacherListView_Previews: PreviewProvider {
         ]
 
         let store = Store(
-            initialState: AITeacherListFeature.State(
+            initialState: ConversationSceneListFeature.State(
                 dataLoadingStatus: .success,
                 currentCategory: .general,
-                aiTeacherList: IdentifiedArrayOf(uniqueElements: sampleTeachers)
+                ConversationSceneList: IdentifiedArrayOf(uniqueElements: sampleTeachers)
             ),
-            reducer: AITeacherListFeature.init
+            reducer: ConversationSceneListFeature.init
         )
         
         // Mocking API client for preview if needed for fetch actions
         // store.dependencies.apiClient = .previewValue ...
 
         return NavigationView {
-            AITeacherListView(store: store)
+            ConversationSceneListView(store: store)
         }
     }
 }

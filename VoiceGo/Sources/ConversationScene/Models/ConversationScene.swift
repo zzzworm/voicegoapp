@@ -1,8 +1,8 @@
 import Foundation
 import GRDB
 
-// MARK: - AITeacherCard
-struct AITeacherCard: Codable, FetchableRecord, PersistableRecord, Equatable {
+// MARK: - ConversationSceneCard
+struct ConversationSceneCard: Codable, FetchableRecord, PersistableRecord, Equatable {
     let id: Int
     let openingSpeech: String?
     let simpleReplay: String?
@@ -12,9 +12,9 @@ struct AITeacherCard: Codable, FetchableRecord, PersistableRecord, Equatable {
     let categoryKey: String?
 }
 
-extension AITeacherCard: TableRecord {
+extension ConversationSceneCard: TableRecord {
     // 数据库表名（如需单独表可设置，否则可省略）
-    static var databaseTableName: String { "aiTeacherCard" }
+    static var databaseTableName: String { "ConversationSceneCard" }
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -47,8 +47,8 @@ extension AITeacherCard: TableRecord {
     }
 }
 
-// MARK: - AITeacher
-struct AITeacher: Codable, FetchableRecord, PersistableRecord, Equatable, Identifiable {
+// MARK: - ConversationScene
+struct ConversationScene: Codable, FetchableRecord, PersistableRecord, Equatable, Identifiable {
     let id: Int
     let documentId: String
     let name: String
@@ -59,11 +59,11 @@ struct AITeacher: Codable, FetchableRecord, PersistableRecord, Equatable, Identi
     let sex: String
     let difficultyLevel: Int
     let tags: String
-    let card: AITeacherCard?
+    let card: ConversationSceneCard?
     var cardId : Int? = nil
 
-    static var sample: [AITeacher] = [
-        AITeacher(
+    static var sample: [ConversationScene] = [
+        ConversationScene(
             id: 1,
             documentId: "teacher_doc_1",
             name: "Dr. Emily Carter",
@@ -74,7 +74,7 @@ struct AITeacher: Codable, FetchableRecord, PersistableRecord, Equatable, Identi
             sex: "female",
             difficultyLevel: 2,
             tags: "Business,Advanced,IELTS",
-            card: AITeacherCard(id: 1,
+            card: ConversationSceneCard(id: 1,
                                 openingSpeech: "Hello! Let's talk business.",
                                 simpleReplay: "Got it.",
                                 formalReplay: "Understood.",
@@ -83,7 +83,7 @@ struct AITeacher: Codable, FetchableRecord, PersistableRecord, Equatable, Identi
                                 categoryKey: "business"),
             cardId: 1
         ),
-        AITeacher(
+        ConversationScene(
             id: 2,
             documentId: "teacher_doc_2",
             name: "Mr. John Doe",
@@ -94,7 +94,7 @@ struct AITeacher: Codable, FetchableRecord, PersistableRecord, Equatable, Identi
             sex: "male",
             difficultyLevel: 1,
             tags: "Travel,Beginner,General",
-            card: AITeacherCard(id: 2,
+            card: ConversationSceneCard(id: 2,
                                 openingSpeech: "Hi there! Planning a trip?",
                                 simpleReplay: "Okay.",
                                 formalReplay: "Certainly.",
@@ -103,7 +103,7 @@ struct AITeacher: Codable, FetchableRecord, PersistableRecord, Equatable, Identi
                                 categoryKey: "travel"),
             cardId: 2
         ),
-        AITeacher(
+        ConversationScene(
             id: 3,
             documentId: "teacher_doc_3",
             name: "Prof. Ada Byron",
@@ -114,7 +114,7 @@ struct AITeacher: Codable, FetchableRecord, PersistableRecord, Equatable, Identi
             sex: "female",
             difficultyLevel: 3,
             tags: "Academic,Formal,University",
-            card: AITeacherCard(id: 3,
+            card: ConversationSceneCard(id: 3,
                                 openingSpeech: "Greetings. Shall we discuss your research?",
                                 simpleReplay: "I see.",
                                 formalReplay: "Precisely.",
@@ -125,8 +125,8 @@ struct AITeacher: Codable, FetchableRecord, PersistableRecord, Equatable, Identi
         )
     ]
 }
-extension AITeacher: TableRecord {
-    static var databaseTableName: String { "aiTeacher" }
+extension ConversationScene: TableRecord {
+    static var databaseTableName: String { "ConversationScene" }
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -171,7 +171,7 @@ extension AITeacher: TableRecord {
     }
 }
 
-extension AITeacher {
+extension ConversationScene {
     enum CategoryTag: String, CaseIterable, Identifiable, Equatable {
         case general = "基础对话"
         case business = "Business"

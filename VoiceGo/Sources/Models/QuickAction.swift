@@ -17,6 +17,7 @@ enum QuickActionType: String {
 enum QuickAction: Equatable {
     case favourites
     case chat
+    case tearchList
 
     /// Initialize a QuickAction based on the provided UIApplicationShortcutItem.
     ///

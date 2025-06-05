@@ -21,7 +21,9 @@ struct RootFeature {
     struct State : Equatable {
         var profile: UserProfile? = nil
         var currentTab = Tab.studytools
+        var tearchListState = AITeacherListFeature.State()
         var studytoolListState = StudyToolsFeature.State()
+        var conversationSceneListState = ConversationSceneListFeature.State()
         var profileState = ProfileFeature.State()
         var notifications = NotificationsFeature.State()
         @Presents var alert: AlertState<Never>?
@@ -41,6 +43,7 @@ struct RootFeature {
             }
             self.profile = profileFetched
             self.currentTab = currentTab
+            self.tearchListState = AITeacherListFeature.State()
             self.studytoolListState = StudyToolsFeature.State()
             self.profileState = ProfileFeature.State(profile: profileFetched)
             self.notifications = NotificationsFeature.State()
@@ -50,16 +53,19 @@ struct RootFeature {
     
     enum Tab: Int, CaseIterable {
         case favourites
-        case chat
+        case tearchList
         case studytools
+        case conversationSceneList
         case profile
     }
     
     enum Action: BindableAction {
         case onTabChanged(Tab)
         case addNotifications(NotificationItem)
-                
+        
+        case tearchList(AITeacherListFeature.Action)
         case studytoolList(StudyToolsFeature.Action)
+        case conversationSceneList(ConversationSceneListFeature.Action)
         case profile(ProfileFeature.Action)
         case notifications(NotificationsFeature.Action)
                 
@@ -81,8 +87,14 @@ struct RootFeature {
 
     var body: some Reducer<State, Action> {
         BindingReducer()
+        Scope(state: \.tearchListState, action: /Action.tearchList) {
+            AITeacherListFeature()
+        }
         Scope(state: \.studytoolListState, action: /Action.studytoolList) {
             StudyToolsFeature()
+        }
+        Scope(state: \.conversationSceneListState, action: /Action.conversationSceneList) {
+            ConversationSceneListFeature()
         }
         Scope(state: \.profileState, action: /Action.profile) {
             ProfileFeature()
@@ -92,10 +104,14 @@ struct RootFeature {
                 }
         Reduce<State, Action> { state, action in
             switch action {
+            case .tearchList:
+                return .none
             case .studytoolList:
                 return .none
             case .onTabChanged(let tab):
                 state.currentTab = tab
+                return .none
+            case .conversationSceneList:
                 return .none
             case .profile(.delegate(.didLogout)):
                 return .send(.delegate(.didLogout))

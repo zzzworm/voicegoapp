@@ -13,6 +13,7 @@ import Alamofire
 
 
 struct VoiceGoAPIClient {
+    
     var fetchStudyTools:  @Sendable (String) async throws -> StrapiResponse<[StudyTool]>
     var fetchUserProfile:  @Sendable () async throws -> UserProfile
     var updateUserProfile:  @Sendable (UserProfile) async throws -> UserProfile
@@ -26,6 +27,11 @@ struct VoiceGoAPIClient {
     var streamAITeacherConversation:  @Sendable (_ aiTeacher : AITeacher ,_ query: String) async throws -> AsyncThrowingStream<DataStreamRequest.EventSourceEvent, Error>
     var getAITeacherConversationList:  @Sendable (_ aiTeacherId : String ,_ page: Int, _ pageSize: Int) async throws -> StrapiResponse<[AITeacherConversation]>
     var fetchAITeachers: @Sendable (String) async throws -> StrapiResponse<[AITeacher]>
+    
+    var streamSenceConversation: @Sendable (_ scene: ConversationScene, _ query: String) async throws -> AsyncThrowingStream<DataStreamRequest.EventSourceEvent, Error>
+    var getSenceConversationList: @Sendable (_ sceneId: String, _ page: Int, _ pageSize: Int) async throws -> StrapiResponse<[SceneConversation]>
+    var fetchSenceList: @Sendable (String) async throws -> StrapiResponse<[ConversationScene]>
+    
     struct Failure: Error, Equatable {}
 }
 
@@ -201,6 +207,56 @@ extension VoiceGoAPIClient : DependencyKey  {
                     .filter("[tags]", operator: .contains, value: categoryRawValue)
                     .populate("card")
                     .getDocuments(as: [AITeacher].self)
+                return resp
+            }
+        },
+        streamSenceConversation: { scene, query in
+            return AsyncThrowingStream() { continuation in
+                Task {
+                    let categoryKey = scene.card?.categoryKey ?? "场景对话"
+                    let assist_content = scene.card?.assistContent ?? "请根据用户的提问，给出专业的回答"
+                    let data = StrapiRequestBody([
+                        "scene": .dictionary([
+                            "documentId": .string(scene.documentId),
+                            "categoryKey": .string(categoryKey),
+                            "assist_content": .string(assist_content)
+                        ]),
+                        "query": .string(query)
+                    ])
+                    let request = try await Strapi.contentManager.collection("scene-conversation/create-message?stream").asPostRequest(data)
+                    Session.default.eventSourceRequest(request).responseEventSource(handler: { eventSource in
+                        continuation.yield(eventSource.event)
+                        switch eventSource.event {
+                        case .message(_): break
+                        case .complete(let completion):
+                            guard let httpResponse = completion.response else {
+                                let errorMessage = "Bad Response"
+                                return continuation.finish(throwing: StrapiSwiftError.badResponse(statusCode: 503, message: errorMessage))
+                            }
+                            if httpResponse.statusCode != 200 && httpResponse.statusCode != 201 && httpResponse.statusCode != 204 {
+                                let errorMessage = "Bad Response"
+                                continuation.finish(throwing: StrapiSwiftError.badResponse(statusCode: httpResponse.statusCode, message: errorMessage))
+                            } else {
+                                continuation.finish()
+                            }
+                        }
+                    })
+                }
+            }
+        },
+        getSenceConversationList: { sceneId, page, pageSize in
+            let response = try await Strapi.contentManager.collection("scene-conversation/my-list")
+                .filter("[scene][documentId]", operator: .equal, value: sceneId)
+                .paginate(page: page, pageSize: pageSize)
+                .getDocuments(as: [SceneConversation].self)
+            return response
+        },
+        fetchSenceList: { categoryRawValue in
+            return try await handleStrapiRequest {
+                let resp = try await Strapi.contentManager.collection("scenes")
+                    .filter("[tags]", operator: .contains, value: categoryRawValue)
+                    .populate("card")
+                    .getDocuments(as: [ConversationScene].self)
                 return resp
             }
         }

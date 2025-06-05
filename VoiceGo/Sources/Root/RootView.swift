@@ -16,6 +16,38 @@ struct RootView: View {
             TabView(
                 selection: $store.currentTab.sending(\.onTabChanged)
             ) {
+                AITeacherListView(
+                    store: self.store.scope(
+                        state: \.tearchListState,
+                        action: RootFeature.Action
+                            .tearchList
+                    )
+                )
+                .tabItem {
+                    if store.currentTab == .tearchList {
+                        Image(systemName: "ellipses.bubble.fill")
+                    } else {
+                        Image(systemName: "ellipses.bubble")
+                    }
+                    Text("AI教练")
+                }
+                .tag(RootFeature.Tab.tearchList)
+                ConversationSceneListView(
+                    store: self.store.scope(
+                        state: \.conversationSceneListState,
+                        action: RootFeature.Action.conversationSceneList
+                    )
+                )
+                .tabItem {
+                    if store.currentTab == .conversationSceneList {
+                        Image(systemName: "bubble.left.and.bubble.right.fill")
+                    } else {
+                        Image(systemName: "bubble.left.and.bubble.right")
+                    }
+                    Text("情景对话")
+                }
+                .tag(RootFeature.Tab.conversationSceneList)
+
                 StudyToolListView(
                     store: self.store.scope(
                         state: \.studytoolListState,
@@ -24,10 +56,16 @@ struct RootView: View {
                     )
                 )
                 .tabItem {
-                    Image(systemName: "list.bullet")
+                    if store.currentTab == .studytools {
+                        Image(systemName: "briefcase.fill")
+                    } else {
+                        Image(systemName: "briefcase")
+                    }
                     Text("学习")
                 }
                 .tag(RootFeature.Tab.studytools)
+
+                
                 ProfileView(
                     store: self.store.scope(
                         state: \.profileState,
@@ -35,7 +73,11 @@ struct RootView: View {
                     )
                 )
                 .tabItem {
-                    Image(systemName: "person.fill")
+                    if store.currentTab == .profile {
+                        Image(systemName: "person.fill")
+                    } else {
+                        Image(systemName: "person")
+                    }
                     Text("我的")
                 }
                 .tag(RootFeature.Tab.profile)

@@ -1,5 +1,5 @@
 {
-  "originHash" : "84506303c31baf0e062272e186168244c543af5781c636db934c0870cacc9f40",
+  "originHash" : "ad34c4e1ea4397f5572c19bf28a2c2be722d74b42d892e63d4a7d08249a086ba",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -530,6 +530,15 @@
       "state" : {
         "revision" : "2b6054efa051565954e1d2b9da831680026cd768",
         "version" : "4.3.0"
+      }
+    },
+    {
+      "identity" : "uifontcomplete",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Nirma/UIFontComplete.git",
+      "state" : {
+        "revision" : "66374d4cbd2625adbbb5ef241f13e16e234717ce",
+        "version" : "6.2.0"
       }
     },
     {
