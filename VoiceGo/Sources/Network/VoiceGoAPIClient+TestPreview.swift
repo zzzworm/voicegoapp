@@ -147,6 +147,70 @@ extension VoiceGoAPIClient: TestDependencyKey {
             let pagination = Pagination(page: 1, pageSize: 10, pageCount: 1, limit: 10, start: 0, total: filteredTeachers.count)
             let meta = Meta(pagination: pagination)
             return StrapiResponse(data: filteredTeachers, meta: meta)
+        },
+        streamSenceConversation: { scene, query in
+            return AsyncThrowingStream() { continuation in
+                Task {
+                    let categoryKey = scene.card?.categoryKey ?? "场景对话"
+                    let assist_content = scene.card?.assistContent ?? "请根据用户的提问，给出专业的回答"
+                    let data = StrapiRequestBody([
+                        "scene": .dictionary([
+                            "documentId": .string(scene.documentId),
+                            "categoryKey": .string(categoryKey),
+                            "assist_content": .string(assist_content)
+                        ]),
+                        "query": .string(query)
+                    ])
+                    let request = try await Strapi.contentManager.collection("scene-conversation/create-message?stream").asPostRequest(data)
+                    Session.default.eventSourceRequest(request).responseEventSource(handler: { eventSource in
+                        continuation.yield(eventSource.event)
+                        switch eventSource.event {
+                        case .message(_): break
+                        case .complete(let completion):
+                            guard let httpResponse = completion.response else {
+                                let errorMessage = "Bad Response"
+                                return continuation.finish(throwing: StrapiSwiftError.badResponse(statusCode: 503, message: errorMessage))
+                            }
+                            if httpResponse.statusCode != 200 && httpResponse.statusCode != 201 && httpResponse.statusCode != 204 {
+                                let errorMessage = "Bad Response"
+                                continuation.finish(throwing: StrapiSwiftError.badResponse(statusCode: httpResponse.statusCode, message: errorMessage))
+                            } else {
+                                continuation.finish()
+                            }
+                        }
+                    })
+                }
+            }
+        },
+        getSenceConversationList: { sceneId, page, pageSize in
+            let pagination = Pagination(page: page, pageSize: pageSize, pageCount: 1, limit: pageSize, start: 0, total: 1)
+            let meta = Meta(pagination: pagination)
+            let resp = StrapiResponse(
+                data: [SceneConversation(
+                    documentId: sceneId,
+                    id: 1,
+                    updatedAt: Date(),
+                    query: "preview-scene-query",
+                    answer: ConversationAnswer(id: 1,
+                                               answer: "scene-answer",
+                                               score: 1,
+                                               revisions: ["scene-revision"],
+                                               review: "scene-review",
+                                               simpleReplay: "scene-simple",
+                                               formalReplay: "scene-formal"),
+                    message_id: "scene-message-id",
+                    conversation_id: "scene-conv-id",
+                    scene: ConversationScene.sample.first
+                )],
+                meta: meta
+            )
+            return resp
+        },
+        fetchSenceList: { categoryRawValue in
+            let filteredScenes = ConversationScene.sample.filter { $0.tags.localizedCaseInsensitiveContains(categoryRawValue) }
+            let pagination = Pagination(page: 1, pageSize: 10, pageCount: 1, limit: 10, start: 0, total: filteredScenes.count)
+            let meta = Meta(pagination: pagination)
+            return StrapiResponse(data: filteredScenes, meta: meta)
         }
     )
 }
@@ -262,6 +326,70 @@ extension VoiceGoAPIClient {
             let pagination = Pagination(page: 1, pageSize: 10, pageCount: 1, limit: 10, start: 0, total: filteredTeachers.count)
             let meta = Meta(pagination: pagination)
             return StrapiResponse(data: filteredTeachers, meta: meta)
+        },
+        streamSenceConversation: { scene, query in
+            return AsyncThrowingStream() { continuation in
+                Task {
+                    let categoryKey = scene.card?.categoryKey ?? "场景对话"
+                    let assist_content = scene.card?.assistContent ?? "请根据用户的提问，给出专业的回答"
+                    let data = StrapiRequestBody([
+                        "scene": .dictionary([
+                            "documentId": .string(scene.documentId),
+                            "categoryKey": .string(categoryKey),
+                            "assist_content": .string(assist_content)
+                        ]),
+                        "query": .string(query)
+                    ])
+                    let request = try await Strapi.contentManager.collection("scene-conversation/create-message?stream").asPostRequest(data)
+                    Session.default.eventSourceRequest(request).responseEventSource(handler: { eventSource in
+                        continuation.yield(eventSource.event)
+                        switch eventSource.event {
+                        case .message(_): break
+                        case .complete(let completion):
+                            guard let httpResponse = completion.response else {
+                                let errorMessage = "Bad Response"
+                                return continuation.finish(throwing: StrapiSwiftError.badResponse(statusCode: 503, message: errorMessage))
+                            }
+                            if httpResponse.statusCode != 200 && httpResponse.statusCode != 201 && httpResponse.statusCode != 204 {
+                                let errorMessage = "Bad Response"
+                                continuation.finish(throwing: StrapiSwiftError.badResponse(statusCode: httpResponse.statusCode, message: errorMessage))
+                            } else {
+                                continuation.finish()
+                            }
+                        }
+                    })
+                }
+            }
+        },
+        getSenceConversationList: { sceneId, page, pageSize in
+            let pagination = Pagination(page: page, pageSize: pageSize, pageCount: 1, limit: pageSize, start: 0, total: 1)
+            let meta = Meta(pagination: pagination)
+            let resp = StrapiResponse(
+                data: [SceneConversation(
+                    documentId: sceneId,
+                    id: 1,
+                    updatedAt: Date(),
+                    query: "preview-scene-query",
+                    answer: ConversationAnswer(id: 1,
+                                               answer: "scene-answer",
+                                               score: 1,
+                                               revisions: ["scene-revision"],
+                                               review: "scene-review",
+                                               simpleReplay: "scene-simple",
+                                               formalReplay: "scene-formal"),
+                    message_id: "scene-message-id",
+                    conversation_id: "scene-conv-id",
+                    scene: ConversationScene.sample.first
+                )],
+                meta: meta
+            )
+            return resp
+        },
+        fetchSenceList: { categoryRawValue in
+            let filteredScenes = ConversationScene.sample.filter { $0.tags.localizedCaseInsensitiveContains(categoryRawValue) }
+            let pagination = Pagination(page: 1, pageSize: 10, pageCount: 1, limit: 10, start: 0, total: filteredScenes.count)
+            let meta = Meta(pagination: pagination)
+            return StrapiResponse(data: filteredScenes, meta: meta)
         }
     )
 }

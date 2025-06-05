@@ -6,16 +6,29 @@
 //
 
 import SwiftUI
+import UIFontComplete
 
 struct ErrorView: View {
     let message: String
+    let systemMessage: String = String(localized:"请检查网络连接或稍后重试", comment: "Error message when there is a network issue")
     let retryAction: () -> Void
     
     var body: some View {
         VStack {
-            
+            Image(VoiceGoAsset.Assets.errorLogo.name)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 200, height: 200)
+                .padding(.top, 50)
             Text(message)
-                .font(.custom("AmericanTypewriter", size: 25))
+                .font(BuiltInFont.helvetica.of(size: 26.0))
+                .padding(16)
+                
+            Text(systemMessage)
+                .font(BuiltInFont.helvetica.of(size: 16.0))
+                .padding(16)
+            Spacer()
+            let selectedStyle = CTAButtonStyle(isSelected: true)
             Button {
                 retryAction()
             } label: {
@@ -23,10 +36,9 @@ struct ErrorView: View {
                     .font(.custom("AmericanTypewriter", size: 25))
                     .foregroundColor(.white)
             }
-            .frame(width: 100, height: 60)
-            .background(.blue)
-            .cornerRadius(10)
-            .padding()
+            .buttonStyle(selectedStyle)
+            .frame(width:100)
+            .padding(.bottom,16)
 
         }
         .enableInjection()

@@ -4,7 +4,7 @@ import StrapiSwift // Assuming StrapiSwift is used for API responses
 
 
 @Reducer
-struct AITeacherListFeature {
+struct ConversationSceneListFeature {
     @Dependency(\.uuid) var uuid
     @Dependency(\.apiClient) var apiClient
     @Dependency(\.defaultDatabase) var database // Assuming GRDB is used via this dependency
@@ -13,9 +13,9 @@ struct AITeacherListFeature {
     struct State: Equatable {
         var path = StackState<Path.State>()
         var dataLoadingStatus = DataLoadingStatus.notStarted
-        var currentCategory: AITeacher.CategoryTag = .defaultTag // Using the new enum
-        var aiTeacherList: IdentifiedArrayOf<AITeacher> = []
-        var cachedTeacherList: [AITeacher.CategoryTag: IdentifiedArrayOf<AITeacher>] = [:]
+        var currentCategory: ConversationScene.CategoryTag = .defaultTag // Using the new enum
+        var ConversationSceneList: IdentifiedArrayOf<ConversationScene> = []
+        var cachedTeacherList: [ConversationScene.CategoryTag: IdentifiedArrayOf<ConversationScene>] = [:]
 
         var shouldShowError: Bool {
             dataLoadingStatus == .error
@@ -24,27 +24,27 @@ struct AITeacherListFeature {
 
     enum Action {
         enum ViewAction: Equatable {
-            case onAITeacherTap(AITeacher)
+            case onConversationSceneTap(ConversationScene)
             // case onAppear // If needed to load initial data
         }
         case view(ViewAction)
-        case switchCategory(AITeacher.CategoryTag)
-        case fetchAITeachers(AITeacher.CategoryTag)
-        case fetchAITeachersResponse(TaskResult<StrapiResponse<[AITeacher]>>) // Assuming StrapiResponse
+        case switchCategory(ConversationScene.CategoryTag)
+        case fetchConversationScenes(ConversationScene.CategoryTag)
+        case fetchConversationScenesResponse(TaskResult<StrapiResponse<[ConversationScene]>>) // Assuming StrapiResponse
         case path(StackActionOf<Path>)
     }
 
     @Reducer(state: .equatable)
     enum Path {
         // This will be the destination when an AI Teacher is tapped.
-        // Assuming you'll have an AITeacherFeature for the detail view.
-        case aiTeacher(AITeacherPageFeature)
+        // Assuming you'll have an ConversationSceneFeature for the detail view.
+        case ConversationScene(ConversationScenePageFeature)
     }
 
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
-            case .fetchAITeachers(let categoryTag):
+            case .fetchConversationScenes(let categoryTag):
                 if state.dataLoadingStatus == .loading && state.currentCategory == categoryTag {
                     return .none // Avoid re-fetching if already loading for the same category
                 }
@@ -53,30 +53,30 @@ struct AITeacherListFeature {
                 state.currentCategory = categoryTag // Set current category when fetch starts
                 return .run { send in
                     do {
-                        // IMPORTANT: Replace "fetchAITeachers" with the actual API client method
+                        // IMPORTANT: Replace "fetchConversationScenes" with the actual API client method
                         // The categoryTag.rawValue might be used if your API expects a string.
-                        let result = try await apiClient.fetchAITeachers(categoryTag.rawValue)
-                        await send(.fetchAITeachersResponse(.success(result)))
+                        let result = try await apiClient.fetchSenceList(categoryTag.rawValue)
+                        await send(.fetchConversationScenesResponse(.success(result)))
                     } catch {
-                        await send(.fetchAITeachersResponse(.failure(error)))
+                        await send(.fetchConversationScenesResponse(.failure(error)))
                     }
                 }
 
-            case .fetchAITeachersResponse(.success(let aiTeacherListRsp)):
-                var fetchedTeachers: [AITeacher] = []
+            case .fetchConversationScenesResponse(.success(let ConversationSceneListRsp)):
+                var fetchedTeachers: [ConversationScene] = []
                 MainActor.assumeIsolated { // Ensure UI updates are on the main actor
-                    fetchedTeachers = aiTeacherListRsp.data
+                    fetchedTeachers = ConversationSceneListRsp.data
                 }
                 state.dataLoadingStatus = .success
-                state.aiTeacherList = IdentifiedArrayOf(uniqueElements: fetchedTeachers)
-                state.cachedTeacherList[state.currentCategory] = state.aiTeacherList
+                state.ConversationSceneList = IdentifiedArrayOf(uniqueElements: fetchedTeachers)
+                state.cachedTeacherList[state.currentCategory] = state.ConversationSceneList
 
                 // Save to database (similar to StudyToolsFeature)
                 return .run { [fetchedTeachers] _ in // Capture list to avoid issues with state changes
                     do {
                         try await self.database.write { db in
                             for var teacher in fetchedTeachers { // Make mutable to handle potential GRDB requirements
-                                try teacher.upsert(db) // Assuming AITeacher conforms to GRDB's PersistableRecord
+                                try teacher.upsert(db) // Assuming ConversationScene conforms to GRDB's PersistableRecord
                             }
                         }
                     } catch {
@@ -85,7 +85,7 @@ struct AITeacherListFeature {
                     }
                 }
 
-            case .fetchAITeachersResponse(.failure(let error)):
+            case .fetchConversationScenesResponse(.failure(let error)):
                 state.dataLoadingStatus = .error
                 // Log or handle error appropriately
                 print("Error fetching AI Teachers: \(error)")
@@ -94,23 +94,23 @@ struct AITeacherListFeature {
             case .switchCategory(let category):
                 state.currentCategory = category
                 if let cachedTeachers = state.cachedTeacherList[category] {
-                    state.aiTeacherList = cachedTeachers
+                    state.ConversationSceneList = cachedTeachers
                     state.dataLoadingStatus = .success // Or .notStarted if you prefer to show empty then load
                     return .none
                 } else {
-                    return .send(.fetchAITeachers(category))
+                    return .send(.fetchConversationScenes(category))
                 }
 
             case .view(let viewAction):
                 switch viewAction {
-                case .onAITeacherTap(let aiTeacher):
+                case .onConversationSceneTap(let ConversationScene):
                     // Navigate to the detail view for the selected AI Teacher
-                    // This assumes AITeacherFeature.State can be initialized with an AITeacher
-//                    state.path.append(.aiTeacher(.init(aiTeacher: aiTeacher)))
+                    // This assumes ConversationSceneFeature.State can be initialized with an ConversationScene
+//                    state.path.append(.ConversationScene(.init(ConversationScene: ConversationScene)))
                     return .none
                 // case .onAppear:
-                //    if state.aiTeacherList.isEmpty && state.dataLoadingStatus == .notStarted {
-                //        return .send(.fetchAITeachers(state.currentCategory))
+                //    if state.ConversationSceneList.isEmpty && state.dataLoadingStatus == .notStarted {
+                //        return .send(.fetchConversationScenes(state.currentCategory))
                 //    }
                 //    return .none
                 }

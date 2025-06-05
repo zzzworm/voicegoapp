@@ -70,6 +70,7 @@ let package = Package(
         .package(url: "https://github.com/agisilaos/ColorKit.git", from: "1.6.0"),
         .package(url: "https://github.com/yannickl/DynamicColor.git", from: "5.0.0"),
         .package(url: "https://github.com/eu-digital-identity-wallet/SwiftCopyableMacro.git", from: "0.0.3"),
+        .package(url: "https://github.com/Nirma/UIFontComplete.git", from: "6.2.0"),
         .package(path: "../Packages/strapi-swift"),
     ]
 )

@@ -49,6 +49,7 @@ let commonDependencies : [TargetDependency] = [
                 .external(name: "ColorKit"),   
                 .external(name: "DynamicColor"),
                 .external(name: "Copyable"),
+                .external(name: "UIFontComplete"),
             ]
 
 let targetActions: [TargetScript] = [

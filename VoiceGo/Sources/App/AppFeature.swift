@@ -118,7 +118,7 @@ struct AppFeature {
                         
                         if let push = try? Push(decoding: response.request.content.userInfo) {
                             Log.info("userNotifications didReceiveResponse push: \(push.aps.navigateTo!)")
-                            await send(.main(.onTabChanged(.chat)))
+                            await send(.main(.onTabChanged(.tearchList)))
                         }
                     }
 
@@ -132,8 +132,8 @@ struct AppFeature {
                     switch action {
                     case .favourites:
                         state = .main(RootFeature.State(currentTab: .favourites))
-                    case .chat:
-                        state = .main(RootFeature.State(currentTab: .chat))
+                    case .tearchList:
+                        state = .main(RootFeature.State(currentTab: .tearchList))
                     default:
                         break
                     }
