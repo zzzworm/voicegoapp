@@ -10,23 +10,7 @@ struct AITeacherListView: View {
         WithPerceptionTracking {
             NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
                 VStack {
-                    // Category switching buttons
-                    HStack {
-                        ForEach(AITeacher.CategoryTag.allCases, id: \.self) { tag in
-                            Button(action: {
-                                store.send(.switchCategory(tag))
-                            }) {
-                                Text(tag.localizedDescription)
-                                    .padding(EdgeInsets(top: 6, leading: 10, bottom: 6, trailing: 10))
-                                    .background(store.currentCategory == tag ? Color.blue.opacity(0.3) : Color(UIColor.systemGray6))
-                                    .foregroundColor(.primary)
-                                    .cornerRadius(8)
-                            }
-                        }
-                    }
-                    .padding(.vertical, 8)
-                    .padding(.horizontal)
-
+                    
                     // Main content area
                     if store.dataLoadingStatus == .loading && store.aiTeacherList.isEmpty {
                         Spacer()
@@ -37,7 +21,7 @@ struct AITeacherListView: View {
                         Spacer()
                         ErrorView(
                             message: "Could not load AI Teachers. Please try again.", // Replace with localized string
-                            retryAction: { store.send(.fetchAITeachers(store.currentCategory)) }
+                            retryAction: { store.send(.fetchAITeachers) }
                         )
                         Spacer()
                     } else if store.aiTeacherList.isEmpty && store.dataLoadingStatus == .success {
@@ -65,7 +49,7 @@ struct AITeacherListView: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .task {
                     if store.aiTeacherList.isEmpty && store.dataLoadingStatus == .notStarted {
-                        store.send(.fetchAITeachers(store.currentCategory))
+                        store.send(.fetchAITeachers)
                     }
                 }
             } destination: { store in
@@ -118,7 +102,6 @@ struct AITeacherListView_Previews: PreviewProvider {
         let store = Store(
             initialState: AITeacherListFeature.State(
                 dataLoadingStatus: .success,
-                currentCategory: .general,
                 aiTeacherList: IdentifiedArrayOf(uniqueElements: sampleTeachers)
             ),
             reducer: AITeacherListFeature.init

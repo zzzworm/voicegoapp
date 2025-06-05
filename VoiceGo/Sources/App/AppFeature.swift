@@ -54,7 +54,7 @@ struct AppFeature {
         MainActor.assumeIsolated{
             Strapi.configure(baseURL: Configuration.current.baseURL, token: nil)
         }
-        state = .loading(LoadingFeature.State())
+        state = .join(JoinFeature.State())
         Task{
             await self.userDefaultsClient.setCurrentUserID(nil);
         }
