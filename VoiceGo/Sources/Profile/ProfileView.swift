@@ -102,10 +102,13 @@ struct ProfileView: View {
                 switch store.case {
                 case let .setting(store):
                     ProfileSettingView(store: store)
+                    .toolbar(.hidden, for: .tabBar) // Hide tab bar in detail view
                 case let .edit(store):
                     ProfileEditView(store: store)
+                    .toolbar(.hidden, for: .tabBar) // Hide tab bar in detail view
                 }
             }
+            .toolbar(.visible, for: .tabBar) // Hide tab bar in detail view
             .alert($store.scope(state: \.alert, action: \.alert))
         }
         .enableInjection()

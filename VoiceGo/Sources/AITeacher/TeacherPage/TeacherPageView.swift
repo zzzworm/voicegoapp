@@ -12,9 +12,18 @@ struct AITeacherPageView: View {
     let store: StoreOf<AITeacherPageFeature>
     
     private let imageHeightRatio: CGFloat = 0.6
-    private let scrollItemSize = CGSize(width: 35, height: 100)
+    private let scrollItemSize = CGSize(width: 65, height: 100)
     
     var body: some View {
+        content
+            .enableInjection()
+    }
+    
+#if DEBUG
+    @ObserveInjection var forceRedraw
+#endif
+    
+    @ViewBuilder private var content: some View {
         WithPerceptionTracking {
             GeometryReader { geometry in
                 VStack(spacing: 0) {
@@ -74,40 +83,7 @@ struct AITeacherPageView: View {
                     }
                     
                     // Scrollable teacher list
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 12) {
-                            ForEach(store.state.aiTeacherList) { teacher in
-                                if  let url = URL(string: teacher.coverUrl) {
-                                    AsyncImage(url: url) { phase in
-                                        switch phase {
-                                        case .success(let image):
-                                            image
-                                                .resizable()
-                                                .scaledToFill()
-                                                .frame(width: scrollItemSize.width, height: scrollItemSize.height)
-                                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                                        case .failure(_):
-                                            Color.gray.opacity(0.3)
-                                                .frame(width: scrollItemSize.width, height: scrollItemSize.height)
-                                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                                        case .empty:
-                                            ProgressView()
-                                                .frame(width: scrollItemSize.width, height: scrollItemSize.height)
-                                        @unknown default:
-                                            Color.gray.opacity(0.3)
-                                                .frame(width: scrollItemSize.width, height: scrollItemSize.height)
-                                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                                        }
-                                    }
-                                } else {
-                                    Color.gray.opacity(0.3)
-                                        .frame(width: scrollItemSize.width, height: scrollItemSize.height)
-                                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                                }
-                            }
-                        }
-                        .padding(.horizontal)
-                    }
+                    teacherListView
                     .padding(.vertical, 16)
                     
                     Spacer()
@@ -132,6 +108,51 @@ struct AITeacherPageView: View {
                 .navigationBarTitleDisplayMode(.inline)
             }
         }
+    }
+    
+    // MARK: - View Variables
+    
+    @ViewBuilder
+    private var teacherListView: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 12) {
+                ForEach(store.state.aiTeacherList) { teacher in
+                    teacherItemView(for: teacher)
+                }
+            }
+            .padding(.horizontal)
+        }
+    }
+    
+    @ViewBuilder
+    private func teacherItemView(for teacher: AITeacher) -> some View {
+        if let url = URL(string: teacher.coverUrl) {
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: scrollItemSize.width, height: scrollItemSize.height)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                case .failure(_):
+                    placeholderItem
+                case .empty:
+                    ProgressView()
+                        .frame(width: scrollItemSize.width, height: scrollItemSize.height)
+                @unknown default:
+                    placeholderItem
+                }
+            }
+        } else {
+            placeholderItem
+        }
+    }
+    
+    private var placeholderItem: some View {
+        Color.gray.opacity(0.3)
+            .frame(width: scrollItemSize.width, height: scrollItemSize.height)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 

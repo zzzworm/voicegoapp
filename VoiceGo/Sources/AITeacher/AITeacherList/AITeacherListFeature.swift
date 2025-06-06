@@ -91,7 +91,7 @@ struct AITeacherListFeature {
                 case .onAITeacherTap(let aiTeacher):
                     // Navigate to the detail view for the selected AI Teacher
                     // This assumes AITeacherFeature.State can be initialized with an AITeacher
-                   state.path.append(.aiTeacher(.init(aiTeacher: aiTeacher)))
+                    state.path.append(.aiTeacher(.init(aiTeacher: aiTeacher, aiTeacherList: state.aiTeacherList)))
                     return .none
                 // case .onAppear:
                 //    if state.aiTeacherList.isEmpty && state.dataLoadingStatus == .notStarted {

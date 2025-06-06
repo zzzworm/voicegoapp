@@ -39,7 +39,18 @@
   - SafeArea and GeometryReader for layout
   - Handle all screen sizes and orientations
   - Implement proper keyboard handling use @FocusState
-
+  - always generate Injection hotreload support. likes:
+```
+    var body: some View {
+        content
+            .enableInjection()
+    }
+    
+#if DEBUG
+    @ObserveInjection var forceRedraw
+#endif
+```
+  - separate big view to view variables for better code
 
   # Performance
 
