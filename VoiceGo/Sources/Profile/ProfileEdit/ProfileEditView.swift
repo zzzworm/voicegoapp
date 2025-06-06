@@ -66,6 +66,40 @@ struct ProfileEditView: View {
                             }
                         }
                     }
+                    // Sex Picker Sheet
+                    .sheet(isPresented: $store.isSexPickerPresented) {
+                        NavigationStack {
+                            List {
+                                Section {
+                                    ForEach(UserProfile.Sex.allCases, id: \.self) { sex in
+                                        Button(action: { store.send(.view(.sexSelected(sex))) }) {
+                                            HStack {
+                                                Text(sex.localizedDescription)
+                                                Spacer()
+                                                if sex == store.sexToChange {
+                                                    Image(systemName: "checkmark")
+                                                        .foregroundColor(.blue)
+                                                }
+                                            }
+                                        }
+                                    }
+                                } header: {
+                                    Spacer(minLength: 0).listRowInsets(EdgeInsets())
+                                }
+                            }
+                            .environment(\.defaultMinListHeaderHeight, 0)
+                            .navigationTitle("选择性别")
+                            .navigationBarTitleDisplayMode(.inline)
+                            .toolbar {
+                                ToolbarItem(placement: .navigationBarTrailing) {
+                                    Button("完成") {
+                                        store.send(.view(.toggleSexPicker(false)))
+                                    }
+                                }
+                            }
+                        }
+                        .presentationDetents([.height(160)]) // 设置固定高度
+                    }
                     
                     Section("学习设置") {
                         // English Level
@@ -95,7 +129,14 @@ struct ProfileEditView: View {
                         }
                         
                         // Study Goal
-                        TextField("学习目标", text: $store.studyGoalToChange)
+                        HStack {
+                            Text("学习目标")
+                                .foregroundColor(.primary)
+                            Spacer()
+                            TextField("学习目标", text: $store.studyGoalToChange)
+                                .multilineTextAlignment(.trailing)
+                                .foregroundColor(.gray)
+                        }
                         
                         // User Role
                         Button(action: {
@@ -110,7 +151,111 @@ struct ProfileEditView: View {
                             }
                         }
                     }
+                    // English Level Picker Sheet
+                    .sheet(isPresented: $store.isEngLevelPickerPresented) {
+                        NavigationStack {
+                            List {
+                                Section {
+                                    ForEach(UserStudySetting.EngLevel.allCases, id: \.self) { level in
+                                        Button(action: { store.send(.view(.engLevelSelected(level))) }) {
+                                            HStack {
+                                                Text(level.localizedDescription)
+                                                Spacer()
+                                                if level == store.engLevelToChange {
+                                                    Image(systemName: "checkmark")
+                                                        .foregroundColor(.blue)
+                                                }
+                                            }
+                                        }
+                                    }
+                                } header: {
+                                    Spacer(minLength: 0).listRowInsets(EdgeInsets())
+                                }
+                            }
+                            .environment(\.defaultMinListHeaderHeight, 0)
+                            .navigationTitle("选择英语水平")
+                            .navigationBarTitleDisplayMode(.inline)
+                            .toolbar {
+                                ToolbarItem(placement: .navigationBarTrailing) {
+                                    Button("完成") {
+                                        store.send(.view(.toggleEngLevelPicker(false)))
+                                    }
+                                }
+                            }
+                        }
+                        .presentationDetents([.height(240)]) // 设置固定高度
+                    }
+                    
+                    // Word Level Picker Sheet
+                    .sheet(isPresented: $store.isWordLevelPickerPresented) {
+                        NavigationStack {
+                            List {
+                                Section {
+                                    ForEach(UserStudySetting.WordLevel.allCases, id: \.self) { level in
+                                        Button(action: { store.send(.view(.wordLevelSelected(level))) }) {
+                                            HStack {
+                                                Text(level.localizedDescription)
+                                                Spacer()
+                                                if level == store.wordLevelToChange {
+                                                    Image(systemName: "checkmark")
+                                                        .foregroundColor(.blue)
+                                                }
+                                            }
+                                        }
+                                    }
+                                } header: {
+                                    Spacer(minLength: 0).listRowInsets(EdgeInsets())
+                                }
+                            }
+                            .environment(\.defaultMinListHeaderHeight, 0)
+                            .navigationTitle("选择词汇级别")
+                            .navigationBarTitleDisplayMode(.inline)
+                            .toolbar {
+                                ToolbarItem(placement: .navigationBarTrailing) {
+                                    Button("完成") {
+                                        store.send(.view(.toggleWordLevelPicker(false)))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    // User Role Picker Sheet
+                    .sheet(isPresented: $store.isUserRolePickerPresented) {
+                        NavigationStack {
+                            List {
+                                Section {
+                                    ForEach(UserStudySetting.UserRole.allCases, id: \.self) { role in
+                                        Button(action: { store.send(.view(.userRoleSelected(role))) }) {
+                                            HStack {
+                                                Text(role.localizedDescription)
+                                                Spacer()
+                                                if role == store.userRoleToChange {
+                                                    Image(systemName: "checkmark")
+                                                        .foregroundColor(.blue)
+                                                }
+                                            }
+                                        }
+                                    }
+                                } header: {
+                                    Spacer(minLength: 0).listRowInsets(EdgeInsets())
+                                }
+                            }
+                            .environment(\.defaultMinListHeaderHeight, 0)
+                            .navigationTitle("选择用户角色")
+                            .navigationBarTitleDisplayMode(.inline)
+                            .toolbar {
+                                ToolbarItem(placement: .navigationBarTrailing) {
+                                    Button("完成") {
+                                        store.send(.view(.toggleUserRolePicker(false)))
+                                    }
+                                }
+                            }
+                        }
+                        .presentationDetents([.height(400)]) // 设置固定高度
+                    }
                 }
+                .environment(\.defaultMinListHeaderHeight, 0)
                 .navigationTitle("编辑资料")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
@@ -120,153 +265,12 @@ struct ProfileEditView: View {
                         }
                     }
                 }
-                // Sex Picker Sheet
-                .sheet(isPresented: $store.isSexPickerPresented) {
-                    NavigationStack {
-                        List {
-                            Section {
-                                ForEach(UserProfile.Sex.allCases, id: \.self) { sex in
-                                    Button(action: { store.send(.view(.sexSelected(sex))) }) {
-                                        HStack {
-                                            Text(sex.localizedDescription)
-                                            Spacer()
-                                            if sex == store.sexToChange {
-                                                Image(systemName: "checkmark")
-                                                    .foregroundColor(.blue)
-                                            }
-                                        }
-                                    }
-                                }
-                            } header: {
-                                Spacer(minLength: 0).listRowInsets(EdgeInsets())
-                            }
-                        }
-                        .navigationTitle("选择性别")
-                        .navigationBarTitleDisplayMode(.inline)
-                        .toolbar {
-                            ToolbarItem(placement: .navigationBarTrailing) {
-                                Button("完成") {
-                                    store.send(.view(.toggleSexPicker(false)))
-                                }
-                            }
-                        }
+                .alert($store.scope(state: \.alert, action: \.alert))
+                .disabled(store.isLoading)
+                .overlay {
+                    if store.isLoading {
+                        ProgressView()
                     }
-                }.environment(\.defaultMinListHeaderHeight, 0)
-                    .navigationTitle("选择性别")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button("取消") {
-                                store.send(.view(.toggleSexPicker(false)))
-                            }
-                        }
-                    }
-            }
-            .presentationDetents([.height(160)]) // 设置固定高度
-            
-            // English Level Picker Sheet
-            .sheet(isPresented: $store.isEngLevelPickerPresented) {
-                NavigationStack {
-                    List {
-                        Section {
-                            ForEach(UserStudySetting.EngLevel.allCases, id: \.self) { level in
-                                Button(action: { store.send(.view(.engLevelSelected(level))) }) {
-                                    HStack {
-                                        Text(level.localizedDescription)
-                                        Spacer()
-                                        if level == store.engLevelToChange {
-                                            Image(systemName: "checkmark")
-                                                .foregroundColor(.blue)
-                                        }
-                                    }
-                                }
-                            }
-                        } header: {
-                            Spacer(minLength: 0).listRowInsets(EdgeInsets())
-                        }
-                    }
-                    .navigationTitle("选择英语水平")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button("完成") {
-                                store.send(.view(.toggleEngLevelPicker(false)))
-                            }
-                        }
-                    }
-                }
-            }
-            
-            // Word Level Picker Sheet
-            .sheet(isPresented: $store.isWordLevelPickerPresented) {
-                NavigationStack {
-                    List {
-                        Section {
-                            ForEach(UserStudySetting.WordLevel.allCases, id: \.self) { level in
-                                Button(action: { store.send(.view(.wordLevelSelected(level))) }) {
-                                    HStack {
-                                        Text(level.localizedDescription)
-                                        Spacer()
-                                        if level == store.wordLevelToChange {
-                                            Image(systemName: "checkmark")
-                                                .foregroundColor(.blue)
-                                        }
-                                    }
-                                }
-                            }
-                        } header: {
-                            Spacer(minLength: 0).listRowInsets(EdgeInsets())
-                        }
-                    }
-                    .navigationTitle("选择词汇级别")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button("完成") {
-                                store.send(.view(.toggleWordLevelPicker(false)))
-                            }
-                        }
-                    }
-                }
-            }
-            
-            // User Role Picker Sheet
-            .sheet(isPresented: $store.isUserRolePickerPresented) {
-                NavigationStack {
-                    List {
-                        Section {
-                            ForEach(UserStudySetting.UserRole.allCases, id: \.self) { role in
-                                Button(action: { store.send(.view(.userRoleSelected(role))) }) {
-                                    HStack {
-                                        Text(role.localizedDescription)
-                                        Spacer()
-                                        if role == store.userRoleToChange {
-                                            Image(systemName: "checkmark")
-                                                .foregroundColor(.blue)
-                                        }
-                                    }
-                                }
-                            }
-                        } header: {
-                            Spacer(minLength: 0).listRowInsets(EdgeInsets())
-                        }
-                    }
-                    .navigationTitle("选择用户角色")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button("完成") {
-                                store.send(.view(.toggleUserRolePicker(false)))
-                            }
-                        }
-                    }
-                }
-            }
-            .alert($store.scope(state: \.alert, action: \.alert))
-            .disabled(store.isLoading)
-            .overlay {
-                if store.isLoading {
-                    ProgressView()
                 }
             }
         }
