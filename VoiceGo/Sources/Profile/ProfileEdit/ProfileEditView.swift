@@ -10,9 +10,9 @@ struct ProfileEditView: View {
             .enableInjection()
     }
     
-    #if DEBUG
+#if DEBUG
     @ObserveInjection var forceRedraw
-    #endif
+#endif
     
     @ViewBuilder private var content: some View {
         WithPerceptionTracking {
@@ -66,6 +66,50 @@ struct ProfileEditView: View {
                             }
                         }
                     }
+                    
+                    Section("学习设置") {
+                        // English Level
+                        Button(action: {
+                            store.send(.view(.toggleEngLevelPicker(true)))
+                        }) {
+                            HStack {
+                                Text("英语水平")
+                                    .foregroundColor(.primary)
+                                Spacer()
+                                Text(store.engLevelToChange.localizedDescription)
+                                    .foregroundColor(.gray)
+                            }
+                        }
+                        
+                        // Word Level
+                        Button(action: {
+                            store.send(.view(.toggleWordLevelPicker(true)))
+                        }) {
+                            HStack {
+                                Text("词汇级别")
+                                    .foregroundColor(.primary)
+                                Spacer()
+                                Text(store.wordLevelToChange.localizedDescription)
+                                    .foregroundColor(.gray)
+                            }
+                        }
+                        
+                        // Study Goal
+                        TextField("学习目标", text: $store.studyGoalToChange)
+                        
+                        // User Role
+                        Button(action: {
+                            store.send(.view(.toggleUserRolePicker(true)))
+                        }) {
+                            HStack {
+                                Text("用户角色")
+                                    .foregroundColor(.primary)
+                                Spacer()
+                                Text(store.userRoleToChange.localizedDescription)
+                                    .foregroundColor(.gray)
+                            }
+                        }
+                    }
                 }
                 .navigationTitle("编辑资料")
                 .navigationBarTitleDisplayMode(.inline)
@@ -76,48 +120,153 @@ struct ProfileEditView: View {
                         }
                     }
                 }
+                // Sex Picker Sheet
                 .sheet(isPresented: $store.isSexPickerPresented) {
                     NavigationStack {
-                        
-                        List{
-                            Section{
+                        List {
+                            Section {
                                 ForEach(UserProfile.Sex.allCases, id: \.self) { sex in
                                     Button(action: { store.send(.view(.sexSelected(sex))) }) {
                                         HStack {
                                             Text(sex.localizedDescription)
                                             Spacer()
-                                            if sex == store.profile.sex {
+                                            if sex == store.sexToChange {
                                                 Image(systemName: "checkmark")
                                                     .foregroundColor(.blue)
                                             }
                                         }
                                     }
                                 }
-                            }
-                            header: {
+                            } header: {
                                 Spacer(minLength: 0).listRowInsets(EdgeInsets())
                             }
                         }
-                        .environment(\.defaultMinListHeaderHeight, 0)
                         .navigationTitle("选择性别")
                         .navigationBarTitleDisplayMode(.inline)
                         .toolbar {
                             ToolbarItem(placement: .navigationBarTrailing) {
-                                Button("取消") {
+                                Button("完成") {
                                     store.send(.view(.toggleSexPicker(false)))
                                 }
                             }
                         }
                     }
-                    .presentationDetents([.height(160)]) // 设置固定高度
-                        
-                }
-                .alert($store.scope(state: \.alert, action: \.alert))
-                .disabled(store.isLoading)
-                .overlay {
-                    if store.isLoading {
-                        ProgressView()
+                }.environment(\.defaultMinListHeaderHeight, 0)
+                    .navigationTitle("选择性别")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("取消") {
+                                store.send(.view(.toggleSexPicker(false)))
+                            }
+                        }
                     }
+            }
+            .presentationDetents([.height(160)]) // 设置固定高度
+            
+            // English Level Picker Sheet
+            .sheet(isPresented: $store.isEngLevelPickerPresented) {
+                NavigationStack {
+                    List {
+                        Section {
+                            ForEach(UserStudySetting.EngLevel.allCases, id: \.self) { level in
+                                Button(action: { store.send(.view(.engLevelSelected(level))) }) {
+                                    HStack {
+                                        Text(level.localizedDescription)
+                                        Spacer()
+                                        if level == store.engLevelToChange {
+                                            Image(systemName: "checkmark")
+                                                .foregroundColor(.blue)
+                                        }
+                                    }
+                                }
+                            }
+                        } header: {
+                            Spacer(minLength: 0).listRowInsets(EdgeInsets())
+                        }
+                    }
+                    .navigationTitle("选择英语水平")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("完成") {
+                                store.send(.view(.toggleEngLevelPicker(false)))
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Word Level Picker Sheet
+            .sheet(isPresented: $store.isWordLevelPickerPresented) {
+                NavigationStack {
+                    List {
+                        Section {
+                            ForEach(UserStudySetting.WordLevel.allCases, id: \.self) { level in
+                                Button(action: { store.send(.view(.wordLevelSelected(level))) }) {
+                                    HStack {
+                                        Text(level.localizedDescription)
+                                        Spacer()
+                                        if level == store.wordLevelToChange {
+                                            Image(systemName: "checkmark")
+                                                .foregroundColor(.blue)
+                                        }
+                                    }
+                                }
+                            }
+                        } header: {
+                            Spacer(minLength: 0).listRowInsets(EdgeInsets())
+                        }
+                    }
+                    .navigationTitle("选择词汇级别")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("完成") {
+                                store.send(.view(.toggleWordLevelPicker(false)))
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // User Role Picker Sheet
+            .sheet(isPresented: $store.isUserRolePickerPresented) {
+                NavigationStack {
+                    List {
+                        Section {
+                            ForEach(UserStudySetting.UserRole.allCases, id: \.self) { role in
+                                Button(action: { store.send(.view(.userRoleSelected(role))) }) {
+                                    HStack {
+                                        Text(role.localizedDescription)
+                                        Spacer()
+                                        if role == store.userRoleToChange {
+                                            Image(systemName: "checkmark")
+                                                .foregroundColor(.blue)
+                                        }
+                                    }
+                                }
+                            }
+                        } header: {
+                            Spacer(minLength: 0).listRowInsets(EdgeInsets())
+                        }
+                    }
+                    .navigationTitle("选择用户角色")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("完成") {
+                                store.send(.view(.toggleUserRolePicker(false)))
+                            }
+                        }
+                    }
+                }
+            }
+            .alert($store.scope(state: \.alert, action: \.alert))
+            .disabled(store.isLoading)
+            .overlay {
+                if store.isLoading {
+                    ProgressView()
                 }
             }
         }

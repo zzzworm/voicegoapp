@@ -90,20 +90,30 @@ extension VoiceGoAPIClient : DependencyKey  {
             }
         },
         updateUserProfile: { profile in
-            var updateData : [String: AnyCodable] = [:]
-            if !profile.username.isEmpty {
-                updateData["username"] = .string(profile.username)
-            }
+            var updateData: [String: AnyCodable] = [
+                "username": .string(profile.username),
+                "city": .string(profile.city ?? ""),
+                "sex": .string(profile.sex.rawValue)
+            ]
+            
             if !profile.email.isEmpty {
                 updateData["email"] = .string(profile.email)
             }
-            if let city = profile.city, !city.isEmpty {
-                updateData["city"] = .string(city)
-            }
+            
             if let userIconUrl = profile.userIconUrl, !userIconUrl.isEmpty {
                 updateData["userIconUrl"] = .string(userIconUrl)
             }
-            updateData["sex"] = .string(profile.sex.rawValue)
+            
+            // Add study setting data if provided
+            if let studySetting = profile.study_setting {
+                updateData["study_setting"] = .dictionary([
+                    "eng_level": .string(studySetting.eng_level.rawValue),
+                    "word_level": .string(studySetting.word_level.rawValue),
+                    "study_goal": .string(studySetting.study_goal),
+                    "role": .string(studySetting.role.rawValue)
+                ])
+            }
+            
             let data = StrapiRequestBody(updateData)
             let response = try await Strapi.authentication.local.me(extendUrl: "", requestType: .PUT, data: data, as: UserProfile.self)
             return profile

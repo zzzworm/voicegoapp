@@ -7,6 +7,9 @@
     "%@" : {
 
     },
+    "Advanced" : {
+      "comment" : "Eng level: Advanced\nWord level: High Difficulty"
+    },
     "AI Teacher Details: %@" : {
 
     },
@@ -34,8 +37,20 @@
     "Base.oops" : {
 
     },
+    "Business English" : {
+      "comment" : "Word level: Business English"
+    },
     "Cancel" : {
 
+    },
+    "CET-4" : {
+      "comment" : "Word level: College English Test Band 4"
+    },
+    "CET-6" : {
+      "comment" : "Word level: College English Test Band 6"
+    },
+    "College Student" : {
+      "comment" : "User type: College Student"
     },
     "Console" : {
 
@@ -58,6 +73,9 @@
     "Developed By" : {
 
     },
+    "Employee" : {
+      "comment" : "User type: Employee"
+    },
     "Enter Code" : {
 
     },
@@ -70,6 +88,24 @@
           }
         }
       }
+    },
+    "GMAT" : {
+      "comment" : "Word level: Graduate Management Admission Test"
+    },
+    "GRE" : {
+      "comment" : "Word level: Graduate Record Examination"
+    },
+    "IELTS" : {
+      "comment" : "Word level: International English Language Testing System"
+    },
+    "Intermediate" : {
+      "comment" : "Eng level: Intermediate"
+    },
+    "International Student" : {
+      "comment" : "User type: International Student"
+    },
+    "Junior High School" : {
+      "comment" : "Word level: Junior High School"
     },
     "Login with phone" : {
 
@@ -86,14 +122,50 @@
     "OR" : {
 
     },
+    "Others" : {
+      "comment" : "User type: Others"
+    },
+    "Parent" : {
+      "comment" : "User type: Parent"
+    },
     "Please note that you need to type at least one number for it to pass validation." : {
 
     },
     "Please wait" : {
 
     },
+    "Postgraduate Entrance Exam" : {
+      "comment" : "Word level: Postgraduate Entrance Examination"
+    },
+    "Preschool" : {
+      "comment" : "Word level: Preschool"
+    },
+    "Primary" : {
+      "comment" : "Eng level: Primary"
+    },
+    "Primary School" : {
+      "comment" : "Word level: Primary School"
+    },
     "Problem with audio device. Please try again." : {
 
+    },
+    "Professional" : {
+      "comment" : "Eng level: Professional"
+    },
+    "SAT" : {
+      "comment" : "Word level: Scholastic Assessment Test"
+    },
+    "School Student" : {
+      "comment" : "User type: School Student"
+    },
+    "Senior High School" : {
+      "comment" : "Word level: Senior High School"
+    },
+    "Teacher" : {
+      "comment" : "User type: Teacher"
+    },
+    "TOEFL" : {
+      "comment" : "Word level: Test of English as a Foreign Language"
     },
     "ToolTag_funny_study" : {
       "localizations" : {
@@ -216,6 +288,15 @@
     "学习工具" : {
 
     },
+    "学习目标" : {
+
+    },
+    "学习设置" : {
+
+    },
+    "完成" : {
+
+    },
     "微信登录" : {
 
     },
@@ -255,6 +336,9 @@
     "版本 %@" : {
 
     },
+    "用户角色" : {
+
+    },
     "登录" : {
 
     },
@@ -273,11 +357,20 @@
     "编辑资料" : {
 
     },
+    "英语水平" : {
+
+    },
     "设置" : {
+
+    },
+    "词汇级别" : {
 
     },
     "请检查网络连接或稍后重试" : {
       "comment" : "Error message when there is a network issue"
+    },
+    "请稍后重试" : {
+
     },
     "请输入内容" : {
 
@@ -292,6 +385,15 @@
 
     },
     "选择性别" : {
+
+    },
+    "选择用户角色" : {
+
+    },
+    "选择英语水平" : {
+
+    },
+    "选择词汇级别" : {
 
     },
     "通过趣味和专项练习,让你在轻松中提升英语水平." : {
