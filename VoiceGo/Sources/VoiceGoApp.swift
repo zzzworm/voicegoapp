@@ -84,6 +84,7 @@ struct VoiceGoApp: App {
                 table.primaryKey(["id"])
                 table.column("id", .integer).notNull()
                 table.column("eng_level", .text).notNull()
+                table.column("word_level", .text).notNull()
                 table.column("study_goal", .text).notNull()
                 table.column("role", .text).notNull()
             }
