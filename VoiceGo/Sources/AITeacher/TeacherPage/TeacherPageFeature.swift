@@ -15,7 +15,7 @@ struct AITeacherPageFeature {
     @ObservableState
     struct State: Equatable {
         var aiTeacher: AITeacher
-        // Add other state properties for the detail view if needed
+        var aiTeacherList: IdentifiedArrayOf<AITeacher> = []
     }
     @CasePathable
     enum Action: Equatable,BindableAction {

@@ -83,6 +83,7 @@ struct AITeacherListView_Previews: PreviewProvider {
                       sex: "female",
                       difficultyLevel: 2,
                       tags: "business",
+                      coverUrl: "",
                       card: nil,
                       cardId: nil),
             AITeacher(id: 2,
@@ -95,6 +96,7 @@ struct AITeacherListView_Previews: PreviewProvider {
                       sex: "male",
                       difficultyLevel: 1,
                       tags: "travel",
+                      coverUrl: "",
                       card: nil,
                       cardId: nil)
         ]

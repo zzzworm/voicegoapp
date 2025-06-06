@@ -59,6 +59,7 @@ struct AITeacherCell_Previews: PreviewProvider {
                 sex: "female",
                 difficultyLevel: 2,
                 tags: "business,advanced,ielts",
+                coverUrl: "",
                 card: AITeacherCard(id: 1,
                                     openingSpeech: "Hello there!",
                                     simpleReplay: "Got it.",

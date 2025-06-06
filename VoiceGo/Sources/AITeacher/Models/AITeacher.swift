@@ -23,7 +23,7 @@ extension AITeacherCard: TableRecord {
         case formalReplay = "formal_replay"
         case openingLetter = "opening_letter"
         case assistContent = "assist_content"
-        case categoryKey 
+        case categoryKey
     }
 
     func encode(to container: inout PersistenceContainer) {
@@ -59,6 +59,7 @@ struct AITeacher: Codable, FetchableRecord, PersistableRecord, Equatable, Identi
     let sex: String
     let difficultyLevel: Int
     let tags: String
+    let coverUrl: String
     let card: AITeacherCard?
     var cardId : Int? = nil
 
@@ -74,6 +75,7 @@ struct AITeacher: Codable, FetchableRecord, PersistableRecord, Equatable, Identi
             sex: "female",
             difficultyLevel: 2,
             tags: "Business,Advanced,IELTS",
+            coverUrl: "",
             card: AITeacherCard(id: 1,
                                 openingSpeech: "Hello! Let's talk business.",
                                 simpleReplay: "Got it.",
@@ -94,6 +96,7 @@ struct AITeacher: Codable, FetchableRecord, PersistableRecord, Equatable, Identi
             sex: "male",
             difficultyLevel: 1,
             tags: "Travel,Beginner,General",
+            coverUrl: "",
             card: AITeacherCard(id: 2,
                                 openingSpeech: "Hi there! Planning a trip?",
                                 simpleReplay: "Okay.",
@@ -114,6 +117,7 @@ struct AITeacher: Codable, FetchableRecord, PersistableRecord, Equatable, Identi
             sex: "female",
             difficultyLevel: 3,
             tags: "Academic,Formal,University",
+            coverUrl: "",
             card: AITeacherCard(id: 3,
                                 openingSpeech: "Greetings. Shall we discuss your research?",
                                 simpleReplay: "I see.",
@@ -139,6 +143,7 @@ extension AITeacher: TableRecord {
         case sex
         case difficultyLevel = "difficulty_level"
         case tags
+        case coverUrl
         case card
     }
 
@@ -153,6 +158,7 @@ extension AITeacher: TableRecord {
         container[Column("sex")] = sex
         container[Column("difficultyLevel")] = difficultyLevel
         container[Column("tags")] = tags
+        container[Column("coverUrl")] = coverUrl
         container[Column("cardId")] = cardId
     }
 
@@ -167,6 +173,7 @@ extension AITeacher: TableRecord {
         static let sex = Column(CodingKeys.sex)
         static let difficultyLevel = Column(CodingKeys.difficultyLevel)
         static let tags = Column(CodingKeys.tags)
+        static let coverUrl = Column(CodingKeys.coverUrl)
         static let cardId = Column("cardId")
     }
 }
