@@ -45,10 +45,12 @@ func handleStrapiRequest<T: Decodable & Sendable>(_ action: @Sendable () async t
 
                 switch strapiError {
                 case .badResponse(let statusCode, let message):
-                    if statusCode > 400 && statusCode < 500 {
+                    if statusCode > 400 && statusCode < 404 {
                         @Dependency(\.notificationCenter) var notificationCenter
                         print("Bad response: \(statusCode)")
-                        notificationCenter.post(.signOut, nil, nil)
+                        await MainActor.run{
+                            notificationCenter.post(.signOut, nil, nil)
+                        }
                     }
                     print("Bad response: \(message)")
                 case .decodingError(let decodingError):
@@ -262,7 +264,7 @@ extension VoiceGoAPIClient : DependencyKey  {
         },
         fetchSenceList: { categoryRawValue in
             return try await handleStrapiRequest {
-                let resp = try await Strapi.contentManager.collection("scenes")
+                let resp = try await Strapi.contentManager.collection("conversation-scenes")
                     .filter("[tags]", operator: .contains, value: categoryRawValue)
                     .populate("card")
                     .getDocuments(as: [ConversationScene].self)
