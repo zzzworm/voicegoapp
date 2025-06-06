@@ -56,9 +56,11 @@ struct AITeacherListView: View {
                 // This handles navigation to the detail view
                 switch store.case {
                 case let .aiTeacher(detailStore):
-                    AITeacherPageView(store: detailStore) // Using the placeholder detail view
+                    AITeacherPageView(store: detailStore)
+                    .toolbar(.hidden, for: .tabBar) // Hide tab bar in detail view
                 }
             }
+            .toolbar(.visible, for: .tabBar) // Hide tab bar in detail view
         }
         .enableInjection() // Assuming you use Inject for previews and testing
     }

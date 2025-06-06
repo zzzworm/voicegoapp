@@ -13,17 +13,16 @@ struct StudyToolListView: View {
     var body: some View {
         WithPerceptionTracking {
             NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
-                WithViewStore(self.store, observe: { $0 }) { viewStore in
                     VStack {
                         // 切换数据源的按钮
                         HStack {
                             ForEach(StudyTool.ToolTag.allCases, id:\.self){ tag in
                                 Button(action: {
-                                    viewStore.send(.switchTools(tag))
+                                    store.send(.switchTools(tag))
                                 }) {
                                     Text(tag.localizedDescription)
                                         .padding(EdgeInsets(top: 4, leading: 6, bottom: 4, trailing: 6))
-                                        .background(viewStore.currentTag == tag ? Color.blue.opacity(0.3) : Color.white)
+                                        .background(store.state.currentTag == tag ? Color.blue.opacity(0.3) : Color.white)
                                         .foregroundColor(.black)
                                         .cornerRadius(4)
                                 }
@@ -33,22 +32,22 @@ struct StudyToolListView: View {
                         
                         // 主内容
                         
-                            if viewStore.dataLoadingStatus == .loading {
+                            if store.state.dataLoadingStatus == .loading {
                                 Spacer()
                                 ProgressView()
                                     .frame(width: 100, height: 100)
-                            } else if viewStore.shouldShowError {
+                            } else if store.state.shouldShowError {
                                 ErrorView(
                                     message: "服务器正在开小差，请重试",
-                                    retryAction: { viewStore.send(.fetchStudyToolUsedList(viewStore.currentTag))
+                                    retryAction: { store.send(.fetchStudyToolUsedList(store.currentTag))
                                     }
                                 )
                             } else {
                                 LazyVStack {
-                                    ForEach(viewStore.studyToolList) { studyTool in
+                                    ForEach(store.studyToolList) { studyTool in
                                         StudyToolCell(studyTool: studyTool)
                                             .onTapGesture {
-                                                viewStore.send(.view(.onToolHistoryTap(studyTool)))
+                                                store.send(.view(.onToolHistoryTap(studyTool)))
                                             }.padding(EdgeInsets(top: 0, leading: 10, bottom: 10, trailing: 10))
                                             .id(studyTool.id)
                                     }
@@ -64,15 +63,16 @@ struct StudyToolListView: View {
                     .navigationViewStyle(.stack)
                     .navigationBarTitleDisplayMode(.inline)
                     .task {
-                        viewStore.send(.fetchStudyToolUsedList(.language_study))
+                        store.send(.fetchStudyToolUsedList(.language_study))
                     }
                 }
-            } destination: { store in
+             destination: { store in
                 switch store.case {
                 case let .studyTool(store):
                     StudyToolView(store: store)
+                        .toolbar(.hidden, for: .tabBar) // Hide tab bar in detail view
                 }
-            }
+            }.toolbar(.visible, for: .tabBar) // Hide tab bar in detail view
         }
         .enableInjection()
     }
