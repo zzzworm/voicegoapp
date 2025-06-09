@@ -1,3 +1,6 @@
 [submodule "Packages/strapi-swift"]
 	path = Packages/strapi-swift
 	url = git@git.tower.v6.army:voicego/strapi-swift.git
+[submodule "Packages/ActivityIndicatorView"]
+	path = Packages/ActivityIndicatorView
+	url = git@tower.v6.army:voicego/ios/ActivityIndicatorView.git
