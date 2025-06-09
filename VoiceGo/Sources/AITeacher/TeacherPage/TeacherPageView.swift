@@ -12,7 +12,6 @@ struct AITeacherPageView: View {
     let store: StoreOf<AITeacherPageFeature>
     
     private let imageHeightRatio: CGFloat = 0.6
-    private let scrollItemSize = CGSize(width: 65, height: 100)
     
     var body: some View {
         content

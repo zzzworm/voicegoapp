@@ -72,7 +72,7 @@ struct StudyToolListView: View {
                     StudyToolView(store: store)
                         .toolbar(.hidden, for: .tabBar) // Hide tab bar in detail view
                 }
-            }.toolbar(.visible, for: .tabBar) // Hide tab bar in detail view
+            }
         }
         .enableInjection()
     }
