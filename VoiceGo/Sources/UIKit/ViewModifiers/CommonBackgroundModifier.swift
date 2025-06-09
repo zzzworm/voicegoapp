@@ -6,7 +6,7 @@ struct CommonBackgroundModifier: ViewModifier {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(
                 LinearGradient(
-                    gradient: Gradient(colors: [Color.blue.opacity(0.3), .white]),
+                    gradient: Gradient(colors: [.skyblue, .white]),
                     startPoint: .top,
                     endPoint: .bottom
                 ).ignoresSafeArea()

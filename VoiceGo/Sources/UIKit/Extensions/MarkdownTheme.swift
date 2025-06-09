@@ -19,11 +19,27 @@ extension Theme {
     // More text styles...
     .paragraph { configuration in
       configuration.label
-        .relativeLineSpacing(.em(0.25))
-        .markdownMargin(top: 0, bottom: 16)
+            .relativeLineSpacing(.em(0.0))
+            .relativePadding(.leading, length: .em(0.5))
+        .markdownMargin(top: 0, bottom: 6)
+    }
+    .blockquote { configuration in
+      configuration.label
+            .relativeLineSpacing(.em(0.0))
+            .relativePadding(.leading, length: .em(0.5))
+        .markdownMargin(top: 0, bottom: 6)
+    }
+    .list {
+      configuration in
+      configuration.label
+            .relativeLineSpacing(.em(0.0))
+            .relativePadding(.leading, length: .em(0.5))
+        .markdownMargin(top: 0, bottom: 6)
     }
     .listItem { configuration in
       configuration.label
+            .relativeLineSpacing(.em(0.0))
+            .relativePadding(.leading, length: .em(0.5))
         .markdownMargin(top: .em(0.25))
     }
 }

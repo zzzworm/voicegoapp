@@ -77,7 +77,7 @@ struct ConversationSceneListView: View {
                     .toolbar(.hidden, for: .tabBar) // Hide tab bar in detail view
                 }
             }
-            .toolbar(.visible, for: .tabBar) // Hide tab bar in detail view
+            
         }
         .enableInjection() // Assuming you use Inject for previews and testing
     }

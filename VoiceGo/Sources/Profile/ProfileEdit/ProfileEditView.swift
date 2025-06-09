@@ -55,6 +55,14 @@ struct ProfileEditView: View {
         }
     }
     
+    @ViewBuilder
+    private var placeholderImage: some View {
+        Image(systemName: "person.circle.fill")
+            .resizable()
+            .scaledToFill()
+            .foregroundColor(.gray)
+    }
+    
     // MARK: - Profile Image Section
     @ViewBuilder private var profileImageSection: some View {
         Section {
@@ -68,17 +76,28 @@ struct ProfileEditView: View {
                             .frame(width: 100, height: 100)
                             .clipShape(Circle())
                     } else {
-                        AsyncImage(url: URL(string: store.profile.userIconUrl ?? "")) { image in
-                            image
-                                .resizable()
-                                .scaledToFill()
-                        } placeholder: {
-                            Image(systemName: "person.circle.fill")
-                                .resizable()
-                                .foregroundColor(.gray)
+                        if let iconUrl = store.profile.userIconUrl, let url = URL(string: iconUrl) {
+                            AsyncImage(url: url) { phase in
+                                switch phase {
+                                case .success(let image):
+                                    image
+                                        .resizable()
+                                        .scaledToFill()
+                                case .failure(_):
+                                    placeholderImage
+                                case .empty:
+                                    ProgressView()
+                                @unknown default:
+                                    placeholderImage
+                                }
+                            }
+                            .frame(width: 100, height: 100)
+                            .clipShape(Circle())
+                        } else {
+                            placeholderImage
+                                .frame(width: 100, height: 100)
+                                .clipShape(Circle())
                         }
-                        .frame(width: 100, height: 100)
-                        .clipShape(Circle())
                     }
                 }
                 Spacer()

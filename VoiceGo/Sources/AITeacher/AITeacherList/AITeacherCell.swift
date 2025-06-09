@@ -28,11 +28,22 @@ struct AITeacherCell: View {
                 
                 Spacer()
                 
-                Image(systemName: "person.circle") // Placeholder for teacher avatar
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 40, height: 40)
-                    .foregroundColor(.gray)
+                AsyncImage(url: URL(string: aiTeacher.coverUrl)) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 40, height: 40)
+                            .foregroundColor(.gray)
+                    default:
+                        Image(systemName: "person.circle") // Placeholder for teacher avatar
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 40, height: 40)
+                            .foregroundColor(.gray)
+                    }
+                }
                     .padding(10)
             }
         }
