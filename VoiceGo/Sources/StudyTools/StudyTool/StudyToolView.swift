@@ -69,10 +69,10 @@ struct StudyToolView: View {
                                                 proxy.scrollTo(lastItem.id, anchor: .bottom)
                                             }
                                         }
-//                                    if #available(iOS 17.0, *){
-//                                        scrollview.defaultScrollAnchor(.bottom)
-//                                    }
-//                                    else {
+                                    if #available(iOS 17.0, *){
+                                        scrollview.defaultScrollAnchor(.bottom)
+                                    }
+                                    else {
                                         scrollview
                                             .onChange(of: viewStore.toolHistoryListState) { _ in
                                                 if !hasScrolledToBottom , let lastItem = viewStore.toolHistoryListState.last {
@@ -81,7 +81,7 @@ struct StudyToolView: View {
                                                 }
                                             }
                                             
-//                                    }
+                                    }
                                 }
                                 BottomInputBarBarView(store: store.scope(state: \.inputBarState, action: StudyToolFeature.Action.inputBar))
                                 

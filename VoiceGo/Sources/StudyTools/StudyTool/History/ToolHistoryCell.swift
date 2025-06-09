@@ -45,6 +45,7 @@ struct ToolHistoryCell: View {
                                 
                                 Divider()
                                 Markdown("\(viewStore.history.answer)")
+                                    .markdownTheme(.fancy)
                                     .padding(.trailing, 10)
                                     .textSelection(.enabled)
                                     .font(.system(.body, design: .rounded))

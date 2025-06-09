@@ -14,17 +14,32 @@ import ComposableArchitecture
 struct AITeacherPageFeature {
     @ObservableState
     struct State: Equatable {
-        var aiTeacher: AITeacher
+        var aiTeacher: AITeacher{
+            return aiTeacherList.first(where: { $0.id == selectedTeacherId }) ?? aiTeacherList.first!
+        }
         var aiTeacherList: IdentifiedArrayOf<AITeacher> = []
+        var selectedTeacherId: Int?
+        
+        init(aiTeacherList: IdentifiedArrayOf<AITeacher> = [], selectedTeacherId: Int?) {
+            self.aiTeacherList = aiTeacherList
+            self.selectedTeacherId = selectedTeacherId ?? aiTeacherList.first?.id
+        }
     }
     @CasePathable
-    enum Action: Equatable,BindableAction {
+    enum Action: Equatable, BindableAction {
         case binding(BindingAction<State>)
+        case selectTeacher(AITeacher)
     }
     var body: some ReducerOf<Self> {
         Reduce { state, action in
-            // Handle actions
-            return .none
+            switch action {
+            case .selectTeacher(let teacher):
+                state.selectedTeacherId = teacher.id
+                return .none
+                
+            case .binding:
+                return .none
+            }
         }
     }
 }

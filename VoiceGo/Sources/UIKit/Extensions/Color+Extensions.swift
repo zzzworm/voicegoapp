@@ -62,5 +62,6 @@ extension Color {
     static let systemRed = Color(UIColor.systemRed)
     static let systemTeal = Color(UIColor.systemTeal)
     static let systemIndigo = Color(UIColor.systemIndigo)
-
+    // 使用苹果设计规范中的 Sky Blue 颜色值
+        static let skyblue = Color(red: 0/255, green: 172/255, blue: 238/255)
 }
