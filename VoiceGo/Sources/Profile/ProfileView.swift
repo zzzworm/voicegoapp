@@ -108,7 +108,6 @@ struct ProfileView: View {
                     .toolbar(.hidden, for: .tabBar) // Hide tab bar in detail view
                 }
             }
-            .toolbar(.visible, for: .tabBar) // Hide tab bar in detail view
             .alert($store.scope(state: \.alert, action: \.alert))
         }
         .enableInjection()
