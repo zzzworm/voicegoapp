@@ -50,6 +50,7 @@ let commonDependencies : [TargetDependency] = [
                 .external(name: "DynamicColor"),
                 .external(name: "Copyable"),
                 .external(name: "UIFontComplete"),
+                .external(name: "ExyteChat"),
             ]
 
 let targetActions: [TargetScript] = [

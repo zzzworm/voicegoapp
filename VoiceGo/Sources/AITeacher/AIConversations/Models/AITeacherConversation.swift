@@ -46,3 +46,4 @@ struct AITeacherConversation : Equatable, Identifiable,TableRecord, Codable  {
 extension AITeacherConversation {
         static var databaseTableName = "aiTeacherHistory"
 }
+
