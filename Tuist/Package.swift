@@ -71,6 +71,8 @@ let package = Package(
         .package(url: "https://github.com/yannickl/DynamicColor.git", from: "5.0.0"),
         .package(url: "https://github.com/eu-digital-identity-wallet/SwiftCopyableMacro.git", from: "0.0.3"),
         .package(url: "https://github.com/Nirma/UIFontComplete.git", from: "6.2.0"),
+        .package(url: "https://github.com/exyte/Chat.git", from: "2.1.4"),
         .package(path: "../Packages/strapi-swift"),
+        .package(path: "../Packages/ActivityIndicatorView"),
     ]
 )
