@@ -17,6 +17,7 @@ struct RootFeature {
     @Dependency(\.apiClient) var apiClient
     @Dependency(\.defaultDatabase) var database
     
+    
     @ObservableState
     struct State : Equatable {
         var profile: UserProfile? = nil
@@ -31,6 +32,8 @@ struct RootFeature {
         public init(profile: UserProfile? = nil, currentTab: Tab = .studytools) {
             @Dependency(\.defaultDatabase) var database
             @Dependency(\.userDefaults) var userDefaultsClient
+            @Dependency(\.userInfoRepository) var userInfoRepository
+            
             var profileFetched: UserProfile? = profile
             
             do {
@@ -41,6 +44,7 @@ struct RootFeature {
             catch{
                 
             }
+            userInfoRepository.currentUser = profileFetched
             self.profile = profileFetched
             self.currentTab = currentTab
             self.tearchListState = AITeacherListFeature.State()

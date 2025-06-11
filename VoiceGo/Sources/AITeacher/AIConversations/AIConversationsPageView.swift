@@ -37,46 +37,42 @@ struct AIConversationsPageView: View {
             }
             .messageUseMarkdown(true)
             .setRecorderSettings(recorderSettings)
-            .navigationBarBackButtonHidden()
             .navigationBarTitleDisplayMode(.inline)
-//            .toolbar {
-//                ToolbarItem(placement: .navigationBarLeading) {
-//                    Button { presentationMode.wrappedValue.dismiss() } label: {
-//                        Image("backArrow", bundle: .current)
-//                            .renderingMode(.template)
-//                            .foregroundStyle(colorScheme == .dark ? .white : .black)
-//                    }
-//                }
-//                ToolbarItem(placement: .navigationBarLeading) {
-//                    HStack {
-//                        if let url = store.state.chatCover {
-//                            CachedAsyncImage(url: url, urlCache: .shared) { phase in
-//                                switch phase {
-//                                case .success(let image):
-//                                    image
-//                                        .resizable()
-//                                        .scaledToFill()
-//                                default:
-//                                    Rectangle().fill(Color(hex: "AFB3B8"))
-//                                }
-//                            }
-//                            .frame(width: 35, height: 35)
-//                            .clipShape(Circle())
-//                        }
-//                        VStack(alignment: .leading, spacing: 0) {
-//                            Text(store.state.chatTitle)
-//                                .fontWeight(.semibold)
-//                                .font(.headline)
-//                                .foregroundStyle(colorScheme == .dark ? .white : .black)
-//                            Text(store.state.chatStatus)
-//                                .font(.footnote)
-//                                .foregroundColor(Color(hex: "AFB3B8"))
-//                        }
-//                        Spacer()
-//                    }
-//                    .padding(.leading, 10)
-//                }
-//            }
+            .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    HStack {
+                        Button(action: {
+                            presentationMode.wrappedValue.dismiss()
+                        }) {
+                            Image(systemName: "chevron.left")
+                                .foregroundColor(colorScheme == .dark ? .white : .black)
+                        }
+                        if let url = store.state.chatCover {
+                            CachedAsyncImage(url: url, urlCache: .shared) { phase in
+                                switch phase {
+                                case .success(let image):
+                                    image
+                                        .resizable()
+                                        .scaledToFill()
+                                default:
+                                    Rectangle().fill(Color(hex: "AFB3B8"))
+                                }
+                            }
+                            .frame(width: 35, height: 35)
+                            .clipShape(Circle())
+                        }
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text(store.state.chatTitle)
+                                .fontWeight(.semibold)
+                                .font(.headline)
+                                .foregroundStyle(colorScheme == .dark ? .white : .black)
+                        }
+                        Spacer()
+                    }
+                    .padding(.leading, 10)
+                }
+            }
             .onAppear { store.send(.view(.onAppear)) }
             .onDisappear { store.send(.view(.onDisappear)) }
         }
@@ -86,7 +82,7 @@ struct AIConversationsPageView: View {
 #Preview {
         AIConversationsPageView(
             store: Store(
-                initialState: AIConversationsPageFeature.State(),
+                initialState: AIConversationsPageFeature.State(aiTeacher: AITeacher.sample[0]),
                 reducer: {AIConversationsPageFeature()}
             )
         )

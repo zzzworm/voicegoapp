@@ -85,23 +85,7 @@ extension VoiceGoAPIClient: TestDependencyKey {
         },
         createAITeacherConversation: { _, _ in
             
-            let conversation = AITeacherConversation(
-                documentId: "preview-id",
-                id: 1,
-                updatedAt: Date(),
-                query: "preview-query",
-                answer: ConversationAnswer(
-                    id: 1,
-                    answer: "preview-answer",
-                    score: 1,
-                    revisions: ["preview-revision"],
-                    review: "preview-review",
-                    simpleReplay: "preview-simple-replay",
-                    formalReplay: "preview-formal-replay"
-                ),
-                message_id: "preview-message-id",
-                conversation_id: "preview-conversation-id"
-            )
+            let conversation = AITeacherConversation.sample[0]
             return StrapiResponse(data: conversation, meta: Meta(pagination: Pagination()))
         },
         streamAITeacherConversation: { aiTeacher, query in
@@ -265,23 +249,7 @@ extension VoiceGoAPIClient {
             }
         },
         createAITeacherConversation: { _, _ in
-            let conversation = AITeacherConversation(
-                documentId: "preview-id",
-                id: 1,
-                updatedAt: Date(),
-                query: "preview-query",
-                answer: ConversationAnswer(
-                    id: 1,
-                    answer: "preview-answer",
-                    score: 1,
-                    revisions: ["preview-revision"],
-                    review: "preview-review",
-                    simpleReplay: "preview-simple-replay",
-                    formalReplay: "preview-formal-replay"
-                ),
-                message_id: "preview-message-id",
-                conversation_id: "preview-conversation-id"
-            )
+            let conversation = AITeacherConversation.sample[0]
             return StrapiResponse(data: conversation, meta: Meta(pagination: Pagination()))
         },
         streamAITeacherConversation: { aiTeacher, query in

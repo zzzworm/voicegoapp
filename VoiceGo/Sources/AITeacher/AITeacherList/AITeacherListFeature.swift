@@ -32,10 +32,11 @@ struct AITeacherListFeature {
     }
 
     @Reducer(state: .equatable)
-    enum Path {
+    public enum Path {
         // This will be the destination when an AI Teacher is tapped.
         // Assuming you'll have an AITeacherFeature for the detail view.
         case aiTeacher(AITeacherPageFeature)
+        case talkToTeacher(AIConversationsPageFeature)
     }
 
     var body: some ReducerOf<Self> {
@@ -99,7 +100,11 @@ struct AITeacherListFeature {
                 //    }
                 //    return .none
                 }
-            
+            case .path(.element(id: _, action: .aiTeacher(.tapTalkToTeacher(let aiTeacher)))):
+                
+                    // Navigate to the conversation page for the selected AI Teacher
+                state.path.append(.talkToTeacher(.init(aiTeacher: aiTeacher)))
+                return .none
             case .path:
                 // Handle navigation path actions if needed, or rely on .forEach
                 return .none

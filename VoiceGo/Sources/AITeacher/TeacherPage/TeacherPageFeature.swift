@@ -29,6 +29,7 @@ struct AITeacherPageFeature {
     enum Action: Equatable, BindableAction {
         case binding(BindingAction<State>)
         case selectTeacher(AITeacher)
+        case tapTalkToTeacher(AITeacher)
     }
     var body: some ReducerOf<Self> {
         BindingReducer()
@@ -36,6 +37,10 @@ struct AITeacherPageFeature {
             switch action {
             case .selectTeacher(let teacher):
                 state.selectedTeacherId = teacher.id
+                return .none
+            
+            case .tapTalkToTeacher(let teacher):
+            
                 return .none
                 
             case .binding:
