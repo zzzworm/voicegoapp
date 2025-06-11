@@ -1,5 +1,6 @@
 import Foundation
 import GRDB
+import ExyteChat
 
 // MARK: - AITeacherCard
 struct AITeacherCard: Codable, FetchableRecord, PersistableRecord, Equatable {
@@ -196,5 +197,10 @@ extension AITeacher {
         static var defaultTag: CategoryTag {
             .general
         }
+    }
+    
+    func toChatUser() -> ExyteChat.User {
+        let avatarURL = URL(string: coverUrl ?? "")
+        return ExyteChat.User(id: documentId, name: name, avatarURL: avatarURL, isCurrentUser: false)
     }
 }

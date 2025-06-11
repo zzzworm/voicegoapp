@@ -11,7 +11,7 @@ import ComposableArchitecture
 // MARK: - NotificationsFeatureView
 
 struct NotificationsView : View {
-    @Perception.Bindable var store: StoreOf<NotificationsFeature>
+    @Bindable var store: StoreOf<NotificationsFeature>
 
     
     var body: some View {

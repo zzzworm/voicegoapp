@@ -12,7 +12,7 @@ import PulseUI
 #endif
 
 struct ProfileSettingView: View {
-    @Perception.Bindable var store: StoreOf<ProfileSettingFeature>
+    @Bindable var store: StoreOf<ProfileSettingFeature>
     
     var body: some View {
         content

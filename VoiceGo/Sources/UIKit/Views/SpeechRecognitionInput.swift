@@ -132,7 +132,7 @@ struct SpeechRecognitionInputView: View {
 #if os(macOS)
     @Bindable var store: StoreOf<SpeechRecognitionInputDomain>
 #else
-    @Perception.Bindable var store: StoreOf<SpeechRecognitionInputDomain>
+    @Bindable var store: StoreOf<SpeechRecognitionInputDomain>
 #endif
     var body: some View {
         WithPerceptionTracking {

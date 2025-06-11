@@ -7,13 +7,17 @@
 
 import SwiftUI
 import ComposableArchitecture
+import Perception
 
 
 // MARK: - LoadingView
 
 struct LoadingView  : View {
-    @Perception.Bindable var store: StoreOf<LoadingFeature>
-
+    #if os(macOS)
+    @Bindable var store: StoreOf<LoadingFeature>
+    #else
+    @Bindable var store: StoreOf<LoadingFeature>
+    #endif
 
     var body: some View {
         content

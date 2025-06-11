@@ -11,7 +11,7 @@ import ComposableArchitecture
 // MARK: - ForgotPasswordView
 
 struct ForgotPasswordView : View {
-    @Perception.Bindable var store: StoreOf<ForgotPasswordFeature>
+    @Bindable var store: StoreOf<ForgotPasswordFeature>
     
     @FocusState private var focused: Bool
     

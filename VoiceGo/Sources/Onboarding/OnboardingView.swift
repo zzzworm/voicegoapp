@@ -11,7 +11,7 @@ import ComposableArchitecture
 // MARK: - HelpView
 
 struct OnboardingView : View {
-    @Perception.Bindable var store: StoreOf<OnboardingFeature>
+    @Bindable var store: StoreOf<OnboardingFeature>
 
 
     var body: some View {

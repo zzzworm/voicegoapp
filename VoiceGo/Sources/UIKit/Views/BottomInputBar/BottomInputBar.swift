@@ -71,7 +71,7 @@ struct BottomInputBarFeature : Reducer{
 
 struct BottomInputBarBarView: View {
     @FocusState var isFocused : Bool // 1
-    @Perception.Bindable var store: StoreOf<BottomInputBarFeature>
+    @Bindable var store: StoreOf<BottomInputBarFeature>
     var body: some View {
         WithPerceptionTracking {
             WithViewStore(self.store, observe: { $0 }) { viewStore in

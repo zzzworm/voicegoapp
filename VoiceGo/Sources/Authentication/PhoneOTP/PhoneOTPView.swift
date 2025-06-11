@@ -11,7 +11,7 @@ import ComposableArchitecture
 // MARK: - PhoneOTPView
 
 struct PhoneOTPView : View {
-    @Perception.Bindable var store: StoreOf<PhoneOTPFeature>
+    @Bindable var store: StoreOf<PhoneOTPFeature>
     
     var body: some View {
         content

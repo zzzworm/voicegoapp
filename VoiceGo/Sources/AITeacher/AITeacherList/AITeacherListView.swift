@@ -4,7 +4,7 @@ import ComposableArchitecture
 
 
 struct AITeacherListView: View {
-    @Perception.Bindable var store: StoreOf<AITeacherListFeature>
+    @Bindable var store: StoreOf<AITeacherListFeature>
 
     var body: some View {
         WithPerceptionTracking {

@@ -1,7 +1,7 @@
 import Foundation
 import GRDB
 import SharingGRDB
-
+import ExyteChat
 
 
 struct ConversationAnswer: Codable, FetchableRecord, PersistableRecord, Equatable, Identifiable {
@@ -37,13 +37,46 @@ struct AITeacherConversation : Equatable, Identifiable,TableRecord, Codable  {
     let id : Int
     let updatedAt: Date
     let query : String
-    var answer : ConversationAnswer
+    var answer : ConversationAnswer?
     let message_id: String
     let conversation_id: String
-    var ai_teacher: AITeacher? = nil
+    var ai_teacher: AITeacher
+    var user: UserProfile
+    let createdAt: Date
+    let publishedAt: Date
 }
 
 extension AITeacherConversation {
         static var databaseTableName = "aiTeacherHistory"
+    
+    func toChatMessage() -> [ExyteChat.Message] {
+        let userMsg =  ExyteChat.Message(
+            id: user.documentId,
+            user: user.toChatUser(),
+            status: .read,
+            createdAt: createdAt,
+            text: query,
+            attachments:[],
+            reactions: [],
+            recording: nil,
+            replyMessage: nil
+        )
+        if let answer = answer {
+            let answerMsg = ExyteChat.Message(
+                id: message_id,
+                user: ai_teacher.toChatUser(),
+                status: .read,
+                createdAt: updatedAt,
+                text: answer.answer,
+                attachments: [],
+                reactions: [],
+                recording: nil,
+                replyMessage: nil
+            )
+            return [userMsg, answerMsg]
+        }
+        
+        return [userMsg]
+    }
 }
 
