@@ -9,7 +9,7 @@ import SwiftUI
 import ComposableArchitecture
 
 struct RootView: View {
-    @Perception.Bindable var store: StoreOf<RootFeature>
+    @Bindable var store: StoreOf<RootFeature>
     
     var body: some View {
         WithPerceptionTracking {

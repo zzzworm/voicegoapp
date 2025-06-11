@@ -8,7 +8,7 @@
 import Foundation
 import SharingGRDB
 import Copyable
-
+import ExyteChat
 
 @Copyable
 struct UserProfile: Identifiable, Equatable , FetchableRecord, MutablePersistableRecord {
@@ -91,6 +91,12 @@ extension UserProfile: Codable, EncodableRecord, TableRecord {
 }
 
 extension UserProfile {
+    
+    func toChatUser() -> ExyteChat.User {
+        let avatarURL = URL(string: userIconUrl ?? "")
+        return ExyteChat.User(id: documentId, name: username, avatarURL: avatarURL, isCurrentUser: true)
+    }
+    
     static var sample: UserProfile {
         .init(
             id: 1,

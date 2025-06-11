@@ -9,7 +9,7 @@ import SwiftUI
 import ComposableArchitecture
 
 struct StudyToolListView: View {
-    @Perception.Bindable var store: StoreOf<StudyToolsFeature>
+    @Bindable var store: StoreOf<StudyToolsFeature>
     var body: some View {
         WithPerceptionTracking {
             NavigationStack(path: $store.scope(state: \.path, action: \.path)) {

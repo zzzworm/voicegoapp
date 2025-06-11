@@ -12,7 +12,7 @@ import iPhoneNumberField
 // MARK: - PhoneLoginView
 
 struct PhoneLoginView : View{
-    @Perception.Bindable var store: StoreOf<PhoneLoginFeature>
+    @Bindable var store: StoreOf<PhoneLoginFeature>
     @FocusState private var focused: Bool
     
     var body: some View {

@@ -1,10 +1,10 @@
 import SwiftUI
 import ComposableArchitecture
-
+import Perception
 
 
 struct ConversationSceneListView: View {
-    @Perception.Bindable var store: StoreOf<ConversationSceneListFeature>
+    @Bindable var store: StoreOf<ConversationSceneListFeature>
 
     var body: some View {
         WithPerceptionTracking {

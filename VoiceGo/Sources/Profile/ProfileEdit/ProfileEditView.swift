@@ -3,7 +3,7 @@ import ComposableArchitecture
 import PhotosUI
 
 struct ProfileEditView: View {
-    @Perception.Bindable var store: StoreOf<ProfileEditFeature>
+    @Bindable var store: StoreOf<ProfileEditFeature>
     
     var body: some View {
         content

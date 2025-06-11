@@ -11,7 +11,7 @@ import ComposableArchitecture
 // MARK: - LoginView
 
 struct EmailRegisterView : View {
-    @Perception.Bindable var store: StoreOf<EmailRegisterFeature>
+    @Bindable var store: StoreOf<EmailRegisterFeature>
     
     enum FocusedField {
             case username,email, password, retype

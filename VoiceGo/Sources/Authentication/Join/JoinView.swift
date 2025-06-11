@@ -11,7 +11,7 @@ import ComposableArchitecture
 // MARK: - LoginOptionsView
 
 struct JoinView : View {
-    @Perception.Bindable var store: StoreOf<JoinFeature>
+    @Bindable var store: StoreOf<JoinFeature>
     
     var body: some View {
         content

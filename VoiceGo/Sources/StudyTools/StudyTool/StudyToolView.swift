@@ -11,7 +11,7 @@ import Perception
 import IsScrolling
 
 struct StudyToolView: View {
-    @Perception.Bindable var store: StoreOf<StudyToolFeature>
+    @Bindable var store: StoreOf<StudyToolFeature>
     @State private var hasScrolledToBottom = false
     var body: some View {
         WithPerceptionTracking {

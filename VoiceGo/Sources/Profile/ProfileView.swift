@@ -12,7 +12,7 @@ import PulseUI
 #endif
 
 struct ProfileView: View {
-    @Perception.Bindable var store: StoreOf<ProfileFeature>
+    @Bindable var store: StoreOf<ProfileFeature>
     var body: some View {
         WithPerceptionTracking {
             NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
