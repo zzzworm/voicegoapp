@@ -11,13 +11,21 @@ import ExyteChat
 
 @Reducer
 struct AIConversationsPageFeature {
+    @Dependency(\.userInfoRepository) var userInfoRepository
     @ObservableState
     struct State: Equatable {
-        public var messages: [Message] = []
-        public var chatTitle: String = "AI Teacher"
+        public var messages: [ExyteChat.Message] = []
+        public var chatTitle: String{
+            aiTeacher.name
+        }
         public var chatStatus: String = "Online"
-        public var chatCover: URL?
-        public init() {}
+        public var chatCover: URL?{
+            URL(string: aiTeacher.coverUrl)
+        }
+        var aiTeacher : AITeacher
+        public init(aiTeacher: AITeacher) {
+            self.aiTeacher = aiTeacher
+        }
     }
     
     @CasePathable
@@ -28,8 +36,8 @@ struct AIConversationsPageFeature {
         }
         case view(ViewAction)
         case sendDraft(DraftMessage)
-        case loadMore(before: Message)
-        case messagesLoaded([Message])
+        case loadMore(before: ExyteChat.Message)
+        case messagesLoaded([ExyteChat.Message])
         case binding(BindingAction<State>)
     }
     
@@ -41,21 +49,39 @@ struct AIConversationsPageFeature {
             switch action {
             case .view(.onAppear):
                 // Load initial messages or setup
+                if state.messages.isEmpty {
+                    // Simulate loading initial messages
+                    let chatUser = state.aiTeacher.toChatUser()
+                    var message = ""
+                    if let card = state.aiTeacher.card {
+                        message = card.openingLetter ?? ""
+                    }
+                    let initialMessages = [
+                        ExyteChat.Message(
+                            id: UUID().uuidString,
+                            user: chatUser,
+                            status: .sent,
+                            createdAt: Date(),
+                            text: message
+                        )
+                    ]
+                    state.messages.append(contentsOf: initialMessages)
+                }
                 return .none
             case .view(.onDisappear):
                 // Cleanup if needed
                 return .none
             case let .sendDraft(draft):
                 // Handle sending a message (append for now)
-//                let newMessage = Message(
-//                    id: UUID().uuidString,
-//                    user: .init(id: "current", name: "You", avatarURL: nil, isCurrentUser: true),
-//                    text: draft.text,
-//                    date: Date(),
-//                    status: .sent,
-//                    type: .text
-//                )
-//                state.messages.append(newMessage)
+                let chatUser = userInfoRepository.currentUser!.toChatUser()
+                let newMessage = ExyteChat.Message(
+                    id: UUID().uuidString,
+                    user: chatUser,
+                    status: .sent,
+                    createdAt: Date(),
+                    text: draft.text
+                )
+                state.messages.append(newMessage)
                 return .none
             case let .loadMore(before):
                 // Simulate loading more (prepend dummy message)

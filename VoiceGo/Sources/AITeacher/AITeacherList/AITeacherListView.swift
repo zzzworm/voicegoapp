@@ -26,7 +26,7 @@ struct AITeacherListView: View {
                         Spacer()
                     } else if store.aiTeacherList.isEmpty && store.dataLoadingStatus == .success {
                         Spacer()
-                        Text("No AI Teachers found in this category.") // Replace with localized string
+                        Text("没有找到AI教练") // Replace with localized string
                             .foregroundColor(.secondary)
                         Spacer()
                     } else {
@@ -45,7 +45,7 @@ struct AITeacherListView: View {
                     }
                 }
                 .commonBackground() // Assuming you have a commonBackground modifier
-                .navigationTitle("AI Teachers") // Replace with localized string
+                .navigationTitle("AI教练") // Replace with localized string
                 .navigationBarTitleDisplayMode(.inline)
                 .task {
                     if store.aiTeacherList.isEmpty && store.dataLoadingStatus == .notStarted {
@@ -57,6 +57,9 @@ struct AITeacherListView: View {
                 switch store.case {
                 case let .aiTeacher(detailStore):
                     AITeacherPageView(store: detailStore)
+                    .toolbar(.hidden, for: .tabBar) // Hide tab bar in detail view
+                case let .talkToTeacher(detailStore):
+                    AIConversationsPageView(store: detailStore)
                     .toolbar(.hidden, for: .tabBar) // Hide tab bar in detail view
                 }
             }

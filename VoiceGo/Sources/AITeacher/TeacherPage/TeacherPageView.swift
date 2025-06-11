@@ -14,6 +14,7 @@ struct AITeacherPageView: View {
     private let imageHeightRatio: CGFloat = 0.6
     private let scrollItemSize = CGSize(width: 75, height: 100)
     
+
     var body: some View {
         content
             .enableInjection()
@@ -93,6 +94,7 @@ struct AITeacherPageView: View {
                     // Start Chat button
                     Button(action: {
                         // Handle start chat action
+                        store.send(.tapTalkToTeacher(store.state.aiTeacher))
                     }) {
                         Text("开始聊天")
                             .font(.headline)

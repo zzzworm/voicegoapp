@@ -47,7 +47,7 @@ struct AITeacherConversation : Equatable, Identifiable,TableRecord, Codable  {
 }
 
 extension AITeacherConversation {
-        static var databaseTableName = "aiTeacherHistory"
+    static var databaseTableName = "aiTeacherHistory"
     
     func toChatMessage() -> [ExyteChat.Message] {
         let userMsg =  ExyteChat.Message(
@@ -78,5 +78,22 @@ extension AITeacherConversation {
         
         return [userMsg]
     }
+    
+    
+    static var sample : [AITeacherConversation] = [
+        AITeacherConversation(
+            documentId: "conversation_doc_1",
+            id: 1,
+            updatedAt: Date(),
+            query: "What is the capital of France?",
+            answer: ConversationAnswer(answer: "The capital of France is Paris.", score: 100, revisions: [], review: "Correct answer.", simpleReplay: "Got it.", formalReplay: "Understood."),
+            message_id: "message_id_1",
+            conversation_id: "conversation_id_1",
+            ai_teacher: AITeacher.sample[0],
+            user: UserProfile.sample,
+            createdAt: Date(),
+            publishedAt: Date()
+        )
+    ]
 }
 

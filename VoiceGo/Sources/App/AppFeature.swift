@@ -47,6 +47,7 @@ struct AppFeature {
     @Dependency(\.userKeychainClient) var userKeychainClient
     @Dependency(\.googleSignInClient) var googleSignInClient
     @Dependency(\.userNotificationClient) var userNotificationClient
+    @Dependency(\.userInfoRepository) var userInfoRepository
     
     fileprivate func doLogout(_ state: inout AppFeature.State) {
         self.googleSignInClient.logout()
