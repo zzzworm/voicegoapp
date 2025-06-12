@@ -50,7 +50,7 @@ struct ForgotPasswordView : View {
                 .focused($focused)
                 Spacer()
                 Button("发送验证码", action: {
-                    store.send(.view(.onChangePasswordButtonTap))
+                    store.send(.view(.onChangePasswordButtonTaped))
                 })
                 .buttonStyle(CTAButtonStyle(isSelected: true))
                     .padding(.bottom, 12)

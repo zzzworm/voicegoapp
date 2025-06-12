@@ -151,11 +151,13 @@ extension VoiceGoAPIClient : DependencyKey  {
                         case .complete(let completion):
                             guard let httpResponse = completion.response else {
                                 let errorMessage = "Bad Response"
-                                return continuation.finish( throwing: StrapiSwiftError.badResponse(statusCode: 503, message: errorMessage))
+                                let errorDetails = StrapiErrorDetails(status: 503, name: "Service Unavailable", message: errorMessage, details: nil)
+                                return continuation.finish(throwing: StrapiSwiftError.badResponse(statusCode: 503, error: errorDetails))
                             }
                                 if httpResponse.statusCode != 200 && httpResponse.statusCode != 201 && httpResponse.statusCode != 204 {
                                     let errorMessage = "Bad Response"
-                                    continuation.finish( throwing: StrapiSwiftError.badResponse(statusCode: httpResponse.statusCode, message: errorMessage))
+                                    let errorDetails = StrapiErrorDetails(status: httpResponse.statusCode, name: "Bad Request", message: errorMessage, details: nil)
+                                    continuation.finish(throwing: StrapiSwiftError.badResponse(statusCode: httpResponse.statusCode, error: errorDetails))
                                 }
                                 else{
                                     continuation.finish()
@@ -193,11 +195,13 @@ extension VoiceGoAPIClient : DependencyKey  {
                         case .complete(let completion):
                             guard let httpResponse = completion.response else {
                                 let errorMessage = "Bad Response"
-                                return continuation.finish(throwing: StrapiSwiftError.badResponse(statusCode: 503, message: errorMessage))
+                                let errorDetails = StrapiErrorDetails(status: 503, name: "Service Unavailable", message: errorMessage, details: nil)
+                                return continuation.finish(throwing: StrapiSwiftError.badResponse(statusCode: 503, error: errorDetails))
                             }
                             if httpResponse.statusCode != 200 && httpResponse.statusCode != 201 && httpResponse.statusCode != 204 {
                                 let errorMessage = "Bad Response"
-                                continuation.finish(throwing: StrapiSwiftError.badResponse(statusCode: httpResponse.statusCode, message: errorMessage))
+                                let errorDetails = StrapiErrorDetails(status: httpResponse.statusCode, name: "Bad Request", message: errorMessage, details: nil)
+                                continuation.finish(throwing: StrapiSwiftError.badResponse(statusCode: httpResponse.statusCode, error: errorDetails))
                             } else {
                                 continuation.finish()
                             }
@@ -242,11 +246,13 @@ extension VoiceGoAPIClient : DependencyKey  {
                         case .complete(let completion):
                             guard let httpResponse = completion.response else {
                                 let errorMessage = "Bad Response"
-                                return continuation.finish(throwing: StrapiSwiftError.badResponse(statusCode: 503, message: errorMessage))
+                                let errorDetails = StrapiErrorDetails(status: 503, name: "Service Unavailable", message: errorMessage, details: nil)
+                                return continuation.finish(throwing: StrapiSwiftError.badResponse(statusCode: 503, error: errorDetails))
                             }
                             if httpResponse.statusCode != 200 && httpResponse.statusCode != 201 && httpResponse.statusCode != 204 {
                                 let errorMessage = "Bad Response"
-                                continuation.finish(throwing: StrapiSwiftError.badResponse(statusCode: httpResponse.statusCode, message: errorMessage))
+                                let errorDetails = StrapiErrorDetails(status: httpResponse.statusCode, name: "Bad Request", message: errorMessage, details: nil)
+                                continuation.finish(throwing: StrapiSwiftError.badResponse(statusCode: httpResponse.statusCode, error: errorDetails))
                             } else {
                                 continuation.finish()
                             }
