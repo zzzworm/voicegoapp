@@ -4,3 +4,6 @@
 [submodule "Packages/ActivityIndicatorView"]
 	path = Packages/ActivityIndicatorView
 	url = git@tower.v6.army:voicego/ios/ActivityIndicatorView.git
+[submodule "Packages/exyteChat"]
+	path = Packages/exyteChat
+	url = https://github.com/exyte/Chat.git

@@ -168,7 +168,7 @@ extension VoiceGoAPIClient : DependencyKey  {
         },
         createAITeacherConversation: { aiTeacher, query in
             let data = StrapiRequestBody(["ai_teacher": .dictionary(["documentId":.string(aiTeacher.documentId)]), "query": .string(query)]);
-            let response = try await Strapi.contentManager.collection("tool-conversation").postData(data, as: AITeacherConversation.self)
+            let response = try await Strapi.contentManager.collection("teacher-conversation/create-message").postData(data, as: AITeacherConversation.self)
             return response
         },
         streamAITeacherConversation: { aiTeacher, query in

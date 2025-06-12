@@ -11,8 +11,8 @@ struct ConversationAnswer: Codable, FetchableRecord, PersistableRecord, Equatabl
     let score: Int
     let revisions: [String] // 假设 revisions 是字符串数组，如有更复杂结构请补充
     let review: String
-    let simpleReplay: String
-    let formalReplay: String
+    let simpleReplay: String?
+    let formalReplay: String?
 
 }
 extension ConversationAnswer {
@@ -38,8 +38,8 @@ struct AITeacherConversation : Equatable, Identifiable,TableRecord, Codable  {
     let updatedAt: Date
     let query : String
     var answer : ConversationAnswer?
-    let message_id: String
-    let conversation_id: String
+    let message_id: String?
+    let conversation_id: String?
     var ai_teacher: AITeacher
     var user: UserProfile
     let createdAt: Date
@@ -49,9 +49,30 @@ struct AITeacherConversation : Equatable, Identifiable,TableRecord, Codable  {
 extension AITeacherConversation {
     static var databaseTableName = "aiTeacherHistory"
     
+    func toChatLatestMessage() -> [ExyteChat.Message] {
+        let userMsg =  ExyteChat.Message(
+            id: UUID().uuidString,
+            user: user.toChatUser(),
+            status: .read,
+            createdAt: createdAt,
+            text: query,
+            attachments:[],
+            reactions: [],
+            recording: nil,
+            replyMessage: nil
+        )
+        if let answer = answer {
+            
+            let answerMsg = toAnswerMessage()
+            return [userMsg, answerMsg]
+        }
+        
+        return [userMsg]
+    }
+    
     func toChatMessage() -> [ExyteChat.Message] {
         let userMsg =  ExyteChat.Message(
-            id: user.documentId,
+            id: UUID().uuidString,
             user: user.toChatUser(),
             status: .read,
             createdAt: createdAt,
@@ -63,7 +84,7 @@ extension AITeacherConversation {
         )
         if let answer = answer {
             let answerMsg = ExyteChat.Message(
-                id: message_id,
+                id: message_id ?? UUID().uuidString,
                 user: ai_teacher.toChatUser(),
                 status: .read,
                 createdAt: updatedAt,
@@ -79,6 +100,29 @@ extension AITeacherConversation {
         return [userMsg]
     }
     
+    func toAnswerMessage() -> ExyteChat.Message {
+        var suggestions: [String] = []
+        
+        if let simpleReplay = answer?.simpleReplay {
+            suggestions.append("简单: \(simpleReplay)")
+        }
+        
+        if let formalReplay = answer?.formalReplay {
+            suggestions.append("地道: \(formalReplay)")
+        }
+        let answerMsg = ExyteChat.Message(
+            id: message_id ?? UUID().uuidString,
+            user: ai_teacher.toChatUser(),
+            status: .read,
+            createdAt: updatedAt,
+            text: answer!.answer,
+            attachments: [],
+            suggestions: suggestions,
+            recording: nil,
+            replyMessage: nil
+        )
+        return answerMsg
+    }
     
     static var sample : [AITeacherConversation] = [
         AITeacherConversation(
