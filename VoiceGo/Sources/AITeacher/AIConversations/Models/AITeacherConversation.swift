@@ -101,14 +101,23 @@ extension AITeacherConversation {
     }
     
     func toAnswerMessage() -> ExyteChat.Message {
-        var suggestions: [String] = []
+        var associations: [ExyteChat.Association] = []
         
         if let simpleReplay = answer?.simpleReplay {
-            suggestions.append("简单: \(simpleReplay)")
+            let association = ExyteChat.Association(
+                id: UUID().uuidString,
+                type: .suggestion("简单: \(simpleReplay)")
+            )
+            associations.append(association)
         }
         
         if let formalReplay = answer?.formalReplay {
-            suggestions.append("地道: \(formalReplay)")
+            
+            let association = ExyteChat.Association(
+                id: UUID().uuidString,
+                type: .suggestion("地道: \(formalReplay)")
+            )
+            associations.append(association)
         }
         let answerMsg = ExyteChat.Message(
             id: message_id ?? UUID().uuidString,
@@ -117,7 +126,7 @@ extension AITeacherConversation {
             createdAt: updatedAt,
             text: answer!.answer,
             attachments: [],
-            suggestions: suggestions,
+            associations: associations,
             recording: nil,
             replyMessage: nil
         )

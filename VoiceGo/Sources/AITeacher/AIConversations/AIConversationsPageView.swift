@@ -51,7 +51,7 @@ enum MessageAction: MessageMenuAction {
 
 
 struct AIConversationsPageView: View {
-    let store: StoreOf<AIConversationsPageFeature>
+    @Bindable var store: StoreOf<AIConversationsPageFeature>
     private let reactionDelegate: AITeacherReactionDelegate
     
     @Environment(\.colorScheme) private var colorScheme
@@ -109,47 +109,61 @@ struct AIConversationsPageView: View {
     }
     
     @ViewBuilder private var content: some View {
-        var chatView = ChatView(
-            messages: store.state.messages,
-            chatType: .conversation,
-            didSendMessage: { draft in
-                store.send(.sendDraft(draft))
-            },
-            reactionDelegate: reactionDelegate,
-            messageMenuAction: { (action: MessageAction, defaultActionClosure, message) in // <-- here: specify the name of your `MessageMenuAction` enum
-//                switch action {
-//                case .reply:
-//                    defaultActionClosure(message, .reply)
-//                case .edit:
-//                    defaultActionClosure(message, .edit { editedText in
-//                        // update this message's text on your BE
-//                        print(editedText)
-//                    })
-//                }
-            }
-        )
-
-        if let pageCount = store.state.paginationState?.pageCount, pageCount > 1 {
-            chatView.enableLoadMore(pageSize: 3) { message in
-                store.send(.loadMore(before: message))
-            }
-        }
-        
-        chatView
-            .messageUseMarkdown(true)
-            .setRecorderSettings(recorderSettings)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    navigationBarLeadingContent
+        WithViewStore(self.store, observe: { $0 }) { viewStore in
+            var chatView = ChatView(
+                messages: store.state.messages,
+                chatType: .conversation,
+                didSendMessage: { draft in
+                    store.send(.sendDraft(draft))
+                },
+                reactionDelegate: reactionDelegate,
+                messageMenuAction: { (action: MessageAction, defaultActionClosure, message) in // <-- here: specify the name of your `MessageMenuAction` enum
+                    //                switch action {
+                    //                case .reply:
+                    //                    defaultActionClosure(message, .reply)
+                    //                case .edit:
+                    //                    defaultActionClosure(message, .edit { editedText in
+                    //                        // update this message's text on your BE
+                    //                        print(editedText)
+                    //                    })
+                    //                }
+                }
+            )
+            
+            if let pageCount = store.state.paginationState?.pageCount, pageCount > 1 {
+                chatView.enableLoadMore(pageSize: 3) { message in
+                    store.send(.loadMore(before: message))
                 }
             }
-            .onAppear { store.send(.view(.onAppear)) }
-            .onDisappear { store.send(.view(.onDisappear)) }
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationBarBackButtonHidden(true)
-            .task {
-                store.send(.fetchConversationList(page: 1, pageSize: 20))
-            }
+            
+            chatView
+                .messageUseMarkdown(true)
+                .setRecorderSettings(recorderSettings)
+                .tapAssociationClosure({ message, association in
+                    
+                    store.send(.tapAssociation(message,association))
+                    
+                })
+                .alert($store.scope(state: \.alert, action: \.alert))
+                .disabled(store.isLoading)
+                .overlay {
+                    if store.isLoading {
+                        ProgressView()
+                    }
+                }
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        navigationBarLeadingContent
+                    }
+                }
+                .onAppear { store.send(.view(.onAppear)) }
+                .onDisappear { store.send(.view(.onDisappear)) }
+                .navigationBarTitleDisplayMode(.inline)
+                .navigationBarBackButtonHidden(true)
+                .task {
+                    store.send(.fetchConversationList(page: 1, pageSize: 20))
+                }
+        }
     }
 }
 

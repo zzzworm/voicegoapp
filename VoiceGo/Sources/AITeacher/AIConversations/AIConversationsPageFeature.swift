@@ -18,6 +18,7 @@ struct AIConversationsPageFeature {
 
     @ObservableState
     struct State: Equatable {
+        @Presents var alert: AlertState<Action.AlertAction>?
         public var messages: [ExyteChat.Message] = []
         public var chatTitle: String{
             aiTeacher.name
@@ -27,6 +28,9 @@ struct AIConversationsPageFeature {
         }
         var aiTeacher : AITeacher
         var dataLoadingStatus = DataLoadingStatus.notStarted
+        var isLoading : Bool{
+            dataLoadingStatus == .loading
+        }
         var paginationState : Pagination?
         var isLoadMore = false
         var isScrolling = false
@@ -39,19 +43,26 @@ struct AIConversationsPageFeature {
     
     @CasePathable
     enum Action: BindableAction {
+        case view(ViewAction)
         case reaction(AITeacherChatReactionFeature.Action)
         enum ViewAction: Equatable {
             case onAppear
             case onDisappear
         }
-        case view(ViewAction)
         case fetchConversationList(page: Int, pageSize: Int)
         case fetchConversationListResponse(TaskResult<StrapiResponse<[AITeacherConversation]>>)
         case sendDraft(DraftMessage)
         case deleteMessage(ExyteChat.Message)
-        case sendDraftFailed(ExyteChat.Message,DraftMessage)
+        case sendDraftFailed(ExyteChat.Message, DraftMessage)
         case loadMore(before: ExyteChat.Message)
         case messagesLoaded([ExyteChat.Message])
+        case tapAssociation(ExyteChat.Message, ExyteChat.Association)
+        
+        case useAgeReachLimit
+        enum AlertAction: Equatable {
+            case confirmUpgradePlan
+        }
+        case alert(PresentationAction<AlertAction>)
         case binding(BindingAction<State>)
     }
     
@@ -61,15 +72,23 @@ struct AIConversationsPageFeature {
         let chatUser = aiTeacher.toChatUser()
         guard let card = aiTeacher.card, let message = card.openingLetter else { return [] }
         
-        var suggestions: [String] = []
+        var associations: [Association] = []
         
         if let simpleReplay = card.simpleReplay {
-            suggestions.append("简单: \(simpleReplay)")
+            let association = Association(
+                id: uuid().uuidString,
+                type: .suggestion("简单: \(simpleReplay)")
+            )
+            associations.append(association)
         }
         
         if let formalReplay = card.formalReplay {
-
-            suggestions.append("地道: \(formalReplay)")
+            
+            let association = Association(
+                id: uuid().uuidString,
+                type: .suggestion("地道: \(formalReplay)")
+            )
+            associations.append(association)
         }
         
         return [
@@ -79,7 +98,7 @@ struct AIConversationsPageFeature {
                 status: .sent,
                 createdAt: Date(),
                 text: message,
-                suggestions: suggestions
+                associations: associations
             )
         ]
     }
@@ -156,12 +175,25 @@ struct AIConversationsPageFeature {
             case .view(.onDisappear):
                 // Cleanup if needed
                 return .none
+            case .tapAssociation(let message, let association):
+                switch association.type {
+                case .suggestion(let suggestReply):
+                    // Handle association tap
+                    let reply: String = String(suggestReply.split(separator: ":").last ?? "")
+                    let draft = DraftMessage(
+                        text: reply,
+                        medias: [],
+                        giphyMedia: nil,
+                        recording: nil,
+                        replyMessage: nil,
+                        createdAt: Date()
+                    )
+                    return.send(.sendDraft(draft))
+                }
+                return .none
+                
             case let .sendDraft(draft):
                 // Handle sending a message (append for now)
-                if var latestMessage = state.messages.last {
-                    latestMessage.reactions = []
-                    state.messages[state.messages.count - 1] = latestMessage
-                }
                 let chatUser = userInfoRepository.currentUser!.toChatUser()
                 let newMessage = ExyteChat.Message(
                     id: draft.id ?? uuid().uuidString,
@@ -178,10 +210,28 @@ struct AIConversationsPageFeature {
                         let answerMsg = await response.data.toAnswerMessage()
                         return await send(.messagesLoaded([answerMsg]))
                     }
-                    catch{
-                        return await send(.sendDraftFailed(newMessage,draft))
+                    catch(let error as StrapiSwiftError) {
+                        switch error {
+                        case .badResponse(let statusCode, let errorDetails):
+                            if let errorName = errorDetails?.name, errorName == "FreeTrialLimitExceededError" {
+                                return await send(.useAgeReachLimit)
+                            }
+                        default:
+                            return await send(.sendDraftFailed(newMessage,draft))
+                        }
                     }
                 }
+            case .useAgeReachLimit:
+                state.alert = AlertState(
+                    title: TextState("Upgrade Plan"),
+                    message: TextState("You have reached the usage limit for this AI teacher. Please upgrade your plan to continue."),
+                    buttons: [
+                        ButtonState(role: .destructive, action: .confirmUpgradePlan) {
+                            TextState(String(localized:"升级", comment: "Useage Limited Alert"))
+                        }
+                    ]
+                )
+                return .none
             case let .deleteMessage(message):
                 state.messages.removeAll { $0.id == message.id }
                 return .none
@@ -208,14 +258,22 @@ struct AIConversationsPageFeature {
 //                state.messages.insert(more, at: 0)
                 return .none
             case let .messagesLoaded(messages):
+                if var latestHasAssociationsIndex = state.messages.lastIndex(where: { $0.associations.isEmpty == false }) {
+                    var latestMessage = state.messages[latestHasAssociationsIndex]
+                    latestMessage.associations = []
+                    state.messages[latestHasAssociationsIndex] = latestMessage
+                }
                 state.messages.append(contentsOf: messages)
                 return .none
             case .binding(_):
                 return .none
             case .reaction(_):
                 return .none
+            case .alert(_):
+                return .none
             }
         }
+        .ifLet(\.$alert, action: \.alert)
         .onChange(of: \.reactionState.messageReactions) { _, newValue in
             Reduce { state, _ in
                 for (messageId, reactions) in newValue {

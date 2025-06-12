@@ -19,7 +19,7 @@ struct ForgotPasswordFeature {
     
     enum Action: Equatable, BindableAction {
         enum ViewAction: Equatable {
-            case onChangePasswordButtonTap
+            case onChangePasswordButtonTaped
         }
         
         enum DelegateAction: Equatable {
@@ -42,7 +42,7 @@ struct ForgotPasswordFeature {
             switch action {
             case let .view(viewAction):
                 switch viewAction {
-                case .onChangePasswordButtonTap:
+                case .onChangePasswordButtonTaped:
                     state.alert = AlertState {
                         TextState("确认重置？")
                     } actions: {

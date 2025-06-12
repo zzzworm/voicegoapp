@@ -231,6 +231,9 @@
         }
       }
     },
+    "Upgrade Plan" : {
+
+    },
     "View" : {
 
     },
@@ -241,6 +244,9 @@
 
     },
     "You don't have any notifications." : {
+
+    },
+    "You have reached the usage limit for this AI teacher. Please upgrade your plan to continue." : {
 
     },
     "Your device does not allow speech recognition." : {
@@ -263,6 +269,9 @@
     },
     "其他登录" : {
 
+    },
+    "升级" : {
+      "comment" : "Useage Limited Alert"
     },
     "反馈/举报" : {
 
