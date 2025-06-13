@@ -12,43 +12,6 @@ import ExyteChat
 import InjectionNext
 #endif
 
-enum MessageAction: MessageMenuAction {
-    case copy,reply, edit
-
-    func title() -> String {
-        switch self {
-        case .copy:
-            "Copy"
-        case .reply:
-            "Reply"
-        case .edit:
-            "Edit"
-        }
-    }
-    
-    func icon() -> Image {
-        switch self {
-        case .copy:
-            Image(systemName: "doc.on.doc")
-        case .reply:
-            Image(systemName: "arrowshape.turn.up.left")
-        case .edit:
-            Image(systemName: "square.and.pencil")
-        }
-    }
-    
-    // Optional
-    // Implement this method to conditionally include menu actions on a per message basis
-    // The default behavior is to include all menu action items
-    static func menuItems(for message: ExyteChat.Message) -> [MessageAction] {
-        if message.user.isCurrentUser  {
-            return [.edit]
-        } else {
-            return [.copy,.reply]
-        }
-    }
-}
-
 
 struct AIConversationsPageView: View {
     @Bindable var store: StoreOf<AIConversationsPageFeature>
@@ -56,7 +19,68 @@ struct AIConversationsPageView: View {
     
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.presentationMode) private var presentationMode
+    @Environment(\.chatTheme) private var theme
+
     private let recorderSettings = RecorderSettings(sampleRate: 16000, numberOfChannels: 1, linearPCMBitDepth: 16)
+    
+    @ViewBuilder
+    private func messageInputView(
+        textBinding: Binding<String>,
+        inputViewStyle: InputViewStyle,
+        inputViewActionClosure: @escaping (InputViewAction) -> Void
+    ) -> some View {
+        Group {
+            switch inputViewStyle {
+            case .message: // input view on chat screen
+                VStack {
+                    HStack {
+//                        Button { inputViewActionClosure(.photo) }
+//                        label: {
+//                            theme.images.inputView.attachCamera
+//                                .frame(width: 40, height: 40)
+//                                .background {
+//                                    Circle().fill(theme.colors.sendButtonBackground)
+//                                }
+//                        }
+                        
+                        BottomInputBarBarView(store: store.scope(state: \.inputBarState, action: \.inputBar))
+                        Button {
+                            inputViewActionClosure(.send)
+                        }
+                        label: {
+                            theme.images.inputView.arrowSend
+                                .frame(width: 40, height: 40)
+                                .background {
+                                    Circle().fill(theme.colors.sendButtonBackground)
+                                }
+                        }
+                    }
+                    .padding(.horizontal, 10)
+                    Text("AI生成内容，仅供参考").padding(.bottom, 5)
+                }
+                
+            case .signature: // input view on photo selection screen
+                VStack {
+                    HStack {
+                        TextField("Compose a signature for photo", text: textBinding)
+                            .background(Color.white)
+                            
+                        Button {
+                            inputViewActionClosure(.send)
+                        }
+                        label: {
+                            theme.images.inputView.arrowSend
+                                .frame(width: 40, height: 40)
+                                .background {
+                                    Circle().fill(theme.colors.sendButtonBackground)
+                                }
+                        }
+                    }
+                    .padding(.horizontal, 10)
+                }
+            }
+        }
+    }
     
     init(store: StoreOf<AIConversationsPageFeature>) {
         self.store = store
@@ -117,17 +141,37 @@ struct AIConversationsPageView: View {
                     store.send(.sendDraft(draft))
                 },
                 reactionDelegate: reactionDelegate,
+                inputViewBuilder: { textBinding, attachments, inputViewState, inputViewStyle, inputViewActionClosure, dismissKeyboardClosure in
+                    messageInputView(
+                        textBinding: $store.inputBarState.inputText,
+                        inputViewStyle: inputViewStyle,
+                        inputViewActionClosure: inputViewActionClosure
+                    )
+                },
                 messageMenuAction: { (action: MessageAction, defaultActionClosure, message) in // <-- here: specify the name of your `MessageMenuAction` enum
-                    //                switch action {
-                    //                case .reply:
-                    //                    defaultActionClosure(message, .reply)
-                    //                case .edit:
-                    //                    defaultActionClosure(message, .edit { editedText in
-                    //                        // update this message's text on your BE
-                    //                        print(editedText)
-                    //                    })
-                    //                }
+                                    switch action {
+                                    case .reply:
+                                        defaultActionClosure(message, .reply)
+                                    case .edit:
+                                        defaultActionClosure(message, .edit { editedText in
+                                            // update this message's text on your BE
+                                            let draft = DraftMessage(
+                                                text: editedText,
+                                                medias: [],
+                                                giphyMedia: nil,
+                                                recording: nil,
+                                                replyMessage: nil,
+                                                createdAt: Date()
+                                            )
+                                            store.send(.sendDraft(draft))
+                                        })
+                                    case .copy:
+                                        store.send(.copyMessage(message))
+                                    case .delete:
+                                        store.send(.deleteMessage(message))
+                                    }
                 }
+
             )
             
             if let pageCount = store.state.paginationState?.pageCount, pageCount > 1 {

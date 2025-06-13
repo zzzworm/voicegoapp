@@ -51,6 +51,7 @@ let commonDependencies : [TargetDependency] = [
                 .external(name: "Copyable"),
                 .external(name: "UIFontComplete"),
                 .external(name: "ExyteChat"),
+                .external(name: "ResponsiveTextField"),
             ]
 
 let targetActions: [TargetScript] = [
