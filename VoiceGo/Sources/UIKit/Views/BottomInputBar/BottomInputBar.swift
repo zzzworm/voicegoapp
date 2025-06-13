@@ -7,6 +7,7 @@
 
 import SwiftUI
 import ComposableArchitecture
+import ResponsiveTextField
 
 struct BottomInputBarFeature : Reducer{
     @ObservableState
@@ -97,8 +98,8 @@ struct BottomInputBarBarView: View {
                         else{
                             // 添加输入框
                             
-                            TextField(
-                                "请输入内容",
+                            ResponsiveTextField(
+                                placeholder:"请输入内容",
                                 text: viewStore.binding(
                                     get: \.inputText,
                                     send: BottomInputBarFeature.Action.inputTextChanged
