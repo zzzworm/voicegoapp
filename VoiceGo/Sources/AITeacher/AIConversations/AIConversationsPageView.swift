@@ -143,10 +143,20 @@ struct AIConversationsPageView: View {
                 reactionDelegate: reactionDelegate,
                 inputViewBuilder: { textBinding, attachments, inputViewState, inputViewStyle, inputViewActionClosure, dismissKeyboardClosure in
                     messageInputView(
-                        textBinding: $store.inputBarState.inputText,
+                        textBinding: textBinding,
                         inputViewStyle: inputViewStyle,
                         inputViewActionClosure: inputViewActionClosure
                     )
+                    .onChange(of: store.inputBarState.text) { _, newValue in
+                        if textBinding.wrappedValue != newValue {
+                            textBinding.wrappedValue = newValue
+                        }
+                    }
+                    .onChange(of: textBinding.wrappedValue) { _, newValue in
+                        if store.inputBarState.text != newValue {
+                            store.send(.set(\.inputBarState.text, newValue))
+                        }
+                    }
                 },
                 messageMenuAction: { (action: MessageAction, defaultActionClosure, message) in // <-- here: specify the name of your `MessageMenuAction` enum
                                     switch action {

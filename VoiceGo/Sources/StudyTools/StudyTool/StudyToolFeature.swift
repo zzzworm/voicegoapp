@@ -131,7 +131,7 @@ struct StudyToolFeature {
                 switch action {
                 case .binding(_):
                     break
-                case .inputTextChanged(_):
+                case .textChanged(_):
                     break
                 case .speechRecognitionInput(_):
                     break

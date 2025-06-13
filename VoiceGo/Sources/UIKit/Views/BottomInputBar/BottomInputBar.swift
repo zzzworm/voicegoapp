@@ -7,19 +7,19 @@
 
 import SwiftUI
 import ComposableArchitecture
-import ResponsiveTextField
 
 struct BottomInputBarFeature : Reducer{
     @ObservableState
     struct State : Equatable {
-        var inputText: String = ""
+        var text: String = ""
+        var placeholdr: String = "对话，查词，翻译，问答"
         var isKeyboardVisible: Bool = false
         var speechRecognitionInputState: SpeechRecognitionInputDomain.State = .init()
         var speechMode = false
     }
     enum Action: Equatable, BindableAction {
         case binding(BindingAction<State>)
-        case inputTextChanged(String)
+        case textChanged(String)
         case submitText(String)
         case speechRecognitionInput(SpeechRecognitionInputDomain.Action)
         case toggleSpeechMode
@@ -36,8 +36,8 @@ struct BottomInputBarFeature : Reducer{
             switch action {
             case .binding:
                 return .none
-            case .inputTextChanged(let text):
-                state.inputText = text
+            case .textChanged(let text):
+                state.text = text
                 return .none
             case .speechRecognitionInput(let action):
                 switch action {
@@ -63,7 +63,7 @@ struct BottomInputBarFeature : Reducer{
                 state.speechMode.toggle()
                 return .none
             case .submitText(let text):
-                state.inputText = text
+                state.text = text
                 return .none
             }
         }
@@ -98,23 +98,24 @@ struct BottomInputBarBarView: View {
                         else{
                             // 添加输入框
                             
-                            ResponsiveTextField(
-                                placeholder:"请输入内容",
+                            TextField(
+                                store.state.placeholdr,
                                 text: viewStore.binding(
-                                    get: \.inputText,
-                                    send: BottomInputBarFeature.Action.inputTextChanged
-                                )
+                                    get: \.text,
+                                    send: BottomInputBarFeature.Action.textChanged
+                                ),
+                                axis: .vertical
                             )
+                            .lineLimit(15)
                             .focused($isFocused) // 2
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .onSubmit{
-                                viewStore.send(.submitText(viewStore.inputText))
+                                viewStore.send(.submitText(viewStore.text))
                             }
-                            .frame(maxHeight: 30)
                         }
                     }
+                    .frame(minHeight: 30)
                     .padding(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
-                    .frame(maxHeight: 30)
                     
                 }
                 // Synchronize store focus state and local focus state.
