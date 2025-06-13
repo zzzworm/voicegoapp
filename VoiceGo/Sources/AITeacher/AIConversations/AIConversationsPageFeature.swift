@@ -228,15 +228,7 @@ struct AIConversationsPageFeature {
                 case .suggestion(let suggestReply):
                     // Handle association tap
                     let reply: String = String(suggestReply.split(separator: ":").last ?? "")
-                    let draft = DraftMessage(
-                        text: reply,
-                        medias: [],
-                        giphyMedia: nil,
-                        recording: nil,
-                        replyMessage: nil,
-                        createdAt: Date()
-                    )
-                    return.send(.sendDraft(draft))
+                    state.inputBarState.text = reply
                 }
                 return .none
                 
@@ -330,7 +322,7 @@ struct AIConversationsPageFeature {
                 switch action {
                 case .binding(_):
                     break
-                case .inputTextChanged(_):
+                case .textChanged(_):
                     break
                 case .speechRecognitionInput(_):
                     break

@@ -1,5 +1,5 @@
 {
-  "originHash" : "67f5e17f0f9cd4be02acd1ab70e67bbd91abd99fd126f34cdf3c03b9aed607ce",
+  "originHash" : "1f0fc856c9a813037dadd37c9085307dd2ff2df63303018d738bf14fd74b1947",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -503,15 +503,6 @@
       "state" : {
         "revision" : "d72aed98f8253ec1aa9ea1141e28150f408cf17f",
         "version" : "1.29.0"
-      }
-    },
-    {
-      "identity" : "swift-responsive-textfield",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/lukeredpath/swift-responsive-textfield.git",
-      "state" : {
-        "revision" : "68770e6e15b5f502c18588e24532ea0aa5dd3b27",
-        "version" : "0.11.0"
       }
     },
     {
