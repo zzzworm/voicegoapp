@@ -130,6 +130,9 @@ extension VoiceGoAPIClient: TestDependencyKey {
         getAITeacherConversationList: { _, _, _ in
             return StrapiResponse(data: [], meta: Meta(pagination: Pagination()))
         },
+        loadMoreAITeacherConversationList: { _, _, _ in
+            return StrapiResponse(data: [], meta: Meta(pagination: Pagination()))
+        },
         fetchAITeachers: {
             let filteredTeachers = AITeacher.sample
             let pagination = Pagination(page: 1, pageSize: 10, pageCount: 1, limit: 10, start: 0, total: filteredTeachers.count)
@@ -295,6 +298,9 @@ extension VoiceGoAPIClient {
             }
         },
         getAITeacherConversationList: { _, _, _ in
+            return StrapiResponse(data: [], meta: Meta(pagination: Pagination()))
+        },
+        loadMoreAITeacherConversationList:  { _, _, _ in
             return StrapiResponse(data: [], meta: Meta(pagination: Pagination()))
         },
         fetchAITeachers: {

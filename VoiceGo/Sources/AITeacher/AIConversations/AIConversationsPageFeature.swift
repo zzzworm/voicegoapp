@@ -9,12 +9,56 @@ import Foundation
 import ComposableArchitecture
 import ExyteChat
 import StrapiSwift
+import SwiftUICore
+
+enum MessageAction: MessageMenuAction {
+    case copy,reply, edit, delete
+
+    func title() -> String {
+        switch self {
+        case .copy:
+            "Copy"
+        case .reply:
+            "Reply"
+        case .edit:
+            "Edit"
+        case .delete:
+            "Delete"
+        }
+    }
+    
+    func icon() -> Image {
+        switch self {
+        case .copy:
+            Image(systemName: "doc.on.doc")
+        case .reply:
+            Image(systemName: "arrowshape.turn.up.left")
+        case .edit:
+            Image(systemName: "square.and.pencil")
+        case .delete:
+            Image(systemName: "trash")
+        }
+    }
+    
+    // Optional
+    // Implement this method to conditionally include menu actions on a per message basis
+    // The default behavior is to include all menu action items
+    static func menuItems(for message: ExyteChat.Message) -> [MessageAction] {
+        if message.user.isCurrentUser  {
+            return [.edit,.delete]
+        } else {
+            return [.copy,.reply]
+        }
+    }
+}
+
 
 @Reducer
 struct AIConversationsPageFeature {
     @Dependency(\.userInfoRepository) var userInfoRepository
     @Dependency(\.apiClient) var apiClient
     @Dependency(\.uuid) var uuid
+    @Dependency(\.clipboardClient) var clipboardClient
 
     @ObservableState
     struct State: Equatable {
@@ -35,7 +79,8 @@ struct AIConversationsPageFeature {
         var isLoadMore = false
         var isScrolling = false
         var reactionState = AITeacherChatReactionFeature.State()
-
+        var inputBarState = BottomInputBarFeature.State()
+        
         public init(aiTeacher: AITeacher) {
             self.aiTeacher = aiTeacher
         }
@@ -45,6 +90,7 @@ struct AIConversationsPageFeature {
     enum Action: BindableAction {
         case view(ViewAction)
         case reaction(AITeacherChatReactionFeature.Action)
+        case inputBar(BottomInputBarFeature.Action)
         enum ViewAction: Equatable {
             case onAppear
             case onDisappear
@@ -57,7 +103,7 @@ struct AIConversationsPageFeature {
         case loadMore(before: ExyteChat.Message)
         case messagesLoaded([ExyteChat.Message])
         case tapAssociation(ExyteChat.Message, ExyteChat.Association)
-        
+        case copyMessage(ExyteChat.Message)
         case useAgeReachLimit
         enum AlertAction: Equatable {
             case confirmUpgradePlan
@@ -107,7 +153,9 @@ struct AIConversationsPageFeature {
         Scope(state: \.reactionState, action: \.reaction) {
             AITeacherChatReactionFeature()
         }
-
+        Scope(state: \.inputBarState, action: /Action.inputBar) {
+            BottomInputBarFeature()
+        }
         BindingReducer()
         Reduce { state, action in
             switch action {
@@ -246,28 +294,63 @@ struct AIConversationsPageFeature {
                 }
                 return .none
             case let .loadMore(before):
-                // Simulate loading more (prepend dummy message)
-//                let more = Message(
-//                    id: uuid().uuidString,
-//                    user: .init(id: "ai", name: "AI Teacher", avatarURL: nil, isCurrentUser: false),
-//                    text: "Older message...",
-//                    date: Date().addingTimeInterval(-3600),
-//                    status: .sent,
-//                    type: .text
-//                )
-//                state.messages.insert(more, at: 0)
-                return .none
+                let createdAt = before.createdAt
+                let pageSize = 10
+                var aiTeacher = state.aiTeacher
+                return .run{ send in
+                    do{
+                        let result =  try await apiClient.loadMoreAITeacherConversationList(aiTeacher.documentId, createdAt, pageSize)
+                        return await send(.fetchConversationListResponse(.success(result)))
+                    }
+                    catch {
+                        return await send(.fetchConversationListResponse(.failure(error)))
+                    }
+                }
             case let .messagesLoaded(messages):
                 if var latestHasAssociationsIndex = state.messages.lastIndex(where: { $0.associations.isEmpty == false }) {
                     var latestMessage = state.messages[latestHasAssociationsIndex]
                     latestMessage.associations = []
                     state.messages[latestHasAssociationsIndex] = latestMessage
                 }
+                if var latestMessage = state.messages.last {
+                    latestMessage.status = .sent
+                    state.messages[state.messages.count - 1] = latestMessage
+                }
                 state.messages.append(contentsOf: messages)
+                return .none
+            case .copyMessage(let message):
+                // Handle copy action
+                clipboardClient.copyValue(message.text)
                 return .none
             case .binding(_):
                 return .none
             case .reaction(_):
+                return .none
+            case .inputBar(let action):
+                switch action {
+                case .binding(_):
+                    break
+                case .inputTextChanged(_):
+                    break
+                case .speechRecognitionInput(_):
+                    break
+                case .submitText(let reply):
+                    if reply.isEmpty {
+                        return .none
+                    }
+                    let draft = DraftMessage(
+                        text: reply,
+                        medias: [],
+                        giphyMedia: nil,
+                        recording: nil,
+                        replyMessage: nil,
+                        createdAt: Date()
+                    )
+                    return.send(.sendDraft(draft))
+                    
+                case .toggleSpeechMode:
+                    break
+                }
                 return .none
             case .alert(_):
                 return .none

@@ -13,12 +13,11 @@ import Alamofire
 
 
 struct VoiceGoAPIClient {
-    
     var fetchStudyTools:  @Sendable (String) async throws -> StrapiResponse<[StudyTool]>
     var fetchUserProfile:  @Sendable () async throws -> UserProfile
     var updateUserProfile:  @Sendable (UserProfile) async throws -> UserProfile
     var getAliSTS: @Sendable () async throws -> AliOSSSTS
-    
+
     var getToolConversationList:  @Sendable (_ studyToolId : String ,_ page: Int, _ pageSize: Int) async throws -> StrapiResponse<[ToolConversation]>
     var createToolConversation:  @Sendable (_ studyTool : StudyTool ,_ query: String) async throws -> StrapiResponse<ToolConversation>
     var streamToolConversation:  @Sendable (_ studyTool : StudyTool ,_ query: String) async throws -> AsyncThrowingStream<DataStreamRequest.EventSourceEvent, Error>
@@ -26,12 +25,15 @@ struct VoiceGoAPIClient {
     var createAITeacherConversation:  @Sendable (_ aiTeacher : AITeacher ,_ query: String) async throws -> StrapiResponse<AITeacherConversation>
     var streamAITeacherConversation:  @Sendable (_ aiTeacher : AITeacher ,_ query: String) async throws -> AsyncThrowingStream<DataStreamRequest.EventSourceEvent, Error>
     var getAITeacherConversationList:  @Sendable (_ aiTeacherId : String ,_ page: Int, _ pageSize: Int) async throws -> StrapiResponse<[AITeacherConversation]>
+
+    var loadMoreAITeacherConversationList:  @Sendable (_ aiTeacherId : String ,_ createdAt: Date, _ pageSize: Int) async throws -> StrapiResponse<[AITeacherConversation]>
+
     var fetchAITeachers: @Sendable () async throws -> StrapiResponse<[AITeacher]>
-    
+
     var streamSenceConversation: @Sendable (_ scene: ConversationScene, _ query: String) async throws -> AsyncThrowingStream<DataStreamRequest.EventSourceEvent, Error>
     var getSenceConversationList: @Sendable (_ sceneId: String, _ page: Int, _ pageSize: Int) async throws -> StrapiResponse<[SceneConversation]>
     var fetchSenceList: @Sendable (String) async throws -> StrapiResponse<[ConversationScene]>
-    
+
     struct Failure: Error, Equatable {}
 }
 
@@ -42,27 +44,26 @@ func handleStrapiRequest<T: Decodable & Sendable>(_ action: @Sendable () async t
     } catch {
         switch error {
         case let strapiError as StrapiSwiftError:
-
-                switch strapiError {
-                case .badResponse(let statusCode, let message):
-                    if statusCode > 400 && statusCode < 404 {
-                        @Dependency(\.notificationCenter) var notificationCenter
-                        print("Bad response: \(statusCode)")
-                        await MainActor.run{
-                            notificationCenter.post(.signOut, nil, nil)
-                        }
+            switch strapiError {
+            case .badResponse(let statusCode, let message):
+                if statusCode > 400 && statusCode < 404 {
+                    @Dependency(\.notificationCenter) var notificationCenter
+                    print("Bad response: \(statusCode)")
+                    await MainActor.run{
+                        notificationCenter.post(.signOut, nil, nil)
                     }
-                    print("Bad response: \(message)")
-                case .decodingError(let decodingError):
-                    print("Unauthorized")
-                case .unknownError(let unknownError):
-                    print("Unknown error: \(unknownError)")
-                case .noDataAvailable:
-                    print("No data available")
-                default:
-                    print("Strapi Error: \(strapiError)")
                 }
-            
+                print("Bad response: \(message)")
+            case .decodingError(let decodingError):
+                print("Unauthorized")
+            case .unknownError(let unknownError):
+                print("Unknown error: \(unknownError)")
+            case .noDataAvailable:
+                print("No data available")
+            default:
+                print("Strapi Error: \(strapiError)")
+            }
+
         default:
             print("request Error: \(error)")
         }
@@ -73,9 +74,6 @@ func handleStrapiRequest<T: Decodable & Sendable>(_ action: @Sendable () async t
 
 // 使用Moya实现APIClient的liveValue
 extension VoiceGoAPIClient : DependencyKey  {
-    
-    
-    
     static let liveValue = Self(
         fetchStudyTools: { category in
             return try await handleStrapiRequest{
@@ -83,8 +81,8 @@ extension VoiceGoAPIClient : DependencyKey  {
                     .filter("[categoryTag]", operator: .equal, value: category)
                     .populate("exampleCard")
                     .getDocuments(as: [StudyTool].self)
-            return resp
-        }},
+                return resp
+            }},
         fetchUserProfile: {
             return try await handleStrapiRequest{
                 let response = try await Strapi.authentication.local.me(as: UserProfile.self)
@@ -97,15 +95,15 @@ extension VoiceGoAPIClient : DependencyKey  {
                 "city": .string(profile.city ?? ""),
                 "sex": .string(profile.sex.rawValue)
             ]
-            
+
             if !profile.email.isEmpty {
                 updateData["email"] = .string(profile.email)
             }
-            
+
             if let userIconUrl = profile.userIconUrl, !userIconUrl.isEmpty {
                 updateData["userIconUrl"] = .string(userIconUrl)
             }
-            
+
             // Add study setting data if provided
             if let studySetting = profile.study_setting {
                 updateData["study_setting"] = .dictionary([
@@ -115,7 +113,7 @@ extension VoiceGoAPIClient : DependencyKey  {
                     "role": .string(studySetting.role.rawValue)
                 ])
             }
-            
+
             let data = StrapiRequestBody(updateData)
             let response = try await Strapi.authentication.local.me(extendUrl: "", requestType: .PUT, data: data, as: UserProfile.self)
             return profile
@@ -132,7 +130,7 @@ extension VoiceGoAPIClient : DependencyKey  {
             return response
         },
         createToolConversation: {studyTool, query in
-            
+
             let data = StrapiRequestBody(["studyTool": .dictionary(["documentId":.string(studyTool.documentId)]), "query": .string(query)]);
             let response = try await Strapi.contentManager.collection("tool-conversation").postData(data, as: ToolConversation.self)
             return response
@@ -142,7 +140,7 @@ extension VoiceGoAPIClient : DependencyKey  {
                 Task {
                     let data = StrapiRequestBody(["studyTool": .dictionary(["documentId":.string(studyTool.documentId),"categoryKey":.string(studyTool.categoryKey)]), "query": .string(query)]);
                     let request = try await Strapi.contentManager.collection("tool-conversation/create-message?stream").asPostRequest(data)
-                    
+
                     Session.default.eventSourceRequest(request).responseEventSource(handler: { eventSource in
                         continuation.yield(eventSource.event)
                         switch eventSource.event {
@@ -154,15 +152,15 @@ extension VoiceGoAPIClient : DependencyKey  {
                                 let errorDetails = StrapiErrorDetails(status: 503, name: "Service Unavailable", message: errorMessage, details: nil)
                                 return continuation.finish(throwing: StrapiSwiftError.badResponse(statusCode: 503, error: errorDetails))
                             }
-                                if httpResponse.statusCode != 200 && httpResponse.statusCode != 201 && httpResponse.statusCode != 204 {
-                                    let errorMessage = "Bad Response"
-                                    let errorDetails = StrapiErrorDetails(status: httpResponse.statusCode, name: "Bad Request", message: errorMessage, details: nil)
-                                    continuation.finish(throwing: StrapiSwiftError.badResponse(statusCode: httpResponse.statusCode, error: errorDetails))
-                                }
-                                else{
-                                    continuation.finish()
-                                }
-                            
+                            if httpResponse.statusCode != 200 && httpResponse.statusCode != 201 && httpResponse.statusCode != 204 {
+                                let errorMessage = "Bad Response"
+                                let errorDetails = StrapiErrorDetails(status: httpResponse.statusCode, name: "Bad Request", message: errorMessage, details: nil)
+                                continuation.finish(throwing: StrapiSwiftError.badResponse(statusCode: httpResponse.statusCode, error: errorDetails))
+                            }
+                            else{
+                                continuation.finish()
+                            }
+
                         }
                     })
                 }
@@ -174,7 +172,7 @@ extension VoiceGoAPIClient : DependencyKey  {
             return response
         },
         streamAITeacherConversation: { aiTeacher, query in
-            
+
             return AsyncThrowingStream() { continuation in
                 Task {
                     let categoryKey = aiTeacher.card?.categoryKey ?? "教练对话"
@@ -214,6 +212,20 @@ extension VoiceGoAPIClient : DependencyKey  {
             let response = try await Strapi.contentManager.collection("teacher-conversation/my-list")
                 .filter("[ai_teacher][documentId]", operator: .equal, value: aiTeacherId)
                 .paginate(page: page, pageSize: pageSize)
+                .sort(by:"createdAt", order: .descending)
+                .getDocuments(as: [AITeacherConversation].self)
+            return response
+        },
+        loadMoreAITeacherConversationList: { aiTeacherId, createdAt, pageSize in
+            let isoFormatter = ISO8601DateFormatter()
+            isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            let createdAtString = isoFormatter.string(from: createdAt)
+            
+            let response = try await Strapi.contentManager.collection("teacher-conversation/my-list")
+                .filter("[ai_teacher][documentId]", operator: .equal, value: aiTeacherId)
+                .filter("[createdAt]", operator: .lessThan, value: createdAtString)
+                .sort(by:"createdAt", order: .descending)
+                .paginate(page: 1, pageSize: pageSize)
                 .getDocuments(as: [AITeacherConversation].self)
             return response
         },
