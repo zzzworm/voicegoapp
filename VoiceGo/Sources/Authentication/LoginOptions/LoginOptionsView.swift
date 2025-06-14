@@ -70,9 +70,6 @@ struct LoginOptionsView  : View{
                 store.send(.view(.onAppleLoginButtonTap))
             })
             .buttonStyle(.cta)
-            .opacity(0.4)
-            // .disabled(true)
-
             Text(store.agreementsAttributedString)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)

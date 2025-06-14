@@ -61,6 +61,22 @@ struct AppFeature {
         }
     }
     
+    // MARK: - Private Methods
+    
+    private func configureFirebaseAndGoogleSignIn() {
+        // Configure Firebase
+        FirebaseApp.configure()
+        if let clientID = FirebaseApp.app()?.options.clientID {
+            // Create Google Sign In configuration object.
+            let config = GIDConfiguration(clientID: clientID)
+            GIDSignIn.sharedInstance.configuration = config
+        }
+        GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
+            Log.debug("GIDSignIn user \(String(describing: user?.profile?.email))")
+            Log.debug("GIDSignIn error \(String(describing: error?.localizedDescription))")
+        }
+    }
+    
     var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
@@ -68,16 +84,9 @@ struct AppFeature {
         
                 switch appDelegateAction {
                 case .didFinishLaunching:
-                    // Configure Logger
+                    // Configure Logger and Firebase
                     Log.initialize()
-                    
-                    // Configure Firebase
-                    FirebaseApp.configure()
-                    
-                    GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
-                        Log.debug("GIDSignIn user \(String(describing: user?.profile?.email))")
-                        Log.debug("GIDSignIn error \(String(describing: error?.localizedDescription))")
-                    }
+                    configureFirebaseAndGoogleSignIn()
                     
                     let userNotificationsEventStream = self.userNotificationClient.delegate()
                     return .run { send in
