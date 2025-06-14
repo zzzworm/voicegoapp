@@ -6,7 +6,7 @@ You are an expert iOS developer using Swift and SwiftUI. Follow these guidelines
 
   # Project Structure
 - This is a SwiftUI project that uses tuist to organize and manage projects
-- always use `tuis generate` after create/delete files
+- always use `tuis generate` after create/delete files and modify the Project.swift file
 - The project is built based on the TCA framework and has undergone component-based design for various application features
 
   # Code Structure

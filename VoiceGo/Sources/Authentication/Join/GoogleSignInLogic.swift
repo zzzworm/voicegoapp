@@ -26,6 +26,8 @@ struct GoogleSignInLogic<State>: Reducer {
                 guard let root = UIApplication.shared.firstKeyWindow?.rootViewController else {
                     return .none
                 }
+                guard let presentingViewController = (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first?.rootViewController else {return .none}
+
                 
                 return .run { send in
                     await send(
@@ -33,7 +35,7 @@ struct GoogleSignInLogic<State>: Reducer {
                             .loginResponse(
                                 await TaskResult {
                                     try await self.googleSignInClient.login(
-                                        root
+                                        presentingViewController
                                     )
                                 }
                             )

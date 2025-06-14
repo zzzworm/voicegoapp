@@ -97,6 +97,16 @@ let project = Project(
                     "NSBonjourServices" : [
                         "_pulse._tcp",
                     ],
+                    "CFBundleURLTypes": [
+                        [
+                            "CFBundleTypeRole": "Editor",
+                            "CFBundleURLSchemes": ["com.googleusercontent.apps.154047246991-i35evo607leghoonomt7qnci8sb03nv6"]
+                        ],
+                        [
+                            "CFBundleTypeRole": "Editor",
+                            "CFBundleURLSchemes": ["com.googleusercontent.apps.807659277596-8je49j3lvjk6mbumn8nackgegq1tj9bk"]
+                        ]
+                    ],
                     "CFBundleShortVersionString": "1.0.0",
                     "LSApplicationCategoryType": "public.app-category.education",
                 ]
@@ -121,8 +131,8 @@ let project = Project(
             "ASSETCATALOG_COMPILER_LOCALIZATION": "zh-Hans",
             "ENABLE_USER_SCRIPT_SANDBOXING": "NO",
             ],
-            debug : [
-                "OTHER_LDFLAGS": "-Xlinker -interposable",
+            debug: [
+                "OTHER_LDFLAGS": "$(inherited) -ObjC -Xlinker -interposable",
             ]
             ),
             additionalFiles: [
