@@ -19,13 +19,16 @@ struct AuthenticationResponse: Equatable, Decodable {
 enum AuthenticationError: Equatable, LocalizedError, Sendable {
     case invalidEmail
     case invalidUserPassword
+    case invaildResponse
 
     var errorDescription: String? {
         switch self {
         case .invalidEmail:
-            return  "User Identifier invalid."
+            return  String(localized: "User Identifier invalid.")
         case .invalidUserPassword:
-            return "Unknown user or invalid password."
+            return String(localized: "Unknown user or invalid password.")
+        case .invaildResponse:
+            return String(localized: "Invaild Response")
         }
     }
 }

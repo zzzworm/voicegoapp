@@ -51,6 +51,7 @@ let commonDependencies : [TargetDependency] = [
                 .external(name: "Copyable"),
                 .external(name: "UIFontComplete"),
                 .external(name: "ExyteChat"),
+                .sdk(name: "AuthenticationServices", type: .framework),
             ]
 
 let targetActions: [TargetScript] = [
@@ -132,7 +133,7 @@ let project = Project(
             "ENABLE_USER_SCRIPT_SANDBOXING": "NO",
             ],
             debug: [
-                "OTHER_LDFLAGS": "$(inherited) -ObjC -Xlinker -interposable",
+                "OTHER_LDFLAGS": "$(inherited) -Xlinker -interposable",
             ]
             ),
             additionalFiles: [

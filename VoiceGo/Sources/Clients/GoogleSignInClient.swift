@@ -44,17 +44,11 @@ extension GoogleSignInClient: DependencyKey {
                                              
                 let result = try await GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController)
                 
-                let user = result.user.profile
-                
-                guard let email = user?.email else {
-                    throw AuthenticationError.invalidEmail
-                }
-                
-                let username = "strapiuser1@example.com"
-                let password = "password123"
-                
-                let ret =  try await Strapi.authentication.local.login(identifier: username, password: password, as: UserProfile.self)
+                let user = result.user
+                let accessToken = user.accessToken 
+                let ret =  try await Strapi.authentication.connect.auth(provider: "google", access_token: accessToken.tokenString, as: UserProfile.self)
                 return AuthenticationResponse(jwt: ret.jwt, user: ret.user)
+       
             },
             logout: {
                 GIDSignIn.sharedInstance.signOut()

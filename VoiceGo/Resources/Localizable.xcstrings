@@ -107,6 +107,9 @@
     "International Student" : {
       "comment" : "User type: International Student"
     },
+    "Invaild Response" : {
+
+    },
     "Junior High School" : {
       "comment" : "Word level: Junior High School"
     },
@@ -234,7 +237,13 @@
         }
       }
     },
+    "Unknown user or invalid password." : {
+
+    },
     "Upgrade Plan" : {
+
+    },
+    "User Identifier invalid." : {
 
     },
     "View" : {
