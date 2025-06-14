@@ -9,16 +9,20 @@
 import SharingGRDB
 import Foundation
 import ComposableArchitecture
+import StrapiSwift
 
 /// 处理登录成功后的数据存储逻辑
 func handleLoginResponse(
-    data: AuthenticationResponse,
-    userKeychainClient: UserKeychainClient,
-    database: any DatabaseWriter,
-    userDefaultsClient: UserDefaultsClient
+    data: AuthenticationResponse
 ) async {
+    
+    @Dependency(\.userKeychainClient) var userKeychainClient
+    @Dependency(\.defaultDatabase) var database
+    @Dependency(\.userDefaults) var userDefaultsClient
+    
     Log.info("loginResponse: \(data)")
     userKeychainClient.storeToken(data.jwt)
+    await Strapi.configure(baseURL: Configuration.current.baseURL, token: data.jwt)
     var account = data.user
     do {
         try await database.write { db in

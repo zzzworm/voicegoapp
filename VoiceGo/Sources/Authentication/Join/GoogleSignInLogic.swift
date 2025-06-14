@@ -13,6 +13,7 @@ import SharingGRDB
 struct GoogleSignInLogic<State>: Reducer {
     
     @Dependency(\.googleSignInClient) var googleSignInClient
+    @Dependency(\.appleSignInClient) var appleSignInClient
     @Dependency(\.userKeychainClient) var userKeychainClient
     @Dependency(\.userDefaults) var userDefaultsClient
     @Dependency(\.defaultDatabase) var database
@@ -42,6 +43,19 @@ struct GoogleSignInLogic<State>: Reducer {
                         )
                     )
                 }
+            case .didAppleLoginButtonSelected:
+ 
+                return .run { send in
+                    await send(
+                        .internal(
+                            .loginResponse(
+                                await TaskResult {
+                                    try await self.appleSignInClient.login()
+                                }
+                            )
+                        )
+                    )
+                }
                 
             default:
                 return .none
@@ -55,12 +69,7 @@ struct GoogleSignInLogic<State>: Reducer {
                 return .concatenate(
                     
                     .run { _ in
-                        await handleLoginResponse(
-                            data: data,
-                            userKeychainClient: userKeychainClient,
-                            database: database,
-                            userDefaultsClient: userDefaultsClient
-                        )
+                        await handleLoginResponse(data: data)
                     },
                     .send(.delegate(.didAuthenticated))
                 )

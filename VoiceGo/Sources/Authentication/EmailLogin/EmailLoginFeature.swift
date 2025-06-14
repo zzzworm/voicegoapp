@@ -91,12 +91,7 @@ struct EmailLoginFeature {
                     
                     return .concatenate(
                         .run { _ in
-                            await handleLoginResponse(
-                                data: data,
-                                userKeychainClient: userKeychainClient,
-                                database: database,
-                                userDefaultsClient: userDefaultsClient
-                            )
+                            await handleLoginResponse(data: data)
                         },
                         .send(.delegate(.didEmailAuthenticated))
                     )
