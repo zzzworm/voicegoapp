@@ -13,3 +13,11 @@ enum DataLoadingStatus {
     case success
     case error
 }
+
+
+enum MessageingStatus {
+    case notStarted
+    case sending
+    case success
+    case error
+}

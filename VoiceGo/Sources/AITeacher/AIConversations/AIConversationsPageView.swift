@@ -44,15 +44,33 @@ struct AIConversationsPageView: View {
 //                        }
                         
                         BottomInputBarBarView(store: store.scope(state: \.inputBarState, action: \.inputBar))
-                        Button {
-                            inputViewActionClosure(.send)
-                        }
-                        label: {
-                            theme.images.inputView.arrowSend
-                                .frame(width: 40, height: 40)
-                                .background {
-                                    Circle().fill(theme.colors.sendButtonBackground)
+                        if store.state.isSending{
+                            Button {
+                                if let pendingMessage = store.state.pendingMessage,
+                                   let pendingDrfat = store.state.pendingDrfat {
+                                    // Stop sending the message
+                                    store.send(.stopMessageing(pendingMessage,pendingDrfat))
                                 }
+                            }
+                            label: {
+                                Image(systemName: "stop.fill")
+                                    .frame(width: 40, height: 40)
+                                    .background {
+                                        Circle().fill(theme.colors.sendButtonBackground)
+                                    }
+                            }
+                        }
+                        else{
+                            Button {
+                                inputViewActionClosure(.send)
+                            }
+                            label: {
+                                theme.images.inputView.arrowSend
+                                    .frame(width: 40, height: 40)
+                                    .background {
+                                        Circle().fill(theme.colors.sendButtonBackground)
+                                    }
+                            }
                         }
                     }
                     .padding(.horizontal, 10)

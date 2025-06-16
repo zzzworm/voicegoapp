@@ -63,7 +63,7 @@ struct BottomInputBarFeature : Reducer{
                 state.speechMode.toggle()
                 return .none
             case .submitText(let text):
-                state.text = text
+                state.text = ""
                 return .none
             }
         }

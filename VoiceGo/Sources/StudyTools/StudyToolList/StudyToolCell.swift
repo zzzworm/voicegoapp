@@ -18,7 +18,7 @@ struct StudyToolCell: View {
                 .shadow(radius: 2)
             HStack {
                 VStack(alignment: .leading) {
-                    Text(studyTool.title).font(.caption).padding(EdgeInsets(top: 0, leading: 0, bottom: 5, trailing: 0))
+                    Text(studyTool.title).font(.headline).padding(EdgeInsets(top: 0, leading: 0, bottom: 5, trailing: 0))
                     
                     Text("\(studyTool.description)").font(.footnote)
                         .foregroundColor(.darkText)
