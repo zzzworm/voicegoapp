@@ -53,6 +53,33 @@ enum MessageAction: MessageMenuAction {
 }
 
 
+extension ExyteChat.Message : Equatable{
+    public static func == (lhs: ExyteChat.Message, rhs: ExyteChat.Message) -> Bool {
+        return lhs.id == rhs.id &&
+            lhs.user == rhs.user &&
+            lhs.status == rhs.status &&
+            lhs.createdAt == rhs.createdAt &&
+            lhs.text == rhs.text &&
+            lhs.attachments == rhs.attachments &&
+            lhs.reactions == rhs.reactions &&
+            lhs.associations == rhs.associations &&
+            lhs.giphyMediaId == rhs.giphyMediaId &&
+            lhs.recording == rhs.recording &&
+            lhs.replyMessage == rhs.replyMessage
+    }
+}
+
+extension ExyteChat.DraftMessage : Equatable {
+    public static func == (lhs: ExyteChat.DraftMessage, rhs: ExyteChat.DraftMessage) -> Bool {
+        return lhs.text == rhs.text &&
+            lhs.medias == rhs.medias &&
+            lhs.giphyMedia == rhs.giphyMedia &&
+            lhs.recording == rhs.recording &&
+            lhs.replyMessage == rhs.replyMessage &&
+            lhs.createdAt == rhs.createdAt
+    }
+}
+
 @Reducer
 struct AIConversationsPageFeature {
     @Dependency(\.userInfoRepository) var userInfoRepository
@@ -74,6 +101,11 @@ struct AIConversationsPageFeature {
         var dataLoadingStatus = DataLoadingStatus.notStarted
         var isLoading : Bool{
             dataLoadingStatus == .loading
+        }
+        var pendingMessage: ExyteChat.Message?
+        var pendingDrfat: DraftMessage?
+        var isSending: Bool {
+            nil != pendingMessage
         }
         var paginationState : Pagination?
         var isLoadMore = false
@@ -98,6 +130,7 @@ struct AIConversationsPageFeature {
         case fetchConversationList(page: Int, pageSize: Int)
         case fetchConversationListResponse(TaskResult<StrapiResponse<[AITeacherConversation]>>)
         case sendDraft(DraftMessage)
+        case stopMessageing(ExyteChat.Message, DraftMessage)
         case deleteMessage(ExyteChat.Message)
         case sendDraftFailed(ExyteChat.Message, DraftMessage)
         case loadMore(before: ExyteChat.Message)
@@ -240,9 +273,13 @@ struct AIConversationsPageFeature {
                     user: chatUser,
                     status: .sending,
                     createdAt: Date(),
-                    text: draft.text
+                    text: draft.text,
+                    giphyMediaId: draft.giphyMedia?.id,
+                    recording: draft.recording,
+                    replyMessage: draft.replyMessage
                 )
                 state.messages.append(newMessage)
+                state.pendingMessage = newMessage
                 var aiTeacher = state.aiTeacher
                 return .run {send in
                     do{
@@ -261,6 +298,8 @@ struct AIConversationsPageFeature {
                         }
                     }
                 }
+            case .stopMessageing(let message, let draft):
+                return .send(.sendDraftFailed(message, draft))
             case .useAgeReachLimit:
                 state.alert = AlertState(
                     title: TextState("Upgrade Plan"),
@@ -284,6 +323,7 @@ struct AIConversationsPageFeature {
                 } else {
                     /// If the draft message is not found, we can log or handle it accordingly
                 }
+                state.pendingMessage = nil
                 return .none
             case let .loadMore(before):
                 let createdAt = before.createdAt
@@ -305,10 +345,11 @@ struct AIConversationsPageFeature {
                     state.messages[latestHasAssociationsIndex] = latestMessage
                 }
                 if var latestMessage = state.messages.last {
-                    latestMessage.status = .sent
+                    latestMessage.status = .read
                     state.messages[state.messages.count - 1] = latestMessage
                 }
                 state.messages.append(contentsOf: messages)
+                state.pendingMessage = nil
                 return .none
             case .copyMessage(let message):
                 // Handle copy action

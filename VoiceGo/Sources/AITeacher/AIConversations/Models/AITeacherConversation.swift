@@ -71,18 +71,19 @@ extension AITeacherConversation {
     }
     
     func toChatMessage() -> [ExyteChat.Message] {
-        let userMsg =  ExyteChat.Message(
-            id: UUID().uuidString,
-            user: user.toChatUser(),
-            status: .read,
-            createdAt: createdAt,
-            text: query,
-            attachments:[],
-            reactions: [],
-            recording: nil,
-            replyMessage: nil
-        )
+        
         if let answer = answer {
+            let userMsg = ExyteChat.Message(
+               id: UUID().uuidString,
+               user: user.toChatUser(),
+               status: .read,
+               createdAt: createdAt,
+               text: query,
+               attachments:[],
+               reactions: [],
+               recording: nil,
+               replyMessage: nil
+           )
             let answerMsg = ExyteChat.Message(
                 id: message_id ?? UUID().uuidString,
                 user: ai_teacher.toChatUser(),
@@ -96,8 +97,22 @@ extension AITeacherConversation {
             )
             return [userMsg, answerMsg]
         }
+        else{
+            let userMsg = ExyteChat.Message(
+               id: UUID().uuidString,
+               user: user.toChatUser(),
+               status: .sent,
+               createdAt: createdAt,
+               text: query,
+               attachments:[],
+               reactions: [],
+               recording: nil,
+               replyMessage: nil
+           )
+            return [userMsg]
+        }
         
-        return [userMsg]
+        
     }
     
     func toAnswerMessage() -> ExyteChat.Message {

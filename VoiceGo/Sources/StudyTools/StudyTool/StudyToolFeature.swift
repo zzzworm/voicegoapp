@@ -152,7 +152,6 @@ struct StudyToolFeature {
                     state.lastIndex = index
                     
                     return .run{ send in
-                        Task{
                             for try await event in try await apiClient.streamToolConversation(studyTool,query) {
                                 
                                 switch event {
@@ -184,7 +183,7 @@ struct StudyToolFeature {
                                     print("Stream completed with: \(completion)")
                                 }
                                 
-                            }
+                            
                         }
                     }
                     

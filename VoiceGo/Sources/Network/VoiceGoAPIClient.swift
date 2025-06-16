@@ -25,7 +25,7 @@ struct VoiceGoAPIClient {
     var createAITeacherConversation:  @Sendable (_ aiTeacher : AITeacher ,_ query: String) async throws -> StrapiResponse<AITeacherConversation>
     var streamAITeacherConversation:  @Sendable (_ aiTeacher : AITeacher ,_ query: String) async throws -> AsyncThrowingStream<DataStreamRequest.EventSourceEvent, Error>
     var getAITeacherConversationList:  @Sendable (_ aiTeacherId : String ,_ page: Int, _ pageSize: Int) async throws -> StrapiResponse<[AITeacherConversation]>
-
+    // var deleteAITeacherConversationMesaage:  @Sendable (_ aiTeacherId : String ,_ messageId: String) async throws -> StrapiResponse<>
     var loadMoreAITeacherConversationList:  @Sendable (_ aiTeacherId : String ,_ createdAt: Date, _ pageSize: Int) async throws -> StrapiResponse<[AITeacherConversation]>
 
     var fetchAITeachers: @Sendable () async throws -> StrapiResponse<[AITeacher]>
@@ -174,7 +174,7 @@ extension VoiceGoAPIClient : DependencyKey  {
         streamAITeacherConversation: { aiTeacher, query in
 
             return AsyncThrowingStream() { continuation in
-                Task {
+                let task = Task {
                     let categoryKey = aiTeacher.card?.categoryKey ?? "教练对话"
                     let assist_content = aiTeacher.card?.assistContent ?? "请根据用户的提问，给出专业的回答"
                     let data = StrapiRequestBody([
@@ -205,6 +205,9 @@ extension VoiceGoAPIClient : DependencyKey  {
                             }
                         }
                     })
+                }
+                continuation.onTermination = { _ in
+                    task.cancel()
                 }
             }
         },
