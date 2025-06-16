@@ -7,7 +7,7 @@ public struct AliOSSSTS: Codable, Equatable, Sendable {
     public let expiration: String
     public let region: String
     public let bucket: String
-    
+
     enum CodingKeys: String, CodingKey {
         case accessKeyId = "AccessKeyId"
         case accessKeySecret = "AccessKeySecret"
@@ -16,4 +16,4 @@ public struct AliOSSSTS: Codable, Equatable, Sendable {
         case region
         case bucket
     }
-} 
+}

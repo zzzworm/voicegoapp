@@ -10,10 +10,9 @@ import ComposableArchitecture
 
 // MARK: - NotificationsFeatureView
 
-struct NotificationsView : View {
+struct NotificationsView: View {
     @Bindable var store: StoreOf<NotificationsFeature>
 
-    
     var body: some View {
         content
         .enableInjection()
@@ -22,7 +21,7 @@ struct NotificationsView : View {
     #if DEBUG
     @ObserveInjection var forceRedraw
     #endif
-    
+
     @ViewBuilder private var content: some View {
         WithPerceptionTracking {
             NavigationStack {
@@ -47,7 +46,7 @@ struct NotificationsView : View {
                                 Text("\(item.title)")
                                     .font(.body)
                                     .fontWeight(.bold)
-                                
+
                                 Text("\(item.description)")
                                     .font(.footnote)
                                     .foregroundColor(Color.black.opacity(0.6))

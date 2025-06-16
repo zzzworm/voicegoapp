@@ -11,7 +11,6 @@ import Alamofire
 import ComposableArchitecture
 import Pulse
 
-
 private enum SessionKey: DependencyKey {
     static var liveValue: Session {
         let logger: NetworkLogger = NetworkLogger()
@@ -50,25 +49,24 @@ extension MoyaProvider {
             }
         }
     }
-    
-    func sseRequest(_ target: Target,  callbackQueue: DispatchQueue? = .none , handler:@escaping (DataStreamRequest.EventSource) -> Void, completion: @escaping Moya.Completion) -> DataStreamRequest? {
-        
+
+    func sseRequest(_ target: Target, callbackQueue: DispatchQueue? = .none, handler: @escaping (DataStreamRequest.EventSource) -> Void, completion: @escaping Moya.Completion) -> DataStreamRequest? {
+
         let endpoint = self.endpoint(target)
         let stubBehavior = self.stubClosure(target)
-        
+
         // Allow plugins to modify response
         let pluginsWithCompletion: Moya.Completion = { result in
             let processedResult = self.plugins.reduce(result) { $1.process($0, target: target) }
             completion(processedResult)
         }
-    
+
         var request: URLRequest?
         let performNetworking = { (requestResult: Result<URLRequest, MoyaError>) in
-            
+
             switch requestResult {
             case .success(let urlRequest):
                 request = urlRequest
-                break
             case .failure(let error):
                 pluginsWithCompletion(.failure(error))
                 return
@@ -82,36 +80,34 @@ extension MoyaProvider {
         if let request = request {
             let initialRequest = Session.default.eventSourceRequest(request)
             return initialRequest.responseEventSource(handler: handler)
-        }
-        else{
+        } else {
             return nil
         }
-        
+
     }
 }
 
-
-//MARK: - LOGGER EVENT
+// MARK: - LOGGER EVENT
 
 struct NetworkLoggerEventMonitor: EventMonitor {
     let logger: NetworkLogger
-    
+
     func request(_ request: Request, didCreateTask task: URLSessionTask) {
         logger.logTaskCreated(task)
     }
-    
+
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
         logger.logDataTask(dataTask, didReceive: data)
     }
-    
+
     func urlSession(_ session: URLSession, task: URLSessionTask, didFinishCollecting metrics: URLSessionTaskMetrics) {
         logger.logTask(task, didFinishCollecting: metrics)
     }
-    
+
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         logger.logTask(task, didCompleteWithError: error)
     }
-    
+
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, willCacheResponse proposedResponse: CachedURLResponse) {
         logger.logDataTask(dataTask, didReceive: proposedResponse.data)
     }

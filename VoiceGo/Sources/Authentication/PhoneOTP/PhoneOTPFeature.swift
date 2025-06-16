@@ -10,18 +10,18 @@ import ComposableArchitecture
 
 @Reducer
 struct PhoneOTPFeature {
-    
+
     @ObservableState
     struct State: Equatable, Hashable {
         var code = ""
         var isActivityIndicatorVisible = false
     }
-    
+
     enum Action: Equatable, BindableAction {
         enum ViewAction: Equatable {
             case onResendButtonTap
         }
-        
+
         enum InternalAction: Equatable {
             case codeResponse
         }
@@ -35,18 +35,18 @@ struct PhoneOTPFeature {
         case binding(BindingAction<State>)
         case delegate(Delegate)
     }
-    
+
     @Dependency(\.continuousClock) var clock
     @Dependency(\.userKeychainClient) var userKeychainClient
-    
+
     var body: some ReducerOf<Self> {
         BindingReducer()
-        
+
         Reduce { state, action in
             switch action {
             case .view(.onResendButtonTap):
                 return .none
-                
+
             case .internal(.codeResponse):
                 guard state.code == Constant.validPhoneCode else { return .none }
                 state.isActivityIndicatorVisible = true
@@ -58,13 +58,13 @@ struct PhoneOTPFeature {
                     },
                     .send(.delegate(.didCodeAuthenticated))
                 )
-                
+
             case .binding(\.code):
                 return .send(.internal(.codeResponse))
-                
+
             case .binding:
                 return .none
-                
+
             case .delegate:
                 return .none
             }

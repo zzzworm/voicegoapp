@@ -8,14 +8,14 @@
 import SwiftUI
 
 struct GroundedCaptionView: View {
-    var caption : String = ""
+    var caption: String = ""
     var body: some View {
         ZStack(alignment: .center) {
-            VStack(){
+            VStack {
                 Spacer()
                 RoundedRectangle(cornerRadius: 5)
                     .fill(.blue.opacity(0.3))
-                    .frame(height:5)
+                    .frame(height: 5)
             }
             Text(caption)
                 .padding(EdgeInsets(top: 5, leading: 5, bottom: 0, trailing: 5))
@@ -30,17 +30,16 @@ struct GroundedCaptionView: View {
     #endif
 }
 
-
 struct GroundedCaptionItemView: View {
-    var caption : String = ""
+    var caption: String = ""
     var body: some View {
         ZStack(alignment: .center) {
-            VStack(){
+            VStack {
                 Spacer()
                 RoundedRectangle(cornerRadius: 5)
                     .fill(.blue.opacity(0.2))
             }
-            HStack(){
+            HStack {
                 Text(caption)
                     .padding(EdgeInsets(top: 5, leading: 5, bottom: 0, trailing: 5))
                     .font(.callout)
@@ -55,7 +54,6 @@ struct GroundedCaptionItemView: View {
     @ObserveInjection var forceRedraw
     #endif
 }
-
 
 #Preview(body: {
     GroundedCaptionItemView(caption: "如何用")

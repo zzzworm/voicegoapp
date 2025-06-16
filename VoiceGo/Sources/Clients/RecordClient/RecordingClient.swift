@@ -37,7 +37,6 @@ struct Meter: Equatable {
   let peakPower: Double
 }
 
-
 // MARK: - RecordingClientLive Implementation
 
 actor RecordingClientLive {
@@ -46,13 +45,11 @@ actor RecordingClientLive {
   private let (meterStream, meterContinuation) = AsyncStream<Meter>.makeStream()
   private var meterTask: Task<Void, Never>?
 
-
   func requestMicrophoneAccess() async -> Bool {
     await AVCaptureDevice.requestAccess(for: .audio)
   }
 
   func startRecording() async {
-    
 
     let settings: [String: Any] = [
       AVFormatIDKey: Int(kAudioFormatMPEG4AAC),

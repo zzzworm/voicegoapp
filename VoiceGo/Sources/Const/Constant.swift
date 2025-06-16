@@ -7,7 +7,6 @@
 //
 import Foundation
 
-
 public enum NotificationNames {
         static let signOutNotificationName = "com.zzzwormstudio.voicego.signOut"
 }

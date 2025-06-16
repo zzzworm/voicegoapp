@@ -17,14 +17,14 @@ struct StackNavigationView<RootContent>: View where RootContent: View {
     @Binding var currentSubview: AnyView
     @Binding var showingSubview: Bool
     let rootView: () -> RootContent
-    
+
     init(currentSubview: Binding<AnyView>, showingSubview: Binding<Bool>,
     @ViewBuilder rootView: @escaping () -> RootContent) {
             self._currentSubview = currentSubview
             self._showingSubview = showingSubview
             self.rootView = rootView
         }
-    
+
     var body: some View {
         VStack {
             if !showingSubview {
@@ -42,14 +42,13 @@ struct StackNavigationView<RootContent>: View where RootContent: View {
     #if DEBUG
     @ObserveInjection var forceRedraw
     #endif
-    
-}
 
+}
 
 private struct StackNavigationSubview<Content>: View where Content: View {
     @Binding var isVisible: Bool
     let contentView: () -> Content
-    
+
     var body: some View {
         VStack {
             contentView() // subview
@@ -73,12 +72,9 @@ private struct StackNavigationSubview<Content>: View where Content: View {
     #endif
 }
 
-
-extension Error where Self:Equatable
-{
+extension Error where Self: Equatable {
     fileprivate
-    func equals(_ other:any Error) -> Bool
-    {
+    func equals(_ other: any Error) -> Bool {
         (other as? Self).map { $0 == self } ?? false
     }
 }

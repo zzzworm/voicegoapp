@@ -11,7 +11,6 @@ import Foundation
 import ComposableArchitecture
 import AuthenticationServices
 
-
 struct AuthorizationControllerClient {
     var signIn: @Sendable () async throws -> Void
 }
@@ -24,12 +23,12 @@ extension DependencyValues {
 }
 
 extension AuthorizationControllerClient: DependencyKey {
-    
+
     static let liveValue: AuthorizationControllerClient = {
         return Self(
             signIn: {
                 Log.debug("AuthorizationControllerClient signIn")
-                
+
                 /*
                 // Create an authorization request
                 let appleIDProvider = ASAuthorizationAppleIDProvider()
@@ -53,7 +52,7 @@ extension AuthorizationControllerClient: DependencyKey {
 class AuthorizationControllerDelegateAdapter: NSObject, ASAuthorizationControllerDelegate {
 
     private let callback: (Result<Void, Error>) -> Void
-    
+
     init(callback: @escaping (Result<Void, Error>) -> Void) {
         self.callback = callback
     }

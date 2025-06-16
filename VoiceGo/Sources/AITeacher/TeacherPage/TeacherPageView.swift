@@ -10,24 +10,23 @@ import ComposableArchitecture
 
 struct AITeacherPageView: View {
     let store: StoreOf<AITeacherPageFeature>
-    
+
     private let imageHeightRatio: CGFloat = 0.6
     private let scrollItemSize = CGSize(width: 75, height: 100)
-    
 
     var body: some View {
         content
             .enableInjection()
     }
-    
+
 #if DEBUG
     @ObserveInjection var forceRedraw
 #endif
-    
+
     @ViewBuilder private var content: some View {
         WithPerceptionTracking {
             GeometryReader { geometry in
-                VStack(alignment:.leading, spacing: 0) {
+                VStack(alignment: .leading, spacing: 0) {
                     // Image background (60% height)
                     ZStack(alignment: .bottomLeading) {
                         // Teacher's cover image
@@ -38,9 +37,9 @@ struct AITeacherPageView: View {
                                     image
                                         .resizable()
                                         .scaledToFill()
-                                        
+
                                         .clipped()
-                                case .failure(_):
+                                case .failure:
                                     // Fallback to placeholder if image fails to load
                                     Color.gray.opacity(0.3)
                                         .frame(height: geometry.size.height * imageHeightRatio)
@@ -58,15 +57,15 @@ struct AITeacherPageView: View {
                             Color.gray.opacity(0.3)
                                 .frame(height: geometry.size.height * imageHeightRatio)
                         }
-                        
+
                         // Teacher info overlay
                         VStack(alignment: .leading, spacing: 4) {
-                            HStack{
+                            HStack {
                                 Text(store.aiTeacher.name)
                                     .font(.title2)
                                     .fontWeight(.bold)
                                     .foregroundColor(.white)
-                                
+
                                 if !store.aiTeacher.tags.isEmpty {
                                     Text(store.aiTeacher.tags.replacingOccurrences(of: ",", with: ", "))
                                         .font(.subheadline)
@@ -88,7 +87,7 @@ struct AITeacherPageView: View {
                     }
 
                     teacherListView
-                        .padding(EdgeInsets(top: 10, leading: 10, bottom:10, trailing: 0))
+                        .padding(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 0))
                     Spacer()
                     let selectedStyle = CTAButtonStyle(isSelected: true)
                     // Start Chat button
@@ -108,9 +107,9 @@ struct AITeacherPageView: View {
 
         }
     }
-    
+
     // MARK: - View Variables
-    
+
     @ViewBuilder
     private var teacherListView: some View {
         ScrollViewReader { proxy in
@@ -149,14 +148,14 @@ struct AITeacherPageView: View {
                     }
                 }
             }
-            
+
         }
     }
-    
+
     @ViewBuilder
     private func teacherItemView(for teacher: AITeacher) -> some View {
         let isSelected = teacher.id == store.state.selectedTeacherId
-        
+
         VStack(spacing: 4) {
             if let url = URL(string: teacher.coverUrl) {
                 AsyncImage(url: url) { phase in
@@ -171,7 +170,7 @@ struct AITeacherPageView: View {
                                 RoundedRectangle(cornerRadius: 8)
                                     .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 2)
                             )
-                    case .failure(_):
+                    case .failure:
                         placeholderItem
                     case .empty:
                         ProgressView()
@@ -183,7 +182,7 @@ struct AITeacherPageView: View {
             } else {
                 placeholderItem
             }
-            
+
             Text(teacher.name)
                 .font(.caption)
                 .foregroundColor(isSelected ? .blue : .primary)
@@ -191,10 +190,10 @@ struct AITeacherPageView: View {
                 .frame(width: scrollItemSize.width)
         }
     }
-    
+
     private var placeholderItem: some View {
         let isSelected = store.state.selectedTeacherId == nil
-        
+
         return Color.gray.opacity(0.3)
             .frame(width: scrollItemSize.width, height: scrollItemSize.height)
             .clipShape(RoundedRectangle(cornerRadius: 8))

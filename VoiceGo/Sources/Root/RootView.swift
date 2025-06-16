@@ -10,7 +10,7 @@ import ComposableArchitecture
 
 struct RootView: View {
     @Bindable var store: StoreOf<RootFeature>
-    
+
     var body: some View {
         WithPerceptionTracking {
             TabView(
@@ -65,7 +65,6 @@ struct RootView: View {
                 }
                 .tag(RootFeature.Tab.studytools)
 
-                
                 ProfileView(
                     store: self.store.scope(
                         state: \.profileState,

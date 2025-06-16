@@ -4,14 +4,14 @@ import SharingGRDB
 import GRDB
 
 @Copyable
-struct UserStudySetting : Identifiable, Equatable , Sendable  {
-    
-    enum EngLevel : String, CaseIterable, Codable, Equatable {
+struct UserStudySetting: Identifiable, Equatable, Sendable {
+
+    enum EngLevel: String, CaseIterable, Codable, Equatable {
         case primary = "primary"
         case intermediate = "intermediate"
         case advanced = "advanced"
         case professional = "professional"
-        
+
         var localizedDescription: String {
             switch self {
             case .primary:
@@ -34,7 +34,7 @@ struct UserStudySetting : Identifiable, Equatable , Sendable  {
         case parent = "parent"
         case teacher = "teacher"
         case others = "others"
-        
+
         var localizedDescription: String {
             switch self {
             case .schoolStudent:
@@ -54,7 +54,7 @@ struct UserStudySetting : Identifiable, Equatable , Sendable  {
             }
         }
     }
-    
+
     enum WordLevel: String, CaseIterable, Codable, Equatable {
         case preschool = "preschool"
         case primarySchool = "primary_school"
@@ -70,7 +70,7 @@ struct UserStudySetting : Identifiable, Equatable , Sendable  {
         case gmat = "GMAT"
         case sat = "SAT"
         case highDifficulty = "high_difficulty"
-        
+
         var localizedDescription: String {
             switch self {
             case .preschool:
@@ -104,18 +104,18 @@ struct UserStudySetting : Identifiable, Equatable , Sendable  {
             }
         }
     }
-    
+
     let id: Int
-    let eng_level : EngLevel
+    let eng_level: EngLevel
     let word_level: WordLevel
     let study_goal: String
     let role: UserRole
 }
 
-extension UserStudySetting : Codable,  EncodableRecord, MutablePersistableRecord {
+extension UserStudySetting: Codable, EncodableRecord, MutablePersistableRecord {
 
     static let databaseTableName = "userStudySetting"
-    
+
     enum CodingKeys: String, CodingKey {
         case id
         case eng_level
@@ -142,5 +142,5 @@ extension UserStudySetting : Codable,  EncodableRecord, MutablePersistableRecord
 }
 
 extension UserStudySetting {
-    static var sample: UserStudySetting  = .init(id: 1, eng_level: .primary, word_level:.cet4, study_goal: "Learn English", role: .schoolStudent)
+    static var sample: UserStudySetting  = .init(id: 1, eng_level: .primary, word_level: .cet4, study_goal: "Learn English", role: .schoolStudent)
 }

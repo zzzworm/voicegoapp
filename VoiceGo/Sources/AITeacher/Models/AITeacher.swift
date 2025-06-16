@@ -37,7 +37,7 @@ extension AITeacherCard: TableRecord {
         container[Column("categoryKey")] = categoryKey
     }
 
-    enum Columns{
+    enum Columns {
         static let id = Column(CodingKeys.id)
         static let openingSpeech = Column(CodingKeys.openingSpeech)
         static let simpleReplay = Column(CodingKeys.simpleReplay)
@@ -62,7 +62,7 @@ struct AITeacher: Codable, FetchableRecord, PersistableRecord, Equatable, Identi
     let tags: String
     let coverUrl: String
     let card: AITeacherCard?
-    var cardId : Int? = nil
+    var cardId: Int?
 
     static var sample: [AITeacher] = [
         AITeacher(
@@ -163,7 +163,7 @@ extension AITeacher: TableRecord {
         container[Column("cardId")] = cardId
     }
 
-    enum Columns{
+    enum Columns {
         static let id = Column(CodingKeys.id)
         static let documentId = Column(CodingKeys.documentId)
         static let name = Column(CodingKeys.name)
@@ -198,7 +198,7 @@ extension AITeacher {
             .general
         }
     }
-    
+
     func toChatUser() -> ExyteChat.User {
         let avatarURL = URL(string: coverUrl ?? "")
         return ExyteChat.User(id: documentId, name: name, avatarURL: avatarURL, isCurrentUser: false)

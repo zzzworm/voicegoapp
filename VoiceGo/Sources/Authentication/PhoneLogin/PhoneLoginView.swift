@@ -11,10 +11,10 @@ import iPhoneNumberField
 
 // MARK: - PhoneLoginView
 
-struct PhoneLoginView : View{
+struct PhoneLoginView: View {
     @Bindable var store: StoreOf<PhoneLoginFeature>
     @FocusState private var focused: Bool
-    
+
     var body: some View {
         content.onAppear {
             self.focused = true
@@ -25,14 +25,14 @@ struct PhoneLoginView : View{
     #if DEBUG
     @ObserveInjection var forceRedraw
     #endif
-    
+
     @ViewBuilder private var content: some View {
         WithPerceptionTracking {
             VStack(spacing: 24) {
                 Text("Please note that you need to type at least one number for it to pass validation.")
                     .multilineTextAlignment(.center)
                     .font(.headline)
-                
+
                 iPhoneNumberField(text: $store.number)
                     .flagHidden(false)
                     .flagSelectable(true)
@@ -47,14 +47,14 @@ struct PhoneLoginView : View{
                             .stroke( Color("black").opacity(0.3), lineWidth: 0.5)
                     )
                     .focused($focused)
-                
+
                 Button("continue", action: {
                     focused = false
                     store.send(.view(.onContinueButtonTap))
                 })
                 .buttonStyle(.cta)
                 .disabled(store.isContinueButtonDisabled)
-                
+
                 Spacer()
             }
             .loader(isLoading: store.isActivityIndicatorVisible)

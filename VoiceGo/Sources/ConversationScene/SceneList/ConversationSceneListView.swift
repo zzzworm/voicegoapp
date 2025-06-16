@@ -2,7 +2,6 @@ import SwiftUI
 import ComposableArchitecture
 import Perception
 
-
 struct ConversationSceneListView: View {
     @Bindable var store: StoreOf<ConversationSceneListFeature>
 
@@ -77,7 +76,7 @@ struct ConversationSceneListView: View {
                     .toolbar(.hidden, for: .tabBar) // Hide tab bar in detail view
                 }
             }
-            
+
         }
         .enableInjection() // Assuming you use Inject for previews and testing
     }
@@ -126,7 +125,7 @@ struct ConversationSceneListView_Previews: PreviewProvider {
             ),
             reducer: ConversationSceneListFeature.init
         )
-        
+
         // Mocking API client for preview if needed for fetch actions
         // store.dependencies.apiClient = .previewValue ...
 
@@ -135,4 +134,3 @@ struct ConversationSceneListView_Previews: PreviewProvider {
         }
     }
 }
-

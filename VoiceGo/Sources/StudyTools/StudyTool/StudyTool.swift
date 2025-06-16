@@ -11,9 +11,9 @@ import SharingGRDB
 import GRDB
 
 struct StudyTool: Equatable, Identifiable, Sendable {
-    
+
     static let databaseTableName = "studyTool"
-    
+
     let id: Int
     let documentId: String
     let title: String
@@ -21,15 +21,15 @@ struct StudyTool: Equatable, Identifiable, Sendable {
     let categoryKey: String // Update to enum
     let categoryTag: ToolTag
     let imageUrl: String?
-    var exampleCard : QACard? = nil
-    var cardDocumentId: String? = nil
-    
+    var exampleCard: QACard?
+    var cardDocumentId: String?
+
     enum ToolTag: String, CaseIterable, Codable {
         case language_study
         case official_language
         case funny_study
         case role_play
-        
+
         // 返回本地化描述
         var localizedDescription: String {
             switch self {
@@ -44,10 +44,10 @@ struct StudyTool: Equatable, Identifiable, Sendable {
             }
         }
     }
-    
+
 }
 
-extension StudyTool: Codable, FetchableRecord ,TableRecord, MutablePersistableRecord, EncodableRecord {
+extension StudyTool: Codable, FetchableRecord, TableRecord, MutablePersistableRecord, EncodableRecord {
     enum CodingKeys: String, CodingKey {
         case id
         case documentId
@@ -69,7 +69,7 @@ extension StudyTool: Codable, FetchableRecord ,TableRecord, MutablePersistableRe
         container["imageUrl"] = imageUrl
         container["cardDocumentId"] = cardDocumentId
     }
-    
+
     enum Columns {
         static let documentId = Column(CodingKeys.documentId)
         static let id = Column(CodingKeys.id)
@@ -80,7 +80,7 @@ extension StudyTool: Codable, FetchableRecord ,TableRecord, MutablePersistableRe
         static let  imageUrl  = Column(CodingKeys.imageUrl)
         static let  cardDocumentId  = Column("cardDocumentId")
     }
-    
+
     static var databaseSelection: [any SQLSelectable] {
 
             [.allColumns(excluding: ["exampleCard"])] // NEW!
@@ -123,20 +123,19 @@ extension StudyTool {
 }
 
 struct StudyToolUsed: Equatable, Identifiable, Sendable {
-    
+
     static let databaseTableName = "studyToolUsed"
-    
+
     let id: Int
     let documentId: String
     let lastUsedAt: Date
-    var userDocumentId : String?
-    var studyToolDocumentId : String?
-    var studyTool: StudyTool? = nil
-    
+    var userDocumentId: String?
+    var studyToolDocumentId: String?
+    var studyTool: StudyTool?
+
 }
 
-
-extension StudyToolUsed: Codable ,TableRecord , FetchableRecord, MutablePersistableRecord {
+extension StudyToolUsed: Codable, TableRecord, FetchableRecord, MutablePersistableRecord {
     enum CodedingKeys: String, CodingKey {
         case documentId
         case id
@@ -149,7 +148,7 @@ extension StudyToolUsed: Codable ,TableRecord , FetchableRecord, MutablePersista
         container[Column("userDocumentId")] = userDocumentId
         container[Column("studyToolDocumentId")] = studyToolDocumentId
     }
-    
+
     enum Columns {
         static let documentId = Column(CodingKeys.documentId)
         static let id = Column(CodingKeys.id)
@@ -160,7 +159,6 @@ extension StudyToolUsed: Codable ,TableRecord , FetchableRecord, MutablePersista
 
 }
 
-
 extension StudyToolUsed {
     static var sample: [StudyToolUsed] {
         [
@@ -170,7 +168,7 @@ extension StudyToolUsed {
                 lastUsedAt: Date(),
                 userDocumentId: "user1",
                 studyToolDocumentId: "yjyt2zwv7rfscj28ms6npqf5",
-                studyTool:.init(
+                studyTool: .init(
                 id: 6,
                 documentId: "yjyt2zwv7rfscj28ms6npqf5",
                 title: "AI翻译",
@@ -186,7 +184,7 @@ extension StudyToolUsed {
                 lastUsedAt: Date(),
                 userDocumentId: "user1",
                 studyToolDocumentId: "yjyt2zwv7rfscj28ms6npqf5",
-                studyTool:.init(
+                studyTool: .init(
                 id: 11,
                 documentId: "sddseztemjku7ovve6g5rry9",
                 title: "AI润色",

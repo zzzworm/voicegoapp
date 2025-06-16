@@ -11,12 +11,12 @@ import GoogleSignIn
 
 @Reducer
 struct LoginOptionsFeature {
-    
+
     @ObservableState
     struct State: Equatable, Hashable {
         var agreementsAttributedString: AttributedString {
             var result = AttributedString("By authorizing you agree our Terms and Conditions and Privacy Policy.")
-            
+
             // We can force unwrap the link range,
             // because we are sure in this case,
             // that `website` string is present.
@@ -24,16 +24,16 @@ struct LoginOptionsFeature {
             result[termsRange].link = Constant.termsURL
             result[termsRange].underlineStyle = Text.LineStyle(pattern: .solid)
             result[termsRange].foregroundColor = Color.blue
-            
+
             let privacyRange = result.range(of: "Privacy Policy")!
             result[privacyRange].link = Constant.privacyURL
             result[privacyRange].underlineStyle = Text.LineStyle(pattern: .solid)
             result[privacyRange].foregroundColor = Color.blue
-            
+
             return result
         }
     }
-    
+
     enum Action: Equatable {
         enum ViewAction: Equatable {
             case onEmailLoginButtonTap
@@ -41,7 +41,7 @@ struct LoginOptionsFeature {
             case onPhoneLoginButtonTap
             case onGoogleLoginButtonTap
         }
-        
+
         enum Delegate {
             case didEmailLoginButtonSelected
             case didAppleLoginButtonSelected
@@ -52,11 +52,11 @@ struct LoginOptionsFeature {
         case view(ViewAction)
         case delegate(Delegate)
     }
-    
+
     @Dependency(\.dismiss) var dismiss
-    
+
     var body: some ReducerOf<Self> {
-        Reduce { state, action in
+        Reduce { _, action in
             switch action {
             case let .view(viewAction):
                 switch viewAction {
@@ -65,26 +65,26 @@ struct LoginOptionsFeature {
                         .send(.delegate(.didEmailLoginButtonSelected)),
                         .run { _ in await self.dismiss() }
                     )
-                    
+
                 case .onAppleLoginButtonTap:
                     return .concatenate(
                         .send(.delegate(.didAppleLoginButtonSelected)),
                         .run { _ in await self.dismiss() }
                     )
-                    
+
                 case .onPhoneLoginButtonTap:
                     return .concatenate(
                         .send(.delegate(.didPhoneLoginButtonSelected)),
                         .run { _ in await self.dismiss() }
                     )
-                    
+
                 case .onGoogleLoginButtonTap:
                     return .concatenate(
                         .send(.delegate(.didGoogleLoginButtonSelected)),
                         .run { _ in await self.dismiss() }
                     )
                 }
-                
+
             case .delegate:
                 return .none
             }

@@ -1,6 +1,5 @@
 import ComposableArchitecture
 
-
 @Reducer
 struct AuthLogic {
    func reduce(into state: inout AppFeature.State, action: AppFeature.Action) -> Effect<AppFeature.Action> {
@@ -13,7 +12,7 @@ struct AuthLogic {
                 })
                 .cancellable(id: Cancel.signOut)
             )
-        
+
         default: return .none
         }
     }

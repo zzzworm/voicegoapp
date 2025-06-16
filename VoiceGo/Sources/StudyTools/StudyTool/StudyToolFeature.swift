@@ -13,27 +13,27 @@ import SwiftyJSON
 @Reducer
 struct StudyToolFeature {
     @Dependency(\.uuid) var uuid
-    
+
     @ObservableState
     struct State: Equatable, Identifiable {
         let studyTool: StudyTool
         var dataLoadingStatus = DataLoadingStatus.notStarted
         var toolHistoryListState: IdentifiedArrayOf<ToolHistoryFeature.State> = []
         var currenttoolHistory: ToolHistoryFeature.State?
-        var lastIndex = 0;
+        var lastIndex = 0
         var shouldShowError: Bool {
             dataLoadingStatus == .error
         }
         var inputBarState = BottomInputBarFeature.State()
-        var paginationState : Pagination?
+        var paginationState: Pagination?
         var isLoadMore = false
         var isScrolling = false
-        var id : String {
+        var id: String {
             studyTool.documentId
         }
     }
-    
-    enum Action: Equatable , BindableAction {
+
+    enum Action: Equatable, BindableAction {
         case fetchStudyHistory(page: Int = 1, pageSize: Int = 10)
         case fetchStudyHistoryResponse(TaskResult<StrapiResponse<[ToolConversation]>>)
         case toolHistory(id: ToolHistoryFeature.State.ID, action: ToolHistoryFeature.Action)
@@ -43,11 +43,11 @@ struct StudyToolFeature {
         case binding(BindingAction<State>)
         case viewIndex(Int)
     }
-    
+
     private enum CancelID { case query }
-    
+
     @Dependency(\.apiClient) var apiClient
-    
+
     var body: some ReducerOf<Self> {
         BindingReducer()
         Scope(state: \.inputBarState, action: /Action.inputBar) {
@@ -59,50 +59,52 @@ struct StudyToolFeature {
                 if state.dataLoadingStatus == .loading {
                     return .none
                 }
-                if !state.isLoadMore{
+                if !state.isLoadMore {
                     state.dataLoadingStatus = .loading
                 }
                 let studyToolUsedID = state.studyTool.documentId
-                return .run{ send in
-                    do{
+                return .run { send in
+                    do {
                         let result =  try await apiClient.getToolConversationList(studyToolUsedID, page, pageSize)
                         return await send(.fetchStudyHistoryResponse(.success(result)))
-                    }
-                    catch {
+                    } catch {
                         return await send(.fetchStudyHistoryResponse(.failure(error)))
                     }
-                    
+
                 }
-                
-                
+
             case .fetchStudyHistoryResponse(.success(let toolHistoryListRsp)):
-                MainActor.assumeIsolated{
+                MainActor.assumeIsolated {
                     let toolHistoryList = toolHistoryListRsp.data
                     state.paginationState = toolHistoryListRsp.meta?.pagination
                     state.isLoadMore = false
                     state.dataLoadingStatus = .success
-                    if let page = state.paginationState?.page, page == 1{
+                    if let page = state.paginationState?.page, page == 1 {
                         state.toolHistoryListState = IdentifiedArrayOf(uniqueElements: toolHistoryList.reversed().map { history in
                             return ToolHistoryFeature.State( history: history)
                         })
-                    }
-                    else{
-                        
+                    } else {
+
                         let addIdentifiedArray = IdentifiedArrayOf(uniqueElements: toolHistoryList.reversed().map { history in
                             return ToolHistoryFeature.State( history: history)
                         })
-                        //新到的下一页内容往前插入
+                        // 新到的下一页内容往前插入
                         state.toolHistoryListState.insert(contentsOf: addIdentifiedArray, at: 0)
                     }
                 }
                 return .none
-            case .fetchStudyHistoryResponse(.failure(_)):
+            case .fetchStudyHistoryResponse(.failure):
                 state.dataLoadingStatus = .error
                 state.isLoadMore = false
                 return .none
-            case .streamAnswer(let answer):
+            case .streamAnswer(let result):
                 if var currentToolHistory = state.currenttoolHistory {
-                    currentToolHistory.history.answer += answer
+                    if var answer = currentToolHistory.history.answer {
+                        ToolConversationAnswer(result: answer.result + result)
+                        currentToolHistory.history.answer = answer
+                    } else {
+                        currentToolHistory.history.answer = ToolConversationAnswer(result: result)
+                    }
                     state.currenttoolHistory = currentToolHistory
                     state.toolHistoryListState.update(currentToolHistory, at: state.lastIndex)
                 }
@@ -115,78 +117,75 @@ struct StudyToolFeature {
                 state.lastIndex = 0
                 return .none
             case let .viewIndex(index):
-                guard index == 1,state.isScrolling, !state.isLoadMore, let total = state.paginationState?.total, state.toolHistoryListState.count < total, !state.isLoadMore else { return .none }
+                guard index == 1, state.isScrolling, !state.isLoadMore, let total = state.paginationState?.total, state.toolHistoryListState.count < total, !state.isLoadMore else { return .none }
                 if let page = state.paginationState!.page, let pageSize = state.paginationState!.pageSize {
                     state.isLoadMore = true
-                    return .run{ send in
+                    return .run { send in
                         await send(.fetchStudyHistory(page: page+1, pageSize: pageSize))
                     }
-                }
-                else{
+                } else {
                     return .none
                 }
             case .toolHistory(id: let id, action: let action):
                 return .none
             case .inputBar(let action):
                 switch action {
-                case .binding(_):
+                case .binding:
                     break
-                case .textChanged(_):
+                case .textChanged:
                     break
-                case .speechRecognitionInput(_):
+                case .speechRecognitionInput:
                     break
                 case .submitText(let query):
                     if query.isEmpty {
                         return .none
                     }
                     let studyTool = state.studyTool
-                    let toolHistoryState = ToolHistoryFeature.State(history: ToolConversation(documentId:self.uuid().uuidString,
-                                                                                             id:0,
+                    let toolHistoryState = ToolHistoryFeature.State(history: ToolConversation(documentId: self.uuid().uuidString,
+                                                                                             id: 0,
                                                                                              updatedAt: .now,
                                                                                              query: query,
-                                                                                             answer: "",
+                                                                                              answer: .init(result: ""),
                                                                                              message_id: "",
                                                                                              conversation_id: ""))
                     state.currenttoolHistory = toolHistoryState
                     let (inserted, index) = state.toolHistoryListState.append(toolHistoryState)
                     state.lastIndex = index
-                    
-                    return .run{ send in
-                            for try await event in try await apiClient.streamToolConversation(studyTool,query) {
-                                
+
+                    return .run { send in
+                            for try await event in try await apiClient.streamToolConversation(studyTool, query) {
+
                                 switch event {
                                 case .message(let message):
-                                    guard let event = message.event, let dataString = message.data ,let jsonData = dataString.data(using:.utf8) else {
+                                    guard let event = message.event, let dataString = message.data, let jsonData = dataString.data(using: .utf8) else {
                                         print("No event")
                                         return
                                     }
                                     do {
-                                        if (event == "message") {
-                                            
+                                        if event == "message" {
+
                                             // 使用 SwiftyJSON 解析 JSON 数据
                                             let json = try JSON(data: jsonData)
-                                            if let answer = json["answer"].string{
+                                            if let answer = json["answer"].string {
                                                 await send(.streamAnswer(answer))
                                             }
-                                        }
-                                        else if(event == "completed"){
-                                            
+                                        } else if event == "completed" {
+
                                             // 使用 SwiftyJSON 解析 JSON 数据
                                             let toolHistory = try JSONDecoder.default.decode(ToolConversation.self, from: jsonData)
                                             await send(.complete(toolHistory))
                                         }
-                                        
+
                                     } catch {
                                         print("解析 JSON 数据时出错: \(error)")
                                     }
                                 case .complete(let completion):
                                     print("Stream completed with: \(completion)")
                                 }
-                                
-                            
+
                         }
                     }
-                    
+
                 case .toggleSpeechMode:
                     break
                 }
@@ -198,6 +197,6 @@ struct StudyToolFeature {
         .forEach(\.toolHistoryListState, action: /Action.toolHistory) {
             ToolHistoryFeature()
         }
-        
+
     }
 }

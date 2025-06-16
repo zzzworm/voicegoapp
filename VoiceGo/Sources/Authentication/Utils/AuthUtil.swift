@@ -15,11 +15,11 @@ import StrapiSwift
 func handleLoginResponse(
     data: AuthenticationResponse
 ) async {
-    
+
     @Dependency(\.userKeychainClient) var userKeychainClient
     @Dependency(\.defaultDatabase) var database
     @Dependency(\.userDefaults) var userDefaultsClient
-    
+
     Log.info("loginResponse: \(data)")
     userKeychainClient.storeToken(data.jwt)
     await Strapi.configure(baseURL: Configuration.current.baseURL, token: data.jwt)
@@ -33,4 +33,3 @@ func handleLoginResponse(
         Log.error("Failed to save user to database: \(error)")
     }
 }
-

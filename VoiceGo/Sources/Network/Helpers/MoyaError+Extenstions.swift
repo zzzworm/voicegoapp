@@ -9,7 +9,7 @@ import enum Moya.MoyaError
 import Foundation
 
 extension MoyaError {
-    
+
     var asAPIError: APIError {
         switch self {
         case .underlying(let error, let response):
@@ -30,9 +30,9 @@ extension MoyaError {
             if error.asAFError?.responseCode == 401 {
                 return .unauthorized
             }
-            
+
             return .moyaError(self)
-            
+
         default:
             return .moyaError(self)
         }

@@ -23,7 +23,7 @@ extension ConversationSceneCard: TableRecord {
         case formalReplay = "formal_replay"
         case openingLetter = "opening_letter"
         case assistContent = "assist_content"
-        case categoryKey 
+        case categoryKey
     }
 
     func encode(to container: inout PersistenceContainer) {
@@ -36,7 +36,7 @@ extension ConversationSceneCard: TableRecord {
         container[Column("categoryKey")] = categoryKey
     }
 
-    enum Columns{
+    enum Columns {
         static let id = Column(CodingKeys.id)
         static let openingSpeech = Column(CodingKeys.openingSpeech)
         static let simpleReplay = Column(CodingKeys.simpleReplay)
@@ -60,7 +60,7 @@ struct ConversationScene: Codable, FetchableRecord, PersistableRecord, Equatable
     let difficultyLevel: Int
     let tags: String
     let card: ConversationSceneCard?
-    var cardId : Int? = nil
+    var cardId: Int?
 
     static var sample: [ConversationScene] = [
         ConversationScene(
@@ -156,7 +156,7 @@ extension ConversationScene: TableRecord {
         container[Column("cardId")] = cardId
     }
 
-    enum Columns{
+    enum Columns {
         static let id = Column(CodingKeys.id)
         static let documentId = Column(CodingKeys.documentId)
         static let name = Column(CodingKeys.name)

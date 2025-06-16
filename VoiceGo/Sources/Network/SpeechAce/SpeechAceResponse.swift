@@ -12,7 +12,7 @@ struct SpeechAceResponse: Codable {
     let quotaRemaining: Int?
     let textScore: TextScore?
     let version: String
-    
+
     enum CodingKeys: String, CodingKey {
         case status
         case quotaRemaining = "quota_remaining"
@@ -30,7 +30,7 @@ struct TextScore: Codable {
     let speechaceScore: ScoreValue
     let toeicScore: ScoreValue
     let cefrscore: ScoreValue
-    
+
     enum CodingKeys: String, CodingKey {
         case text
         case wordScoreList = "word_score_list"
@@ -52,10 +52,10 @@ enum Scorable: Codable {
     case int(Int)
     case double(Double)
     case string(String)
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        
+
         if let intValue = try? container.decode(Int.self) {
             self = .int(intValue)
         } else if let doubleValue = try? container.decode(Double.self) {
@@ -66,7 +66,7 @@ enum Scorable: Codable {
             throw DecodingError.typeMismatch(Scorable.self, DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Unable to decode Scorable"))
         }
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         switch self {
@@ -86,7 +86,7 @@ struct WordScore: Codable {
     let qualityScore: Double
     let phoneScoreList: [PhoneScore]?
     let syllableScoreList: [SyllableScore]
-    
+
     enum CodingKeys: String, CodingKey {
         case word
         case qualityScore = "quality_score"
@@ -105,7 +105,7 @@ struct PhoneScore: Codable {
     let predictedStressLevel: Int?
     let wordExtent: [Int]
     let soundMostLike: String?
-    
+
     enum CodingKeys: String, CodingKey {
         case phone
         case stressLevel = "stress_level"
@@ -127,7 +127,7 @@ struct SyllableScore: Codable {
     let stressScore: Double
     let predictedStressLevel: Int
     let extent: [Int]
-    
+
     enum CodingKeys: String, CodingKey {
         case phoneCount = "phone_count"
         case stressLevel = "stress_level"

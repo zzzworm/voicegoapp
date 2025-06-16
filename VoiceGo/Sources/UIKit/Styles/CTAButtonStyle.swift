@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct CTAButtonStyle: ButtonStyle {
-    
+
     @Environment(\.isEnabled) private var isEnabled
-    @State var isSelected : Bool = false
-    
+    @State var isSelected: Bool = false
+
     func makeBody(configuration: Self.Configuration) -> some View {
         configuration.label
             .font(.title3)

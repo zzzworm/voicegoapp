@@ -12,7 +12,7 @@ import StrapiSwift
 import SwiftUICore
 
 enum MessageAction: MessageMenuAction {
-    case copy,reply, edit, delete
+    case copy, reply, edit, delete
 
     func title() -> String {
         switch self {
@@ -26,7 +26,7 @@ enum MessageAction: MessageMenuAction {
             "Delete"
         }
     }
-    
+
     func icon() -> Image {
         switch self {
         case .copy:
@@ -39,21 +39,20 @@ enum MessageAction: MessageMenuAction {
             Image(systemName: "trash")
         }
     }
-    
+
     // Optional
     // Implement this method to conditionally include menu actions on a per message basis
     // The default behavior is to include all menu action items
     static func menuItems(for message: ExyteChat.Message) -> [MessageAction] {
-        if message.user.isCurrentUser  {
-            return [.edit,.delete]
+        if message.user.isCurrentUser {
+            return [.edit, .delete]
         } else {
-            return [.copy,.reply]
+            return [.copy, .reply]
         }
     }
 }
 
-
-extension ExyteChat.Message : Equatable{
+extension ExyteChat.Message: Equatable {
     public static func == (lhs: ExyteChat.Message, rhs: ExyteChat.Message) -> Bool {
         return lhs.id == rhs.id &&
             lhs.user == rhs.user &&
@@ -69,7 +68,7 @@ extension ExyteChat.Message : Equatable{
     }
 }
 
-extension ExyteChat.DraftMessage : Equatable {
+extension ExyteChat.DraftMessage: Equatable {
     public static func == (lhs: ExyteChat.DraftMessage, rhs: ExyteChat.DraftMessage) -> Bool {
         return lhs.text == rhs.text &&
             lhs.medias == rhs.medias &&
@@ -91,15 +90,15 @@ struct AIConversationsPageFeature {
     struct State: Equatable {
         @Presents var alert: AlertState<Action.AlertAction>?
         public var messages: [ExyteChat.Message] = []
-        public var chatTitle: String{
+        public var chatTitle: String {
             aiTeacher.name
         }
-        public var chatCover: URL?{
+        public var chatCover: URL? {
             URL(string: aiTeacher.coverUrl)
         }
-        var aiTeacher : AITeacher
+        var aiTeacher: AITeacher
         var dataLoadingStatus = DataLoadingStatus.notStarted
-        var isLoading : Bool{
+        var isLoading: Bool {
             dataLoadingStatus == .loading
         }
         var pendingMessage: ExyteChat.Message?
@@ -107,17 +106,17 @@ struct AIConversationsPageFeature {
         var isSending: Bool {
             nil != pendingMessage
         }
-        var paginationState : Pagination?
+        var paginationState: Pagination?
         var isLoadMore = false
         var isScrolling = false
         var reactionState = AITeacherChatReactionFeature.State()
         var inputBarState = BottomInputBarFeature.State()
-        
+
         public init(aiTeacher: AITeacher) {
             self.aiTeacher = aiTeacher
         }
     }
-    
+
     @CasePathable
     enum Action: BindableAction {
         case view(ViewAction)
@@ -144,15 +143,13 @@ struct AIConversationsPageFeature {
         case alert(PresentationAction<AlertAction>)
         case binding(BindingAction<State>)
     }
-    
-    
-    
+
     private func createInitialMessages(from aiTeacher: AITeacher) -> [ExyteChat.Message] {
         let chatUser = aiTeacher.toChatUser()
         guard let card = aiTeacher.card, let message = card.openingLetter else { return [] }
-        
+
         var associations: [Association] = []
-        
+
         if let simpleReplay = card.simpleReplay {
             let association = Association(
                 id: uuid().uuidString,
@@ -160,16 +157,16 @@ struct AIConversationsPageFeature {
             )
             associations.append(association)
         }
-        
+
         if let formalReplay = card.formalReplay {
-            
+
             let association = Association(
                 id: uuid().uuidString,
                 type: .suggestion("地道: \(formalReplay)")
             )
             associations.append(association)
         }
-        
+
         return [
             ExyteChat.Message(
                 id: uuid().uuidString,
@@ -181,7 +178,7 @@ struct AIConversationsPageFeature {
             )
         ]
     }
-    
+
     var body: some ReducerOf<Self> {
         Scope(state: \.reactionState, action: \.reaction) {
             AITeacherChatReactionFeature()
@@ -196,43 +193,41 @@ struct AIConversationsPageFeature {
                 if state.dataLoadingStatus == .loading {
                     return .none
                 }
-                if !state.isLoadMore{
+                if !state.isLoadMore {
                     state.dataLoadingStatus = .loading
                 }
                 let aiTeacherUsedID = state.aiTeacher.documentId
-                return .run{ send in
-                    do{
+                return .run { send in
+                    do {
                         let result =  try await apiClient.getAITeacherConversationList(aiTeacherUsedID, page, pageSize)
                         return await send(.fetchConversationListResponse(.success(result)))
-                    }
-                    catch {
+                    } catch {
                         return await send(.fetchConversationListResponse(.failure(error)))
                     }
-                    
+
                 }
             case .fetchConversationListResponse(.success(let conversationListRsp)):
-                MainActor.assumeIsolated{
+                MainActor.assumeIsolated {
                     let conversationList = conversationListRsp.data
                     state.paginationState = conversationListRsp.meta?.pagination
                     state.isLoadMore = false
                     state.dataLoadingStatus = .success
-                    if let page = state.paginationState?.page, page == 1{
+                    if let page = state.paginationState?.page, page == 1 {
                         let sortedConversations = conversationList.reversed()
                         var toAddedMessages: [ExyteChat.Message] = []
-                        if let latestConversation = sortedConversations.last{
+                        if let latestConversation = sortedConversations.last {
                             toAddedMessages = sortedConversations.dropLast().map { conversation in
                                 return conversation.toChatMessage()
                              }.flatMap { $0 }
                             toAddedMessages.append(contentsOf: latestConversation.toChatLatestMessage())
                         }
                         state.messages = toAddedMessages
-                        
-                    }
-                    else{
+
+                    } else {
                         let addMessages = conversationList.reversed().map { conversation in
                             return conversation.toChatMessage()
                         }.flatMap { $0 }
-                        //新到的下一页内容往前插入
+                        // 新到的下一页内容往前插入
                         state.messages.insert(contentsOf: addMessages, at: 0)
                     }
                     if state.messages.isEmpty {
@@ -251,7 +246,7 @@ struct AIConversationsPageFeature {
                 return .none
             case .view(.onAppear):
                 // Load initial messages or setup
-                
+
                 return .none
             case .view(.onDisappear):
                 // Cleanup if needed
@@ -264,7 +259,7 @@ struct AIConversationsPageFeature {
                     state.inputBarState.text = reply
                 }
                 return .none
-                
+
             case let .sendDraft(draft):
                 // Handle sending a message (append for now)
                 let chatUser = userInfoRepository.currentUser!.toChatUser()
@@ -282,19 +277,18 @@ struct AIConversationsPageFeature {
                 state.pendingMessage = newMessage
                 var aiTeacher = state.aiTeacher
                 return .run {send in
-                    do{
+                    do {
                         let response = try await apiClient.createAITeacherConversation(aiTeacher, draft.text)
                         let answerMsg = await response.data.toAnswerMessage()
                         return await send(.messagesLoaded([answerMsg]))
-                    }
-                    catch(let error as StrapiSwiftError) {
+                    } catch let error as StrapiSwiftError {
                         switch error {
                         case .badResponse(let statusCode, let errorDetails):
                             if let errorName = errorDetails?.name, errorName == "FreeTrialLimitExceededError" {
                                 return await send(.useAgeReachLimit)
                             }
                         default:
-                            return await send(.sendDraftFailed(newMessage,draft))
+                            return await send(.sendDraftFailed(newMessage, draft))
                         }
                     }
                 }
@@ -306,7 +300,7 @@ struct AIConversationsPageFeature {
                     message: TextState("You have reached the usage limit for this AI teacher. Please upgrade your plan to continue."),
                     buttons: [
                         ButtonState(role: .destructive, action: .confirmUpgradePlan) {
-                            TextState(String(localized:"升级", comment: "Useage Limited Alert"))
+                            TextState(String(localized: "升级", comment: "Useage Limited Alert"))
                         }
                     ]
                 )
@@ -314,10 +308,10 @@ struct AIConversationsPageFeature {
             case let .deleteMessage(message):
                 state.messages.removeAll { $0.id == message.id }
                 return .none
-            case let .sendDraftFailed(draftMessage,draft):
-                
+            case let .sendDraftFailed(draftMessage, draft):
+
                 if let index = state.messages.firstIndex(where: { $0.id == draftMessage.id }) {
-                    var message = state.messages[index];
+                    var message = state.messages[index]
                     message.status = .error(draft)
                     state.messages[index] = message
                 } else {
@@ -329,12 +323,11 @@ struct AIConversationsPageFeature {
                 let createdAt = before.createdAt
                 let pageSize = 10
                 var aiTeacher = state.aiTeacher
-                return .run{ send in
-                    do{
+                return .run { send in
+                    do {
                         let result =  try await apiClient.loadMoreAITeacherConversationList(aiTeacher.documentId, createdAt, pageSize)
                         return await send(.fetchConversationListResponse(.success(result)))
-                    }
-                    catch {
+                    } catch {
                         return await send(.fetchConversationListResponse(.failure(error)))
                     }
                 }
@@ -355,17 +348,17 @@ struct AIConversationsPageFeature {
                 // Handle copy action
                 clipboardClient.copyValue(message.text)
                 return .none
-            case .binding(_):
+            case .binding:
                 return .none
-            case .reaction(_):
+            case .reaction:
                 return .none
             case .inputBar(let action):
                 switch action {
-                case .binding(_):
+                case .binding:
                     break
-                case .textChanged(_):
+                case .textChanged:
                     break
-                case .speechRecognitionInput(_):
+                case .speechRecognitionInput:
                     break
                 case .submitText(let reply):
                     if reply.isEmpty {
@@ -380,12 +373,12 @@ struct AIConversationsPageFeature {
                         createdAt: Date()
                     )
                     return.send(.sendDraft(draft))
-                    
+
                 case .toggleSpeechMode:
                     break
                 }
                 return .none
-            case .alert(_):
+            case .alert:
                 return .none
             }
         }

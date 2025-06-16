@@ -9,9 +9,9 @@ import SwiftUI
 
 /// The SceneDelegate class responsible for managing the app's scenes.
 final class SceneDelegate: NSObject, UIWindowSceneDelegate {
-    
+
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
-    
+
     /// Called when a shortcut item is selected to perform an action.
     ///
     /// - Parameters:
@@ -23,7 +23,7 @@ final class SceneDelegate: NSObject, UIWindowSceneDelegate {
         performActionFor shortcutItem: UIApplicationShortcutItem,
         completionHandler: @escaping (Bool) -> Void
     ) {
-        self.appDelegate.store.send(.appDelegate(.didLaunchedWithShortcutItem(shortcutItem)))        
+        self.appDelegate.store.send(.appDelegate(.didLaunchedWithShortcutItem(shortcutItem)))
         completionHandler(true)
     }
 }

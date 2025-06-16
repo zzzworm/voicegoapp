@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct NavigationBarModifier: ViewModifier {
-    
+
     private static var backgroundColor = UIColor.white
     private static var foregroundColor = UIColor.black
 
@@ -18,7 +18,7 @@ struct NavigationBarModifier: ViewModifier {
         backButtonAppearance.disabled.titleTextAttributes = [.foregroundColor: UIColor.clear]
         backButtonAppearance.highlighted.titleTextAttributes = [.foregroundColor: UIColor.clear]
         backButtonAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.clear]
-        
+
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
         appearance.backgroundColor = backgroundColor
@@ -28,17 +28,17 @@ struct NavigationBarModifier: ViewModifier {
         let backButtonImage = UIImage(systemName: "chevron.left")
         appearance.setBackIndicatorImage(backButtonImage, transitionMaskImage: backButtonImage)
         appearance.backButtonAppearance = backButtonAppearance
-        
+
         return appearance
     }()
-    
+
     init(appearance: UINavigationBarAppearance = NavigationBarModifier.defaultBarAppearance) {
         UINavigationBar.appearance().standardAppearance = appearance
         UINavigationBar.appearance().compactAppearance = appearance
         UINavigationBar.appearance().scrollEdgeAppearance = appearance
         UIBarButtonItem.appearance().tintColor = NavigationBarModifier.foregroundColor
     }
-    
+
     func body(content: Content) -> some View {
         ZStack {
             content

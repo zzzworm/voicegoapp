@@ -18,4 +18,4 @@ extension View {
     func commonBackground() -> some View {
         modifier(CommonBackgroundModifier())
     }
-} 
+}

@@ -10,7 +10,7 @@ import DynamicColor
 
 @main
 struct VoiceGoApp: App {
-
+    // swiftlint:disable function_body_length
     func appDatabase() throws -> any DatabaseWriter {
         var configuration = GRDB.Configuration()
         configuration.foreignKeysEnabled = true
@@ -45,7 +45,7 @@ struct VoiceGoApp: App {
                 table.column("city", .text)
                 table.column("phoneNumber", .text)
                 table.column("userIconUrl", .text)
-                table.column("studySettingId", .text).references(UserStudySetting.databaseTableName,column: "id", onDelete: .cascade)
+                table.column("studySettingId", .text).references(UserStudySetting.databaseTableName, column: "id", onDelete: .cascade)
             }
         }
         migrator.registerMigration("Create studyTool used table") { db in
@@ -58,7 +58,7 @@ struct VoiceGoApp: App {
                 table.column("actionText", .text).notNull()
                 table.column("suggestions", .text)
             }
-            
+
             try db.create(table: StudyTool.databaseTableName) { table in
                 table.primaryKey(["documentId"])
                 table.column("documentId", .text).notNull()
@@ -68,18 +68,21 @@ struct VoiceGoApp: App {
                 table.column("categoryKey", .text).notNull()
                 table.column("categoryTag", .text).notNull()
                 table.column("imageUrl", .text)
-                table.column("cardDocumentId", .text).references(QACard.databaseTableName,column: "id", onDelete: .cascade)
+                table.column("cardDocumentId", .text).references(QACard.databaseTableName, column: "id", onDelete: .cascade)
             }
-            
+
             try db.create(table: StudyToolUsed.databaseTableName) { table in
                 table.primaryKey(["documentId"])
                 table.column("documentId", .text).notNull()
                 table.column("id", .integer).notNull()
                 table.column("lastUsedAt", .date).notNull()
-                table.column("userDocumentId", .text).references(UserProfile.databaseTableName,column: "documentId", onDelete: .cascade)
-                table.column("toolDocumentId", .text).references(StudyTool.databaseTableName,column: "documentId", onDelete: .cascade)
+                table.column("userDocumentId", .text).references(UserProfile.databaseTableName, column: "documentId", onDelete: .cascade)
+                table.column("toolDocumentId", .text).references(StudyTool.databaseTableName, column: "documentId", onDelete: .cascade)
             }
 
+        }
+
+        migrator.registerMigration("Create UserStudySetting table") { db in
             try db.create(table: UserStudySetting.databaseTableName) { table in
                 table.primaryKey(["id"])
                 table.column("id", .integer).notNull()
@@ -89,12 +92,72 @@ struct VoiceGoApp: App {
                 table.column("role", .text).notNull()
             }
         }
+
+        migrator.registerMigration("Create AI Teacher    table") { db in
+            
+            try db.create(table: AITeacherCard.databaseTableName) { table in
+                table.primaryKey(["id"])
+                table.column("id", .text).notNull()
+                table.column("openingSpeech", .text)
+                table.column("simpleReplay", .text)
+                table.column("formalReplay", .text)
+                table.column("openingLetter", .text)
+                table.column("assistContent", .text)
+                table.column("categoryKey", .text)
+            }
+            
+            try db.create(table: AITeacher.databaseTableName) { table in
+                table.primaryKey(["documentId"])
+                table.column("documentId", .text).notNull()
+                table.column("id", .integer).notNull()
+                table.column("name", .text).notNull()
+                table.column("introduce", .text).notNull()
+                table.column("createdAt", .datetime).notNull()
+                table.column("updatedAt", .datetime).notNull()
+                table.column("publishedAt", .datetime).notNull()
+                table.column("sex", .text).notNull()
+                table.column("difficultyLevel", .integer).defaults(to:0)
+                table.column("tags", .text).notNull()
+                table.column("coverUrl", .text).notNull()
+                table.column("cardId", .text).references(AITeacherCard.databaseTableName, column: "id", onDelete: .cascade)
+            }
+        }
+
+        migrator.registerMigration("create TeacherConversation table") { db in
+
+            try db.create(table: ConversationAnswer.databaseTableName) { t in
+                t.primaryKey(["documentId"])
+                t.column("documentId", .text).notNull()
+                t.column("result", .text).notNull()
+                t.column("score", .integer).notNull()
+                t.column("revisions", .text).notNull()
+                t.column("review", .text).notNull()
+                t.column("simpleReplay", .text)
+                t.column("formalReplay", .text)
+            }
+
+            try db.create(table: AITeacherConversation.databaseTableName) { t in
+                t.primaryKey(["documentId"])
+                t.column("documentId", .text).notNull()
+                t.column("updatedAt", .datetime).notNull()
+                t.column("query", .text).notNull()
+                t.column("message_id", .text)
+                t.column("conversation_id", .text)
+                t.column("ai_teacher_id", .text).references(AITeacher.databaseTableName, column: "documentId", onDelete: .setNull)
+                t.column("user_id", .text).references(UserProfile.databaseTableName, column: "documentId", onDelete: .cascade)
+                t.column("createdAt", .datetime).notNull()
+                t.column("publishedAt", .datetime).notNull()
+
+            }
+
+        }
+
         try migrator.migrate(database)
         return database
     }
 
     init() {
-        let _ = try! prepareDependencies {
+        _ = try! prepareDependencies {
             let db = try appDatabase()
             $0.defaultDatabase = db
         }
@@ -105,12 +168,12 @@ struct VoiceGoApp: App {
             // 自动清理过期日志（默认保留7天）
             LoggerStore.shared.configuration.saveInterval = .seconds(3600 * 24 * 3)  // 3天
         #endif
-        
+
         let appearance = UINavigationBarAppearance()
                 appearance.configureWithOpaqueBackground()
         appearance.titleTextAttributes = [.foregroundColor: UIColor(hexString: "#F7FAFC")]
                 appearance.largeTitleTextAttributes = [.foregroundColor: UIColor(hexString: "#F7FAFC")]
-        
+
     }
 
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
@@ -128,9 +191,9 @@ struct VoiceGoApp: App {
                 self.appDelegate.store.send(.didChangeScenePhase(phase))
             }
         }
-        
+
     }
-    
+
 #if DEBUG
     @ObserveInjection var forceRedraw
 #endif
@@ -151,12 +214,12 @@ import Combine
 public class InjectionObserver: ObservableObject {
     public static let shared = InjectionObserver()
     @Published var injectionNumber = 0
-    var cancellable: AnyCancellable? = nil
+    var cancellable: AnyCancellable?
     let publisher = PassthroughSubject<Void, Never>()
     init() {
         cancellable = NotificationCenter.default.publisher(for:
             Notification.Name("INJECTION_BUNDLE_NOTIFICATION"))
-            .sink { [weak self] change in
+            .sink { [weak self] _ in
             self?.injectionNumber += 1
             self?.publisher.send()
         }
@@ -170,7 +233,7 @@ extension SwiftUI.View {
     public func enableInjection() -> some SwiftUI.View {
         return eraseToAnyView()
     }
-    public func onInjection(bumpState: @escaping () -> ()) -> some SwiftUI.View {
+    public func onInjection(bumpState: @escaping () -> Void) -> some SwiftUI.View {
         return self
             .onReceive(InjectionObserver.shared.publisher, perform: bumpState)
             .eraseToAnyView()
@@ -193,7 +256,7 @@ extension SwiftUI.View {
     @inline(__always)
     public func enableInjection() -> some SwiftUI.View { return self }
     @inline(__always)
-    public func onInjection(bumpState: @escaping () -> ()) -> some SwiftUI.View {
+    public func onInjection(bumpState: @escaping () -> Void) -> some SwiftUI.View {
         return self
     }
 }

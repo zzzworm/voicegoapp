@@ -11,12 +11,12 @@ import Copyable
 import ExyteChat
 
 @Copyable
-struct UserProfile: Identifiable, Equatable , FetchableRecord, MutablePersistableRecord {
+struct UserProfile: Identifiable, Equatable, FetchableRecord, MutablePersistableRecord {
 
-    public enum Sex : String, CaseIterable, Codable, Equatable {
+    public enum Sex: String, CaseIterable, Codable, Equatable {
         case male
         case female
-        
+
         var localizedDescription: String {
             switch self {
             case .male:
@@ -26,30 +26,30 @@ struct UserProfile: Identifiable, Equatable , FetchableRecord, MutablePersistabl
             }
         }
     }
-    
-    let id : Int
+
+    let id: Int
     let documentId: String
     let email: String
-    let city : String?
+    let city: String?
     let username: String
-    let sex : Sex
-    let provider : String
+    let sex: Sex
+    let provider: String
     let phoneNumber: String?
     let userIconUrl: String?
-    
-    let study_setting : UserStudySetting?
-    var studySettingId: Int? = nil
 
-    var displayIdenifier : String? {
+    let study_setting: UserStudySetting?
+    var studySettingId: Int?
+
+    var displayIdenifier: String? {
         return phoneNumber ?? email
     }
-    
+
 }
 
 extension UserProfile: Codable, EncodableRecord, TableRecord {
-    
+
     static let databaseTableName = "userProfile"
-    
+
     public enum ProfileKeys: String, CodingKey {
         case id
         case documentId
@@ -91,12 +91,12 @@ extension UserProfile: Codable, EncodableRecord, TableRecord {
 }
 
 extension UserProfile {
-    
+
     func toChatUser() -> ExyteChat.User {
         let avatarURL = URL(string: userIconUrl ?? "")
         return ExyteChat.User(id: documentId, name: username, avatarURL: avatarURL, isCurrentUser: true)
     }
-    
+
     static var sample: UserProfile {
         .init(
             id: 1,
@@ -111,7 +111,7 @@ extension UserProfile {
             study_setting: UserStudySetting.sample
         )
     }
-    
+
     static var `default`: UserProfile {
         .init(
             id: 0,
@@ -127,4 +127,3 @@ extension UserProfile {
         )
     }
 }
-

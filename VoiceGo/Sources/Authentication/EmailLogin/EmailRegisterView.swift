@@ -10,16 +10,15 @@ import ComposableArchitecture
 
 // MARK: - LoginView
 
-struct EmailRegisterView : View {
+struct EmailRegisterView: View {
     @Bindable var store: StoreOf<EmailRegisterFeature>
-    
+
     enum FocusedField {
-            case username,email, password, retype
+            case username, email, password, retype
         }
 
     @FocusState private var focusedField: FocusedField?
 
-    
     var body: some View {
         content
         .enableInjection()
@@ -28,16 +27,14 @@ struct EmailRegisterView : View {
     #if DEBUG
     @ObserveInjection var forceRedraw
     #endif
-    
+
     @ViewBuilder private var content: some View {
         WithPerceptionTracking {
             BlurredActivityIndicatorView(
-                isShowing: $store.isActivityIndicatorVisible)
-            {
-                VStack() {
+                isShowing: $store.isActivityIndicatorVisible) {
+                VStack {
                     Image("splash_logo").padding(42)
-                      
-                    
+
                     VStack {
                         AuthTextField(
                             icon: Image(systemName: "envelope"),
@@ -60,7 +57,7 @@ struct EmailRegisterView : View {
                             keyboardType: .default,
                             text: $store.password
                         )
-                        
+
                         AuthTextField(
                             icon: Image(systemName: "lock"),
                             placeholder: "Password",
@@ -69,7 +66,7 @@ struct EmailRegisterView : View {
                             text: $store.retypePassword
                         )
                         Spacer()
-                        
+
                         Button("确定", action: {
                             focusedField = nil
                             store.send(.view(.onConfirmButtonTap))
@@ -83,14 +80,13 @@ struct EmailRegisterView : View {
                             focusedField = .email
                         } else if focusedField == .email {
                             focusedField = .password
-                        }else if focusedField == .password {
+                        } else if focusedField == .password {
                             focusedField = .retype
-                        }
-                        else {
+                        } else {
                             focusedField = nil
                         }
                     }
-                    
+
                     Spacer()
                 }
                 .commonBackground()
@@ -101,12 +97,11 @@ struct EmailRegisterView : View {
     }
 }
 
-
 // MARK: - Preview
 
 struct EmailRegisterView_Previews: PreviewProvider {
     static var previews: some View {
-        Group{
+        Group {
             EmailRegisterView(
                 store: Store(
                     initialState: EmailRegisterFeature.State(
@@ -116,13 +111,13 @@ struct EmailRegisterView_Previews: PreviewProvider {
                         password: "password123",
                         retypePassword: "password123",
                         alert: nil
-                    )){
+                    )) {
                         EmailRegisterFeature()
                     }
             )
             .preferredColorScheme(.light)
             .previewDisplayName("Light Mode")
-            
+
             EmailRegisterView(
                 store: Store(
                     initialState: EmailRegisterFeature.State(
@@ -132,7 +127,7 @@ struct EmailRegisterView_Previews: PreviewProvider {
                         password: "password123",
                         retypePassword: "password123",
                         alert: nil
-                    )){
+                    )) {
                         EmailRegisterFeature()
                     }
             )
@@ -141,5 +136,3 @@ struct EmailRegisterView_Previews: PreviewProvider {
         }
     }
 }
-
-

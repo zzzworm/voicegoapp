@@ -10,9 +10,9 @@ import ComposableArchitecture
 
 // MARK: - LoginOptionsView
 
-struct JoinView : View {
+struct JoinView: View {
     @Bindable var store: StoreOf<JoinFeature>
-    
+
     var body: some View {
         content
         .enableInjection()
@@ -21,12 +21,11 @@ struct JoinView : View {
     #if DEBUG
     @ObserveInjection var forceRedraw
     #endif
-    
+
     @ViewBuilder private var content: some View {
         WithPerceptionTracking {
             NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
 
-                    
                     VStack {
                         Text("您的英语AI伴读工具")
                             .foregroundColor(.appMainColor)
@@ -37,9 +36,8 @@ struct JoinView : View {
                             .padding()
                         Spacer()
                         VStack(spacing: 6) {
-                            
-                            
-                            VStack{
+
+                            VStack {
                                 let selectedStyle = CTAButtonStyle(isSelected: true)
                                 Button {
                                     store.send(.view(.onClickAuthByTap))
@@ -49,8 +47,7 @@ struct JoinView : View {
                                 }
                                 .buttonStyle(selectedStyle)
                                 .padding(EdgeInsets(top: 0, leading: 24, bottom: 0, trailing: 24))
-                                
-                                
+
                                 Button {
                                     store.send(.view(.onWechatAuthByTap))
                                 } label: {
@@ -62,8 +59,8 @@ struct JoinView : View {
                             }
                         }
                         .padding(.top, 24)
-                        
-                        Button{
+
+                        Button {
                             store.send(.view(.onJoinButtonTap))
                         }
                         label: {
@@ -73,7 +70,7 @@ struct JoinView : View {
                                 .foregroundColor(.white)
                         }
                         .padding(20)
-                    
+
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(
@@ -82,21 +79,21 @@ struct JoinView : View {
                             .edgesIgnoringSafeArea(.all)
                             .scaledToFill()
                     )
-                
+
                 .navigationTitle("晨读AI英语")
                 .navigationBarTitleDisplayMode(.inline)
-                
+
             } destination: { store in
                 switch store.case {
                 case let .emailLogin(store):
                     EmailLoginView(store: store)
-                    
+
                 case let .forgotPassword(store):
                     ForgotPasswordView(store: store)
-                    
+
                 case let .phoneLogin(store):
                     PhoneLoginView(store: store)
-                    
+
                 case let .phoneOTP(store):
                     PhoneOTPView(store: store)
                 case let .emailRegister(store):
@@ -116,4 +113,3 @@ struct JoinView : View {
         }
     }
 }
-

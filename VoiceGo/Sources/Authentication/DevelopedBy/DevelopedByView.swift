@@ -10,16 +10,15 @@ import ComposableArchitecture
 
 // MARK: - DevelopedByView
 
-struct DevelopedByView  : View{
+struct DevelopedByView: View {
     let store: StoreOf<DevelopedByFeature>
 
-    
     var body: some View {
         content
             .onAppear { self.store.send(.view(.onViewAppear)) }
-            
+
     }
-    
+
     @ViewBuilder private var content: some View {
         VStack(alignment: .leading) {
             Text("Developed By")
@@ -27,14 +26,14 @@ struct DevelopedByView  : View{
                 .fontWeight(.bold)
                 .multilineTextAlignment(.leading)
                 .padding(.top, 24)
-            
+
             ScrollView {
                 Text(store.text)
                     .font(.body)
             }
         }
         .padding(24)
-        
+
         Button("continue", action: {
             store.send(.view(.onAcceptTap))
         })

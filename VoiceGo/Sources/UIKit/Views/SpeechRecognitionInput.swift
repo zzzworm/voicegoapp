@@ -2,7 +2,6 @@ import ComposableArchitecture
 import Speech
 import SwiftUI
 
-
 @Reducer
 struct SpeechRecognitionInputDomain {
     @ObservableState
@@ -14,8 +13,8 @@ struct SpeechRecognitionInputDomain {
         var numberOfSamples: Int = 10
         var soundSamples: [Float] = [Float](repeating: -30.0, count: 10)
     }
-    
-    enum Action : Equatable, BindableAction {
+
+    enum Action: Equatable, BindableAction {
         static func == (lhs: SpeechRecognitionInputDomain.Action, rhs: SpeechRecognitionInputDomain.Action) -> Bool {
             return false
         }
@@ -28,9 +27,9 @@ struct SpeechRecognitionInputDomain {
         case soundLeveUpdate(Float)
         enum Alert: Equatable {}
     }
-    
+
     @Dependency(\.speechClient) var speechClient
-    
+
     var body: some ReducerOf<Self> {
         BindingReducer()
         Reduce { state, action in
@@ -42,18 +41,18 @@ struct SpeechRecognitionInputDomain {
                 state.currentSample = (state.currentSample + 1) % state.numberOfSamples
                 return .none
             case .recordButtonTapped:
-                
+
                 guard !state.isRecording else {
                     state.isRecording = false
                     return .run { _ in
                         await self.speechClient.finishTask()
                     }
                 }
-                
+
                 return .run { send in
                     let status = await self.speechClient.requestAuthorization()
                     await send(.speechRecognizerAuthorizationStatusResponse(status))
-                    
+
                     guard status == .authorized
                     else { return }
                     let request = SFSpeechAudioBufferRecognitionRequest()
@@ -79,24 +78,24 @@ struct SpeechRecognitionInputDomain {
                     .speech(.failure(SpeechClient.Failure.couldntStartAudioEngine)):
                 state.alert = AlertState { TextState("Problem with audio device. Please try again.") }
                 return .none
-                
+
             case .speech(.failure):
                 state.alert = AlertState {
                     TextState("An error occurred while transcribing. Please try again.")
                 }
                 return .none
-                
+
             case let .speech(.success(transcribedText)):
                 state.transcribedText = transcribedText
                 return .none
-                
+
             case let .speechRecognizerAuthorizationStatusResponse(status):
                 state.isRecording = status == .authorized
-                
+
                 switch status {
                 case .authorized:
                     return .none
-                    
+
                 case .denied:
                     state.alert = AlertState {
                         TextState(
@@ -107,28 +106,28 @@ struct SpeechRecognitionInputDomain {
                         )
                     }
                     return .none
-                    
+
                 case .notDetermined:
                     return .none
-                    
+
                 case .restricted:
                     state.alert = AlertState { TextState("Your device does not allow speech recognition.") }
                     return .none
-                    
+
                 @unknown default:
                     return .none
                 }
-            case .binding(_):
+            case .binding:
                 return .none
             }
         }
         .ifLet(\.$alert, action: \.alert)
-        
+
     }
 }
 
 struct SpeechRecognitionInputView: View {
-    
+
 #if os(macOS)
     @Bindable var store: StoreOf<SpeechRecognitionInputDomain>
 #else
@@ -137,9 +136,9 @@ struct SpeechRecognitionInputView: View {
     var body: some View {
         WithPerceptionTracking {
             WithViewStore(self.store, observe: { $0 }) { viewStore in
-                ZStack(alignment: .center){
-                    if(viewStore.isRecording){
-                        HStack{
+                ZStack(alignment: .center) {
+                    if viewStore.isRecording {
+                        HStack {
                             Spacer()
                                 .frame(maxWidth: .infinity)
                             WaveMonitorView(soundSamples: $store.soundSamples)
@@ -147,8 +146,7 @@ struct SpeechRecognitionInputView: View {
                             Spacer()
                                 .frame(maxWidth: .infinity)
                         }
-                    }
-                    else{
+                    } else {
                         Text("按住说话")
                             .font(.caption)
                             .foregroundColor(.black)

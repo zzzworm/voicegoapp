@@ -144,4 +144,3 @@ struct Log {
         return result
     }
 }
-

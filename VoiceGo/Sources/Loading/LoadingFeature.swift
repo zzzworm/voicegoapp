@@ -42,7 +42,7 @@ struct LoadingFeature {
     @Dependency(\.continuousClock) var clock
 
     private enum CancelID { case timer }
-    
+
     var body: some ReducerOf<Self> {
         BindingReducer()
 
@@ -52,7 +52,7 @@ struct LoadingFeature {
                     switch viewAction {
                     case .onViewAppear:
                         return .send(.internal(.onProgressStart))
-                        
+
                     case .onDisappear:
                       return .cancel(id: CancelID.timer)
                     }
@@ -71,14 +71,14 @@ struct LoadingFeature {
                     case .onProgressUpdated:
                         state.progress += 0.01
                         return state.progress < 1 ? .none : .send(.internal(.onProgressEnd))
-                        
+
                     case .onProgressEnd:
                         return .concatenate(
                             .cancel(id: CancelID.timer),
                             .send(.delegate(.didLoaded))
                         )
                     }
-                
+
             case .binding:
                 return .none
 

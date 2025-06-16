@@ -21,14 +21,14 @@ final class ReachabilityManager {
     private init() {
         // Initialize the Reachability instance.
         reachability = Reachability.forInternetConnection()
-        
+
         // Define the closure to be called when reachability changes to reachable.
-        reachability.reachableBlock = { [weak self] reachability in
+        reachability.reachableBlock = { [weak self] _ in
             self?.scheduleReachabilityUpdate(true)
         }
 
         // Define the closure to be called when reachability changes to unreachable.
-        reachability.unreachableBlock = { [weak self] reachability in
+        reachability.unreachableBlock = { [weak self] _ in
             self?.scheduleReachabilityUpdate(false)
         }
 
@@ -46,7 +46,7 @@ final class ReachabilityManager {
         guard !isReachabilityUpdateScheduled else { return }
 
         isReachabilityUpdateScheduled = true
-                
+
         // Debounce mechanism: Update reachability status after a delay.
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             self?.reachabilityChangedClosure?(isReachable)
@@ -59,4 +59,3 @@ final class ReachabilityManager {
         reachabilityChangedClosure = closure
     }
 }
-

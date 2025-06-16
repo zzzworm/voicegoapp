@@ -8,7 +8,7 @@
 import SwiftUI
 
 extension View {
-    
+
     @ViewBuilder
     func isHidden(_ hidden: Bool, remove: Bool = false) -> some View {
         if hidden {
@@ -29,7 +29,7 @@ extension View {
             perform: { _ in f() }
         )
     }
-    
+
     func onForeground(_ f: @escaping () -> Void) -> some View {
         self.onReceive(
             NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification),
@@ -39,7 +39,7 @@ extension View {
 }
 
 extension View {
-    
+
     @ViewBuilder
     func applyIf<T: View>(_ condition: Bool, apply: (Self) -> T) -> some View {
         if condition {

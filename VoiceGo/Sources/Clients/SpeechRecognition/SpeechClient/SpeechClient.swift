@@ -10,8 +10,8 @@ struct SpeechClient {
     var startTask:
     @Sendable (_ request: SFSpeechAudioBufferRecognitionRequest, _ onAudioLevelChanged: ((Float) -> Void)?) async -> AsyncThrowingStream<
         SpeechRecognitionResult, Error
-    > = { _,_  in .finished() }
-    
+    > = { _, _  in .finished() }
+
     enum Failure: Error, Equatable {
         case taskError
         case couldntStartAudioEngine
@@ -22,7 +22,7 @@ struct SpeechClient {
 extension SpeechClient: TestDependencyKey {
     static var previewValue: Self {
         let isRecording = LockIsolated(false)
-        
+
         return Self(
             finishTask: { isRecording.setValue(false) },
             requestAuthorization: { .authorized },
@@ -64,7 +64,7 @@ extension SpeechClient: TestDependencyKey {
             }
         )
     }
-    
+
     static let testValue = Self()
 }
 

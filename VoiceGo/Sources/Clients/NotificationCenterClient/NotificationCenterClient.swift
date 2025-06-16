@@ -8,7 +8,6 @@ public struct NotificationCenterClient {
     public var post: @Sendable (Notification.Name, Any?, [AnyHashable: Any]?) -> Void
 }
 
-
 extension DependencyValues {
     /// Accessor for the UserCredentialsClient in the dependency values.
     var notificationCenter: NotificationCenterClient {

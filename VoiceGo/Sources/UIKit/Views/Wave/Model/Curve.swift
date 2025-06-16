@@ -14,7 +14,7 @@ struct Curve {
 }
 
 extension Curve {
-    
+
     init() {
         amplitude = CGFloat.random(in: 0.1...1.0)
         frequency = CGFloat.random(in: 0.6...0.9)
@@ -23,19 +23,19 @@ extension Curve {
 }
 
 extension Curve: Identifiable {
-    
+
     var id: String {
         "\(amplitude)\(frequency)\(time)"
     }
 }
 
 extension Curve: Animatable {
-    
+
     typealias AnimatableData = AnimatablePair<AnimatablePair<CGFloat, CGFloat>, CGFloat>
-    
+
     var animatableData: Curve.AnimatableData {
         get { AnimatablePair(AnimatablePair(amplitude, frequency), time) }
-        
+
         set {
             amplitude = newValue.first.first
             frequency = newValue.first.second

@@ -9,17 +9,17 @@ import Foundation
 import Alamofire
 
 public class EventSourceSerializer: DataStreamSerializer {
-    
+
     public static let doubleNewlineDelimiter = "\n\n".data(using: .utf8)!
-    
+
     public let delimiter: Data
-    
+
     private var buffer = Data()
-    
+
     public init(delimiter: Data = doubleNewlineDelimiter) {
         self.delimiter = delimiter
     }
-    
+
     public func serialize(_ data: Data) throws -> [EventSourceMessage] {
         buffer.append(data)
         return extractMessagesFromBuffer().compactMap(EventSourceMessage.init(parsing:))
@@ -28,7 +28,7 @@ public class EventSourceSerializer: DataStreamSerializer {
     private func extractMessagesFromBuffer() -> [String] {
         var messages = [String]()
         var searchRange: Range<Data.Index> = buffer.startIndex..<buffer.endIndex
-        
+
         while let delimiterRange = buffer.range(of: delimiter, in: searchRange) {
             let subdata = buffer.subdata(in: searchRange.startIndex..<delimiterRange.endIndex)
 
@@ -43,5 +43,5 @@ public class EventSourceSerializer: DataStreamSerializer {
 
         return messages
     }
-    
+
 }

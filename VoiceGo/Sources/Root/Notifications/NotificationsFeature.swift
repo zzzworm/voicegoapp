@@ -10,36 +10,36 @@ import ComposableArchitecture
 
 @Reducer
 struct NotificationsFeature {
-    
+
     @ObservableState
     struct State: Equatable {
-        var items: [NotificationItem] = []        
+        var items: [NotificationItem] = []
         @Presents var alert: AlertState<Action.AlertAction>?
     }
-    
+
     enum Action: Equatable {
-        enum ViewAction:  Equatable {
+        enum ViewAction: Equatable {
             case onNotificationTap(notification: NotificationItem)
         }
-        
+
         enum Delegate: Equatable {
             case didAccountNotificationTapped
         }
-        
+
         enum InternalAction: Equatable {
             case deleteNotification(NotificationItem)
         }
-        
+
         enum AlertAction: Equatable {
             case viewNotification(NotificationItem)
         }
-        
+
         case view(ViewAction)
         case delegate(Delegate)
         case `internal`(InternalAction)
         case alert(PresentationAction<AlertAction>)
     }
-    
+
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
@@ -47,22 +47,22 @@ struct NotificationsFeature {
             case let .view(.onNotificationTap(notification)):
                 state.alert = AlertState(title: {
                     TextState(notification.title)
-                } ,
+                },
                                          actions: {
                     ButtonState(action: .viewNotification(notification)) {
                         TextState("View")
                     }
-                    
+
                     ButtonState(role: .cancel) {
                         TextState("Cancel")
                     }
-                } ,
+                },
                                          message: {
                     TextState(notification.description)
                 })
-                
+
                 return .none
-                
+
             // internal actions
             case let .internal(internalAction):
                 switch internalAction {
@@ -76,11 +76,11 @@ struct NotificationsFeature {
                     }
                     return .none
                 }
-                
+
             // alert actions
             case let .alert(.presented(.viewNotification(notification))):
                 return .send(.internal(.deleteNotification(notification)))
-                
+
             case .delegate, .alert:
                 return .none
             }
@@ -88,5 +88,3 @@ struct NotificationsFeature {
         .ifLet(\.$alert, action: \.alert)
     }
 }
-
-

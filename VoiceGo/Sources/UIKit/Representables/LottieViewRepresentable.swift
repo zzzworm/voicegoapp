@@ -12,22 +12,22 @@ import Lottie
 
 /// SwiftUI wrapper around `Lottie.AnimationView`
 public struct LottieViewRepresentable: UIViewRepresentable {
-    
+
     /// The animation
     let animation: LottieAnimation?
-    
+
     /// Flag if the animation should be played
     @Binding var play: Bool
-    
+
     /// Loop mode of the animation
     var loopMode: LottieLoopMode
-    
+
     public init(animation: LottieAnimation, play: Binding<Bool>) {
         self.animation = animation
         self.loopMode = .loop
         self._play = play
     }
-    
+
     public init(name: String, play: Binding<Bool>) {
         animation = .named(name)
         self.loopMode = .loop
@@ -39,13 +39,13 @@ public struct LottieViewRepresentable: UIViewRepresentable {
         self.loopMode = .loop
         _play = play
     }
-    
+
     public init(name: String, loopMode: LottieLoopMode, play: Binding<Bool>) {
         animation = .named(name)
         _play = play
         self.loopMode = loopMode
     }
-    
+
     // MARK: - UIViewRepresentable
     public func makeUIView(context: Context) -> LottieWrapperAnimationView {
         LottieWrapperAnimationView(animation: animation)

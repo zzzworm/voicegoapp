@@ -10,7 +10,7 @@ import ComposableArchitecture
 
 struct AITeacherCell: View {
     let aiTeacher: AITeacher
-    
+
     var body: some View {
         ZStack(alignment: .leading) {
             RoundedRectangle(cornerRadius: 10)
@@ -25,9 +25,9 @@ struct AITeacherCell: View {
                         .lineLimit(2)
                 }
                 .padding(10)
-                
+
                 Spacer()
-                
+
                 AsyncImage(url: URL(string: aiTeacher.coverUrl)) { phase in
                     switch phase {
                     case .success(let image):
@@ -49,11 +49,11 @@ struct AITeacherCell: View {
         }
         .enableInjection()
     }
-    
+
 #if DEBUG
     @ObserveInjection var forceRedraw
 #endif
-    
+
 }
 
 struct AITeacherCell_Previews: PreviewProvider {

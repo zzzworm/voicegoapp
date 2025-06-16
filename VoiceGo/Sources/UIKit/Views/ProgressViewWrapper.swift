@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ProgressViewWrapper: View {
     @Binding var progress: Double
-    
+
     var body: some View {
         ProgressView(value: progress)
             .background(Color.gray)

@@ -10,11 +10,11 @@ import ComposableArchitecture
 
 // MARK: - ForgotPasswordView
 
-struct ForgotPasswordView : View {
+struct ForgotPasswordView: View {
     @Bindable var store: StoreOf<ForgotPasswordFeature>
-    
+
     @FocusState private var focused: Bool
-    
+
     var body: some View {
         content
             .navigationTitle("忘记密码")
@@ -24,7 +24,7 @@ struct ForgotPasswordView : View {
     #if DEBUG
     @ObserveInjection var forceRedraw
     #endif
-    
+
     @ViewBuilder private var content: some View {
         WithPerceptionTracking {
             VStack {
@@ -36,7 +36,7 @@ struct ForgotPasswordView : View {
                     keyboardType: .emailAddress,
                     text: $store.userIdentifier
                 )
-                HStack{
+                HStack {
                     Text("OR").font(.caption).padding(6)
                     Spacer()
                 }

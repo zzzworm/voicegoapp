@@ -10,23 +10,22 @@ import SharingGRDB
 import GRDB
 import Foundation
 
-struct QACard : Equatable, Codable {
-    
+struct QACard: Equatable, Codable {
+
     static let databaseTableName = "studyToolCard"
     let id: Int
-    var isExample : Bool = true
-    var originCaption : String = "原文"
-    var originText : String = ""
-    var actionText : String = ""
+    var isExample: Bool = true
+    var originCaption: String = "原文"
+    var originText: String = ""
+    var actionText: String = ""
     var suggestions: [String] = []
-    private var suggestionText : String {
+    private var suggestionText: String {
         get {suggestions.joined(separator: "|!")}
         set {suggestions = newValue.components(separatedBy: "|!")}
     }
 }
 
-extension QACard : TableRecord ,FetchableRecord, MutablePersistableRecord
-{
+extension QACard: TableRecord, FetchableRecord, MutablePersistableRecord {
     enum Columns {
         static let id = Column(CodingKeys.id)
         static let isExample = Column(CodingKeys.isExample)

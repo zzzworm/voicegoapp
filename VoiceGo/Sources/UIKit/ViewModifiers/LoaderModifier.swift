@@ -41,7 +41,6 @@ extension View {
     }
 }
 
-
 // 定义一个PreferenceKey
 struct UIRefreshedPreferenceKey: PreferenceKey {
     static var defaultValue: Bool = false

@@ -21,7 +21,6 @@ extension ButtonStyle where Self == HighlightFillButtonStyle {
     static var highlightFill: HighlightFillButtonStyle { .init() }
 }
 
-
 struct AnimateableFillButtonStyle: ButtonStyle {
 
   func makeBody(configuration: Self.Configuration) -> some View {

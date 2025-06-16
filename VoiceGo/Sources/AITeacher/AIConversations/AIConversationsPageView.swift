@@ -12,17 +12,16 @@ import ExyteChat
 import InjectionNext
 #endif
 
-
 struct AIConversationsPageView: View {
     @Bindable var store: StoreOf<AIConversationsPageFeature>
     private let reactionDelegate: AITeacherReactionDelegate
-    
+
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.presentationMode) private var presentationMode
     @Environment(\.chatTheme) private var theme
 
     private let recorderSettings = RecorderSettings(sampleRate: 16000, numberOfChannels: 1, linearPCMBitDepth: 16)
-    
+
     @ViewBuilder
     private func messageInputView(
         textBinding: Binding<String>,
@@ -42,14 +41,14 @@ struct AIConversationsPageView: View {
 //                                    Circle().fill(theme.colors.sendButtonBackground)
 //                                }
 //                        }
-                        
+
                         BottomInputBarBarView(store: store.scope(state: \.inputBarState, action: \.inputBar))
-                        if store.state.isSending{
+                        if store.state.isSending {
                             Button {
                                 if let pendingMessage = store.state.pendingMessage,
                                    let pendingDrfat = store.state.pendingDrfat {
                                     // Stop sending the message
-                                    store.send(.stopMessageing(pendingMessage,pendingDrfat))
+                                    store.send(.stopMessageing(pendingMessage, pendingDrfat))
                                 }
                             }
                             label: {
@@ -59,8 +58,7 @@ struct AIConversationsPageView: View {
                                         Circle().fill(theme.colors.sendButtonBackground)
                                     }
                             }
-                        }
-                        else{
+                        } else {
                             Button {
                                 inputViewActionClosure(.send)
                             }
@@ -76,13 +74,13 @@ struct AIConversationsPageView: View {
                     .padding(.horizontal, 10)
                     Text("AI生成内容，仅供参考").padding(.bottom, 5)
                 }
-                
+
             case .signature: // input view on photo selection screen
                 VStack {
                     HStack {
                         TextField("Compose a signature for photo", text: textBinding)
                             .background(Color.white)
-                            
+
                         Button {
                             inputViewActionClosure(.send)
                         }
@@ -99,18 +97,18 @@ struct AIConversationsPageView: View {
             }
         }
     }
-    
+
     init(store: StoreOf<AIConversationsPageFeature>) {
         self.store = store
         self.reactionDelegate = AITeacherReactionDelegate(
             store: store.scope(state: \.reactionState, action: \.reaction)
         )
     }
-    
+
 #if DEBUG
     @ObserveInjection var forceRedraw
 #endif
-    
+
     @ViewBuilder
     private var navigationBarLeadingContent: some View {
         HStack {
@@ -144,14 +142,14 @@ struct AIConversationsPageView: View {
         }
         .padding(.leading, 10)
     }
-    
+
     var body: some View {
         content
             .enableInjection()
     }
-    
+
     @ViewBuilder private var content: some View {
-        WithViewStore(self.store, observe: { $0 }) { viewStore in
+        WithViewStore(self.store, observe: { $0 }) { _ in
             var chatView = ChatView(
                 messages: store.state.messages,
                 chatType: .conversation,
@@ -159,7 +157,7 @@ struct AIConversationsPageView: View {
                     store.send(.sendDraft(draft))
                 },
                 reactionDelegate: reactionDelegate,
-                inputViewBuilder: { textBinding, attachments, inputViewState, inputViewStyle, inputViewActionClosure, dismissKeyboardClosure in
+                inputViewBuilder: { textBinding, _, _, inputViewStyle, inputViewActionClosure, _ in
                     messageInputView(
                         textBinding: textBinding,
                         inputViewStyle: inputViewStyle,
@@ -201,20 +199,20 @@ struct AIConversationsPageView: View {
                 }
 
             )
-            
+
             if let pageCount = store.state.paginationState?.pageCount, pageCount > 1 {
                 chatView.enableLoadMore(pageSize: 3) { message in
                     store.send(.loadMore(before: message))
                 }
             }
-            
+
             chatView
                 .messageUseMarkdown(true)
                 .setRecorderSettings(recorderSettings)
                 .tapAssociationClosure({ message, association in
-                    
-                    store.send(.tapAssociation(message,association))
-                    
+
+                    store.send(.tapAssociation(message, association))
+
                 })
                 .alert($store.scope(state: \.alert, action: \.alert))
                 .disabled(store.isLoading)
@@ -238,7 +236,6 @@ struct AIConversationsPageView: View {
         }
     }
 }
-
 
 #Preview {
     AIConversationsPageView(

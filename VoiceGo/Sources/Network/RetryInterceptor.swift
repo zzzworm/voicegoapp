@@ -1,9 +1,9 @@
 import Alamofire
 
 final class RetryInterceptor: RequestInterceptor {
-  
+
   private var retryLimit: Int = 2
-  
+
   init(_ retryLimit: Int = 2) {
     self.retryLimit = retryLimit
   }
@@ -17,7 +17,7 @@ final class RetryInterceptor: RequestInterceptor {
     guard let response = request.response else {
       return completion(.doNotRetryWithError(VGError.network(.invalidResponse)))
     }
-    
+
     switch response.statusCode {
     case 200..<300:
       return completion(.doNotRetry)

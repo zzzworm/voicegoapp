@@ -29,7 +29,7 @@ extension LocalAuthenticationClient: DependencyKey {
     static let liveValue: Self = {
         // Create an instance of LAContext for handling biometric authentication.
         let context = LAContext()
-        
+
         return Self(
             authenticate: { reason in
                 // Use withCheckedThrowingContinuation for asynchronous authentication.

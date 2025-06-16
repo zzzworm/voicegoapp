@@ -16,7 +16,7 @@ extension SpeechClient: DependencyKey {
                     }
                 }
             },
-            startTask: { request,onAudioLevelChanged  in
+            startTask: { request, onAudioLevelChanged  in
                 let request = UncheckedSendable(request)
                 return await speech.startTask(request: request, onAudioLevelChanged: onAudioLevelChanged)
             }
@@ -25,17 +25,17 @@ extension SpeechClient: DependencyKey {
 }
 
 private actor Speech {
-    var audioEngine: AVAudioEngine? = nil
-    var recognitionTask: SFSpeechRecognitionTask? = nil
+    var audioEngine: AVAudioEngine?
+    var recognitionTask: SFSpeechRecognitionTask?
     var recognitionContinuation: AsyncThrowingStream<SpeechRecognitionResult, any Error>.Continuation?
-    
+
     func finishTask() {
         self.audioEngine?.stop()
         self.audioEngine?.inputNode.removeTap(onBus: 0)
         self.recognitionTask?.finish()
         self.recognitionContinuation?.finish()
     }
-    
+
     func startTask(
         request: UncheckedSendable<SFSpeechAudioBufferRecognitionRequest>, onAudioLevelChanged: ((Float) -> Void)?
     ) -> AsyncThrowingStream<SpeechRecognitionResult, any Error> {
@@ -50,7 +50,7 @@ private actor Speech {
                 continuation.finish(throwing: SpeechClient.Failure.couldntConfigureAudioSession)
                 return
             }
-            
+
             self.audioEngine = AVAudioEngine()
             let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))!
             self.recognitionTask = speechRecognizer.recognitionTask(with: request) { result, error in
@@ -63,7 +63,7 @@ private actor Speech {
                     fatalError("It should not be possible to have both a nil result and nil error.")
                 }
             }
-            
+
             continuation.onTermination = {
                 [
                     speechRecognizer = UncheckedSendable(speechRecognizer),
@@ -71,25 +71,25 @@ private actor Speech {
                     recognitionTask = UncheckedSendable(recognitionTask)
                 ]
                 _ in
-                
+
                 _ = speechRecognizer
                 audioEngine.wrappedValue?.stop()
                 audioEngine.wrappedValue?.inputNode.removeTap(onBus: 0)
                 recognitionTask.wrappedValue?.finish()
             }
-            
+
             self.audioEngine?.inputNode.installTap(
                 onBus: 0,
                 bufferSize: 1024,
                 format: self.audioEngine?.inputNode.outputFormat(forBus: 0)
-            ) { [weak self] (buffer, when) in
+            ) { [weak self] (buffer, _) in
                 guard let strongSelf = self else {
                                     return
                                 }
                 request.append(buffer)
                 onAudioLevelChanged?(buffer.averagePower[0])
             }
-            
+
             self.audioEngine?.prepare()
             do {
                 try self.audioEngine?.start()
@@ -99,6 +99,5 @@ private actor Speech {
             }
         }
     }
-    
 
 }

@@ -51,7 +51,7 @@ extension FirestoreClient: DependencyKey {
         return Self(
             places: {
                 return try await withCheckedThrowingContinuation { continuation in
-                    firestore.collection("places").getDocuments() { (querySnapshot, error) in
+                    firestore.collection("places").getDocuments { (querySnapshot, error) in
                         if let err = error {
                             continuation.resume(with: .failure(err))
                         } else {
@@ -59,11 +59,11 @@ extension FirestoreClient: DependencyKey {
                                 continuation.resume(with: .failure(AppError.general))
                                 return
                             }
-                            
+
                             let places: [Place] = querySnapshot.documents.compactMap { document in
                                 return try! FirestoreDecoder().decode(Place.self, from: document.data())
                             }
-                                                        
+
                             continuation.resume(returning: places)
                         }
                     }

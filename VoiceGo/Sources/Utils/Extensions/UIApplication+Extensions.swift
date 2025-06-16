@@ -9,7 +9,7 @@ import Foundation
 import SafariServices
 
 extension UIApplication {
-    
+
     func openSafari(with url: URL,
                     entersReaderIfAvailable: Bool = false,
                     barCollapsingEnabled: Bool = true) {
@@ -24,7 +24,7 @@ extension UIApplication {
 
 // https://sarunw.com/posts/sfsafariviewcontroller-in-swiftui/
 extension UIApplication {
-    
+
     var firstKeyWindow: UIWindow? {
         return UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }

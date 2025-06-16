@@ -48,7 +48,7 @@ struct Push: Decodable {
     /// Initializes a `Push` instance by decoding a dictionary of notification data.
     /// - Parameter userInfo: The dictionary containing notification data received from APNs.
     /// - Throws: An error if decoding the notification data fails.
-    init(decoding userInfo: [AnyHashable : Any]) throws {
+    init(decoding userInfo: [AnyHashable: Any]) throws {
         let data = try JSONSerialization.data(withJSONObject: userInfo, options: .prettyPrinted)
         self = try JSONDecoder().decode(Push.self, from: data)
     }
@@ -103,22 +103,22 @@ extension PushNotification.Response {
 struct UserNotificationClient {
     /// Requests authorization for specific notification options.
     var requestAuthorization: @Sendable (UNAuthorizationOptions) async throws -> Bool
-    
+
     /// Retrieves the authorization status for notifications.
     var authorizationStatus: @Sendable () async -> UNAuthorizationStatus
-    
+
     /// Adds a notification request.
     var add: @Sendable (UNNotificationRequest) async throws -> Void
-    
+
     /// Removes delivered notifications with specified identifiers.
     var removeDeliveredNotificationsWithIdentifiers: @Sendable ([String]) async -> Void
-    
+
     /// Removes pending notification requests with specified identifiers.
     var removePendingNotificationRequestsWithIdentifiers: @Sendable ([String]) async -> Void
-    
+
     /// Provides an asynchronous stream of delegate events for user notifications.
     var delegate: @Sendable () -> AsyncStream<DelegateEvent>
-    
+
     /// Delegate events for user notifications.
     enum DelegateEvent: Equatable {
         case didReceiveResponse(PushNotification, completionHandler: @Sendable () -> Void)

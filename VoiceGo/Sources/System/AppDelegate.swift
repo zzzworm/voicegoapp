@@ -17,7 +17,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     let store = Store(initialState: AppFeature.State()) {
         AppFeature()
     }
-    
+
     /// The method called when the application finishes launching.
     ///
     /// - Parameters:
@@ -32,7 +32,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         self.store.send(.appDelegate(.didFinishLaunching))
         return true
     }
-    
+
     /// The method called when the app successfully registers for remote notifications.
     ///
     /// - Parameters:
@@ -55,8 +55,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         didFailToRegisterForRemoteNotificationsWithError error: Error
     ) {
         self.store.send(.appDelegate(.didRegisterForRemoteNotifications(.failure(error))))
-    }    
-    
+    }
+
     /// The method called to provide a UISceneConfiguration.
     ///
     /// - Parameters:
@@ -82,7 +82,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         configuration.delegateClass = SceneDelegate.self
         return configuration
     }
-        
+
     /// Handles incoming URLs to the application, such as for authentication callbacks.
     ///
     /// - Parameters:
@@ -93,9 +93,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(
           _ app: UIApplication,
           open url: URL,
-          options: [UIApplication.OpenURLOptionsKey : Any] = [:]
+          options: [UIApplication.OpenURLOptionsKey: Any] = [:]
         ) -> Bool {
-          
+
           // Check if Google Sign-In can handle the URL.
           if GIDSignIn.sharedInstance.handle(url) {
             return true
@@ -105,8 +105,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
           return false
         }
 }
-
-
 
 #if canImport(HotSwiftUI)
 @_exported import HotSwiftUI
@@ -123,12 +121,12 @@ import Combine
 public class InjectionObserver: ObservableObject {
     public static let shared = InjectionObserver()
     @Published var injectionNumber = 0
-    var cancellable: AnyCancellable? = nil
+    var cancellable: AnyCancellable?
     let publisher = PassthroughSubject<Void, Never>()
     init() {
         cancellable = NotificationCenter.default.publisher(for:
             Notification.Name("INJECTION_BUNDLE_NOTIFICATION"))
-            .sink { [weak self] change in
+            .sink { [weak self] _ in
             self?.injectionNumber += 1
             self?.publisher.send()
         }
@@ -142,7 +140,7 @@ extension SwiftUI.View {
     public func enableInjection() -> some SwiftUI.View {
         return eraseToAnyView()
     }
-    public func onInjection(bumpState: @escaping () -> ()) -> some SwiftUI.View {
+    public func onInjection(bumpState: @escaping () -> Void) -> some SwiftUI.View {
         return self
             .onReceive(InjectionObserver.shared.publisher, perform: bumpState)
             .eraseToAnyView()
@@ -165,7 +163,7 @@ extension SwiftUI.View {
     @inline(__always)
     public func enableInjection() -> some SwiftUI.View { return self }
     @inline(__always)
-    public func onInjection(bumpState: @escaping () -> ()) -> some SwiftUI.View {
+    public func onInjection(bumpState: @escaping () -> Void) -> some SwiftUI.View {
         return self
     }
 }

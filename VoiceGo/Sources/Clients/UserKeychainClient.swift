@@ -38,7 +38,7 @@ extension UserKeychainClient: DependencyKey {
         // Initialize KeychainWrapper with the service name
         let keychainWrapper = KeychainWrapper(serviceName: "com.zzzwormstudio")
 
-        return Self (
+        return Self(
             // Add user credentials to the Keychain
             storeToken: { data in
                 keychainWrapper.set(data,
@@ -68,4 +68,3 @@ private extension UserKeychainClient {
     // Key for storing OAuth token in the Keychain
     static let oauthTokenKey = "com.zzzwormstudio.OAuthToken"
 }
-

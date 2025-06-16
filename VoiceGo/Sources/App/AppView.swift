@@ -10,9 +10,9 @@ import ComposableArchitecture
 
 // MARK: - HelpView
 
-struct AppView : View {
+struct AppView: View {
     let store: StoreOf<AppFeature>
-    
+
     var body: some View {
         content
         .enableInjection()
@@ -56,4 +56,3 @@ struct AppView : View {
         )
     )
 }
-

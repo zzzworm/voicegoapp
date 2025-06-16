@@ -8,23 +8,22 @@ import Foundation
 import ComposableArchitecture
 import AVFAudio
 
-
 struct ToolHistoryFeature: Reducer {
     @ObservableState
     struct State: Equatable, Identifiable {
         var history: ToolConversation
-        var isSpeakingQuery : Bool = false
-        var isSpeakingAnswer : Bool = false
+        var isSpeakingQuery: Bool = false
+        var isSpeakingAnswer: Bool = false
         var isSpeaking: Bool {
             return isSpeakingQuery || isSpeakingAnswer
         }
-        var id : String {
+        var id: String {
             history.documentId
         }
     }
-    
+
     @CasePathable
-    enum Action: Equatable,BindableAction {
+    enum Action: Equatable, BindableAction {
         case deleteHistory
         case speakQuestion(String)
         case speakAnswer(String)
@@ -34,47 +33,42 @@ struct ToolHistoryFeature: Reducer {
         case speakFailed
         case binding(BindingAction<State>)
     }
-    
+
     @Dependency(\.speechSynthesizer) var speechSynthesizer
     @Dependency(\.clipboardClient) var clipboardClient
-    
+
     fileprivate func speekText(_ answer: String) -> Effect<ToolHistoryFeature.Action> {
         return .run { send in
             // Create an utterance.
             let utterance = AVSpeechUtterance(string: answer)
-            
-            
+
             // Configure the utterance.
             utterance.rate = 0.57
             utterance.pitchMultiplier = 0.8
             utterance.postUtteranceDelay = 0.2
             utterance.volume = 0.8
-            
-            
+
             // Retrieve the British English voice.
             let voice = AVSpeechSynthesisVoice(language: "zh-CN")
-            
-            
+
             // Assign the voice to the utterance.
             utterance.voice = voice
-            
+
             let success = try await speechSynthesizer.speak(utterance)
-            if(success){
+            if success {
                 await send(.speakFinished)
-            }
-            else{
+            } else {
                 await send(.speakFailed)
             }
         }
     }
-    
-    
+
     var body: some ReducerOf<Self> {
         BindingReducer()
         Reduce { state, action in
             switch action {
             case .deleteHistory:
-                
+
                 return .none
             case .speakQuestion(let question):
                 state.isSpeakingQuery = true
@@ -82,12 +76,11 @@ struct ToolHistoryFeature: Reducer {
             case .speakAnswer(let answer):
                 state.isSpeakingAnswer = true
                 if let attString = try? AttributedString(
-                    markdown:answer
-                ){
+                    markdown: answer
+                ) {
                     let content = String(attString.characters)
                     return speekText(content)
-                }
-                else{
+                } else {
                     return .none
                 }
             case .stopSpeak:
@@ -96,7 +89,7 @@ struct ToolHistoryFeature: Reducer {
                     await send(.speakFailed)
                 }
             case .copyAnswer(let answer):
-                return .run { send in
+                return .run { _ in
                     clipboardClient.copyValue(answer)
                 }
             case .speakFinished:
@@ -107,8 +100,8 @@ struct ToolHistoryFeature: Reducer {
                 state.isSpeakingQuery = false
                 state.isSpeakingAnswer = false
                 return .none
-            
-            case .binding(_):
+
+            case .binding:
                 return .none
             }
         }

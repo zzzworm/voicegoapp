@@ -16,7 +16,7 @@ struct StudyToolListView: View {
                     VStack {
                         // 切换数据源的按钮
                         HStack {
-                            ForEach(StudyTool.ToolTag.allCases, id:\.self){ tag in
+                            ForEach(StudyTool.ToolTag.allCases, id: \.self) { tag in
                                 Button(action: {
                                     store.send(.switchTools(tag))
                                 }) {
@@ -27,11 +27,11 @@ struct StudyToolListView: View {
                                         .cornerRadius(4)
                                 }
                             }
-                            
+
                         }.padding(EdgeInsets(top: 0, leading: 0, bottom: 6, trailing: 0))
-                        
+
                         // 主内容
-                        
+
                             if store.state.dataLoadingStatus == .loading {
                                 Spacer()
                                 ProgressView()
@@ -51,11 +51,11 @@ struct StudyToolListView: View {
                                             }.padding(EdgeInsets(top: 0, leading: 10, bottom: 10, trailing: 10))
                                             .id(studyTool.id)
                                     }
-                                    
+
                                 }
                                 .listRowInsets(EdgeInsets())
                             }
-                        
+
                         Spacer()
                     }
                     .commonBackground()
@@ -76,7 +76,7 @@ struct StudyToolListView: View {
         }
         .enableInjection()
     }
-    
+
 #if DEBUG
     @ObserveInjection var forceRedraw
 #endif

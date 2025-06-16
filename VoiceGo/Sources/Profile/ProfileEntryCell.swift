@@ -12,7 +12,7 @@ struct ProfileEntryButton: View {
     let icon: String
     let title: String
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             VStack(spacing: 8) {
@@ -26,7 +26,7 @@ struct ProfileEntryButton: View {
         }
         .enableInjection()
     }
-    
+
     #if DEBUG
     @ObserveInjection var forceRedraw
     #endif
@@ -61,7 +61,7 @@ struct ProfileEntryCell: View {
         .padding(.vertical, 20)
         .enableInjection()
     }
-    
+
     #if DEBUG
     @ObserveInjection var forceRedraw
     #endif
@@ -70,4 +70,3 @@ struct ProfileEntryCell: View {
 #Preview {
     ProfileEntryCell()
 }
-

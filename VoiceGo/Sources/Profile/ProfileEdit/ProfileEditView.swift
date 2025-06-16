@@ -4,19 +4,19 @@ import PhotosUI
 
 struct ProfileEditView: View {
     @Bindable var store: StoreOf<ProfileEditFeature>
-    
+
     var body: some View {
         content
             .enableInjection()
     }
-    
+
 #if DEBUG
     @ObserveInjection var forceRedraw
 #endif
-    
+
     @ViewBuilder private var content: some View {
         WithPerceptionTracking {
-            WithViewStore(self.store, observe: { $0 }) { viewStore in
+            WithViewStore(self.store, observe: { $0 }) { _ in
                 Form {
                     profileImageSection
                     basicInfoSection
@@ -54,7 +54,7 @@ struct ProfileEditView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private var placeholderImage: some View {
         Image(systemName: "person.circle.fill")
@@ -62,7 +62,7 @@ struct ProfileEditView: View {
             .scaledToFill()
             .foregroundColor(.gray)
     }
-    
+
     // MARK: - Profile Image Section
     @ViewBuilder private var profileImageSection: some View {
         Section {
@@ -83,7 +83,7 @@ struct ProfileEditView: View {
                                     image
                                         .resizable()
                                         .scaledToFill()
-                                case .failure(_):
+                                case .failure:
                                     placeholderImage
                                 case .empty:
                                     ProgressView()
@@ -105,7 +105,7 @@ struct ProfileEditView: View {
             .listRowBackground(Color.clear)
         }
     }
-    
+
     // MARK: - Basic Info Section
     @ViewBuilder private var basicInfoSection: some View {
         Section("基本信息") {
@@ -125,7 +125,7 @@ struct ProfileEditView: View {
             }
         }
     }
-    
+
     // MARK: - Study Settings Section
     @ViewBuilder private var studySettingsSection: some View {
         Section("学习设置") {
@@ -141,7 +141,7 @@ struct ProfileEditView: View {
                         .foregroundColor(.gray)
                 }
             }
-            
+
             // Word Level
             Button(action: {
                 store.send(.view(.toggleWordLevelPicker(true)))
@@ -154,7 +154,7 @@ struct ProfileEditView: View {
                         .foregroundColor(.gray)
                 }
             }
-            
+
             // Study Goal
             HStack {
                 Text("学习目标")
@@ -164,7 +164,7 @@ struct ProfileEditView: View {
                     .multilineTextAlignment(.trailing)
                     .foregroundColor(.gray)
             }
-            
+
             // User Role
             Button(action: {
                 store.send(.view(.toggleUserRolePicker(true)))
@@ -179,9 +179,9 @@ struct ProfileEditView: View {
             }
         }
     }
-    
+
     // MARK: - Picker Views
-    
+
     @ViewBuilder private var sexPickerView: some View {
         NavigationStack {
             List {
@@ -215,7 +215,7 @@ struct ProfileEditView: View {
         }
         .presentationDetents([.height(160)])
     }
-    
+
     @ViewBuilder private var engLevelPickerView: some View {
         NavigationStack {
             List {
@@ -249,7 +249,7 @@ struct ProfileEditView: View {
         }
         .presentationDetents([.height(240)])
     }
-    
+
     @ViewBuilder private var wordLevelPickerView: some View {
         NavigationStack {
             List {
@@ -283,7 +283,7 @@ struct ProfileEditView: View {
             .presentationDetents([.height(580)])
         }
     }
-    
+
     @ViewBuilder private var userRolePickerView: some View {
         NavigationStack {
             List {

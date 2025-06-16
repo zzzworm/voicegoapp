@@ -10,23 +10,22 @@ import Nuke
 import NukeUI
 import ComposableArchitecture
 
-struct ProfileCell : View {
-    let profile : UserProfile
+struct ProfileCell: View {
+    let profile: UserProfile
 //    @Dependency(\.clipboardClient) var clipboardClient
-    
+
     var action: () -> Void
-    
+
     var body: some View {
-        VStack{
-            ZStack{
+        VStack {
+            ZStack {
                 Image(systemName: "person.fill")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 128, height: 128)
                     .foregroundColor(.gray)
                     .cornerRadius(64)
-                if let iconUrl = profile.userIconUrl
-                {
+                if let iconUrl = profile.userIconUrl {
                     LazyImage(url: URL(string: iconUrl))
                         .scaledToFit()
                         .frame(width: 128, height: 128)
@@ -35,16 +34,15 @@ struct ProfileCell : View {
                 }
             }
             HStack {
-                
-                
-                VStack(alignment: .center){
-                    
-                    if let phoneNumber = profile.displayIdenifier{
+
+                VStack(alignment: .center) {
+
+                    if let phoneNumber = profile.displayIdenifier {
                         Text(phoneNumber)
                             .font(.headline)
                             .foregroundColor(.primary)
                     }
-                   
+
                     Text(profile.username)
                         .font(.headline)
                         .foregroundColor(.secondary)
@@ -56,7 +54,7 @@ struct ProfileCell : View {
             }.background(Color.gray.opacity(0.4))
                 .foregroundColor(.black)
                 .cornerRadius(8)
-            
+
             /*
             HStack{
                 Text("用户ID：")
@@ -81,10 +79,9 @@ struct ProfileCell : View {
     #endif
 }
 
-
 struct ProfileCell_Previews: PreviewProvider {
     static var previews: some View {
-        ProfileCell(profile:UserProfile.default) {
+        ProfileCell(profile: UserProfile.default) {
             print("Button tapped!")
         }
         .previewLayout(.sizeThatFits)
