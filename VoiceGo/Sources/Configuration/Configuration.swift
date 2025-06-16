@@ -38,38 +38,38 @@ protocol VoiceGoConfiguration {
 }
 
 public class Configuration {
-    
+
     // #dev Remove singlton when will start unittesting. A.P.
     public static let current = Configuration()
-    
+
     private let config: NSDictionary
-    
+
     let info: [String: Any] = { () -> [String: Any] in
         guard let info = Bundle.main.infoDictionary else {
             return [:]
         }
         return info
     }()
-            
+
     init(dictionary: NSDictionary) {
         config = dictionary
     }
-    
+
     private convenience init() {
         let bundle = Bundle.main
         let configPath = bundle.path(forResource: "config", ofType: "plist")!
         let config = NSDictionary(contentsOfFile: configPath)!
-        
+
         let dict = NSMutableDictionary()
-        
+
         if let commonConfig = config["Common"] as? [AnyHashable: Any] {
             dict.addEntries(from: commonConfig)
         }
-        
+
         #if DEBUG
         if let developmentConfig = config["Development"] as? [AnyHashable: Any] {
             dict.addEntries(from: developmentConfig)
-        }        
+        }
         #elseif QA
         if let qaConfig = config["QA"] as? [AnyHashable: Any] {
             dict.addEntries(from: qaConfig)
@@ -79,13 +79,13 @@ public class Configuration {
             dict.addEntries(from: releaseConfig)
         }
         #endif
-        
+
         self.init(dictionary: dict)
     }
 }
 
-extension Configuration:VoiceGoConfiguration {
-    
+extension Configuration: VoiceGoConfiguration {
+
     var buildConfiguration: BuildConfiguration {
         #if DEBUG
         return BuildConfiguration.development
@@ -95,48 +95,48 @@ extension Configuration:VoiceGoConfiguration {
         return BuildConfiguration.release
         #endif
     }
-    
-    var baseURL : String {
+
+    var baseURL: String {
         return config["base_url"] as! String
     }
-    
-    var dbName : String {
+
+    var dbName: String {
         if let name =  config["dbName"] as? String
             , !name.isEmpty {
             return name
         }
         return "db.sqlite"
     }
-    
+
     var appVersion: String {
         guard let appVersion = info["CFBundleShortVersionString"] else {
             return ""
         }
         return "\(appVersion)"
     }
-    
-    var ossbucket : String {
+
+    var ossbucket: String {
         return config["ossBucket"] as! String
     }
-    
+
     var ossEndpoint: String {
         return config["ossEndpoint"] as! String
     }
-    
-    var buildNumber : Int {
+
+    var buildNumber: Int {
         guard let bundleVersion = info["CFBundleVersion"]
             , let buildNumber = Int("\(bundleVersion)") else {
                 return -1
         }
-        
+
         return buildNumber
     }
-    
+
     var operatingSystemVersion: OperatingSystemVersion {
         return ProcessInfo.processInfo.operatingSystemVersion
     }
-    
-    var osName : String {
+
+    var osName: String {
         #if os(iOS)
         return "iOS"
         #elseif os(watchOS)
@@ -151,42 +151,42 @@ extension Configuration:VoiceGoConfiguration {
         return "Unknown"
         #endif
     }
-    
+
     var deviceModel: String {
         return UIDevice.current.model
     }
-    
+
     var deviceName: String {
         return UIDevice.current.name
     }
-    
+
     var bundle: String {
         guard let bundle = info[kCFBundleIdentifierKey as String] as? String else {
             return ""
         }
         return bundle
     }
-    
+
     var executable: String {
         guard let executable = info[kCFBundleExecutableKey as String] as? String else {
             return ""
         }
         return executable
     }
-    
+
     var systemLanguage: String {
         return Locale.current.language.languageCode?.identifier ?? "en"
     }
-    
+
     var deviceNotificationToken: String {
         return UIDevice.current.identifierForVendor?.uuidString ?? ""
     }
-    
+
     var timezoneOffset: String {
         return "\(TimeZone.current.secondsFromGMT()/60)"
     }
-    
+
     var apiVersion: String {
         return config["api_version"] as! String
-    }    
+    }
 }

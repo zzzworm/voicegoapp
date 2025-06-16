@@ -10,7 +10,7 @@ import Alamofire
 import Moya
 
 extension Session {
-    
+
     public func eventSourceRequest<Parameters: Encodable & Sendable>(_ convertible: URLConvertible,
                                                                      method: HTTPMethod = .get,
                                                                      parameters: Parameters? = nil,
@@ -18,7 +18,7 @@ extension Session {
                                                                      headers: HTTPHeaders? = nil,
                                                                      lastEventID: String? = nil,
                                                                      interceptor: RequestInterceptor? = nil) -> DataStreamRequest {
-        return streamRequest(convertible, method: method,parameters: parameters, encoder: encoder, headers: headers, interceptor: interceptor) { request in
+        return streamRequest(convertible, method: method, parameters: parameters, encoder: encoder, headers: headers, interceptor: interceptor) { request in
             request.timeoutInterval = TimeInterval(Int32.max)
             request.headers.add(name: "Accept", value: "text/event-stream")
             request.headers.add(name: "Cache-Control", value: "no-cache")
@@ -27,38 +27,36 @@ extension Session {
             }
         }
     }
-    
-    public func eventSourceRequest(_ convertible: any URLRequestConvertible,automaticallyCancelOnStreamError: Bool = false, interceptor: (any RequestInterceptor)? = nil) -> DataStreamRequest {
+
+    public func eventSourceRequest(_ convertible: any URLRequestConvertible, automaticallyCancelOnStreamError: Bool = false, interceptor: (any RequestInterceptor)? = nil) -> DataStreamRequest {
         let request = streamRequest(convertible,
                                     interceptor: interceptor)
 
         return request
     }
-    
+
 }
 
 extension DataStreamRequest {
-    
-    
-    
+
     public struct EventSource {
-        
+
         public let event: EventSourceEvent
-        
+
         public let token: CancellationToken
 
         public func cancel() {
             token.cancel()
         }
-        
+
     }
-    
+
     public enum EventSourceEvent {
-        
+
         case message(EventSourceMessage)
-        
+
         case complete(Completion)
-        
+
     }
 
     @discardableResult public func responseEventSource(using serializer: EventSourceSerializer = EventSourceSerializer(),
@@ -79,25 +77,25 @@ extension DataStreamRequest {
 }
 
 extension DataStreamRequest {
-    
+
     public struct DecodableEventSource<T: Decodable> {
-        
+
         public let event: DecodableEventSourceEvent<T>
-        
+
         public let token: CancellationToken
 
         public func cancel() {
             token.cancel()
         }
-        
+
     }
-    
+
     public enum DecodableEventSourceEvent<T: Decodable> {
-        
+
         case message(DecodableEventSourceMessage<T>)
-        
+
         case complete(Completion)
-        
+
     }
 
     @discardableResult public func responseDecodableEventSource<T: Decodable>(using serializer: DecodableEventSourceSerializer<T> = DecodableEventSourceSerializer(),
@@ -114,5 +112,5 @@ extension DataStreamRequest {
             }
         }
     }
-    
+
 }

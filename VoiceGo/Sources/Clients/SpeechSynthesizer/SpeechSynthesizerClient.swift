@@ -11,7 +11,6 @@ import Dependencies
 import os
 import ComposableArchitecture
 
-
 @DependencyClient
 struct SpeechSynthesizerClient {
     var speak: @Sendable (AVSpeechUtterance) async throws -> Bool

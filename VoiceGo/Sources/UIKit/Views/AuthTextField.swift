@@ -20,13 +20,13 @@ public struct AuthTextField: View {
 		self._text = text
 	}
 	public var body: some View {
-        
+
             HStack {
                 icon
                     .fontWeight(.semibold)
                     .frame(width: 30)
                     .padding()
-                VStack{
+                VStack {
                 if isSecure {
                     SecureField(placeholder, text: $text)
                         .keyboardType(keyboardType)

@@ -14,7 +14,6 @@ enum UserInfoRepositoryKey: DependencyKey {
  static var liveValue: UserInfoRepository = UserInfoRepository()
 }
 
-
 extension DependencyValues {
     var userInfoRepository: UserInfoRepository {
         get { self[UserInfoRepositoryKey.self] }
@@ -22,5 +21,3 @@ extension DependencyValues {
     }
 }
 
-
-    

@@ -16,23 +16,23 @@ struct DevelopedByFeature {
     struct State: Equatable {
         var text: String = ""
     }
-    
+
     enum Action: Equatable {
         enum ViewAction: Equatable {
             case onViewAppear
             case onAcceptTap
         }
-        
+
         enum Delegate: Equatable {
             case didDevelopedByViewed
         }
-        
+
         case view(ViewAction)
         case delegate(Delegate)
     }
-    
+
     @Dependency(\.dismiss) var dismiss
-    
+
     var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
@@ -41,14 +41,14 @@ struct DevelopedByFeature {
                 case .onViewAppear:
                     state.text = "About me"
                     return .none
-                    
+
                 case .onAcceptTap:
                     return .concatenate(
                         .send(.delegate(.didDevelopedByViewed)),
                         .run { _ in await self.dismiss() }
                     )
                 }
-                
+
             case .delegate:
                 return .none
             }

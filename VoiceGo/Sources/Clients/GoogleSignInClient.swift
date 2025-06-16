@@ -28,7 +28,7 @@ extension DependencyValues {
 
 extension GoogleSignInClient: DependencyKey {
     /// A live implementation of GoogleSignInClient.
-    
+
     static let liveValue: Self = {
         return Self(
             login: { rootViewController in
@@ -41,14 +41,14 @@ extension GoogleSignInClient: DependencyKey {
 //                    // If sign in succeeded, display the app's main content View.
 //                    Log.debug("GIDSignIn signInResult \(signInResult)")
 //                }
-                                             
+
                 let result = try await GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController)
-                
+
                 let user = result.user
-                let accessToken = user.accessToken 
+                let accessToken = user.accessToken
                 let ret =  try await Strapi.authentication.connect.auth(provider: "google", access_token: accessToken.tokenString, as: UserProfile.self)
                 return AuthenticationResponse(jwt: ret.jwt, user: ret.user)
-       
+
             },
             logout: {
                 GIDSignIn.sharedInstance.signOut()
@@ -63,4 +63,3 @@ extension GoogleSignInClient: TestDependencyKey {
         logout: unimplemented("\(Self.self).logout")
     )
 }
-

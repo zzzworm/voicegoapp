@@ -10,32 +10,32 @@ import ComposableArchitecture
 
 @Reducer
 struct ForgotPasswordFeature {
-    
+
     @ObservableState
     struct State: Equatable {
         @Presents var alert: AlertState<Action.AlertAction>?
         var userIdentifier = ""
     }
-    
+
     enum Action: Equatable, BindableAction {
         enum ViewAction: Equatable {
             case onChangePasswordButtonTaped
         }
-        
+
         enum DelegateAction: Equatable {
             case didPasswordChanged
         }
-        
+
         enum AlertAction: Equatable {
             case confirmPasswordChange
         }
-        
+
         case view(ViewAction)
         case alert(PresentationAction<AlertAction>)
         case delegate(DelegateAction)
         case binding(BindingAction<State>)
     }
-    
+
     var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce { state, action in
@@ -47,15 +47,15 @@ struct ForgotPasswordFeature {
                         TextState("确认重置？")
                     } actions: {
                         ButtonState(role: .destructive, action: .confirmPasswordChange) {
-                            TextState(String(localized:"确定", comment: "Forgot Password Alert"))
+                            TextState(String(localized: "确定", comment: "Forgot Password Alert"))
                         }
                     }
                     return .none
                 }
-                
+
             case .alert(.presented(.confirmPasswordChange)):
                 return .send(.delegate(.didPasswordChanged))
-                
+
             case .delegate, .alert:
                 return .none
             case .binding:

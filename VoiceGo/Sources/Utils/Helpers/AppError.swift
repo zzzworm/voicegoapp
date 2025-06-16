@@ -14,7 +14,7 @@ public enum AppError: Error {
 }
 
 extension AppError: LocalizedError {
-    
+
     public var errorDescription: String? {
         switch self {
         case .general:
@@ -25,7 +25,7 @@ extension AppError: LocalizedError {
             return "A serious database failure occurred."
         }
     }
-    
+
     public var failureReason: String? {
         switch self {
         case .general:
@@ -36,7 +36,7 @@ extension AppError: LocalizedError {
             return "Database failure reason (#\(code))"
         }
     }
-    
+
     public var recoverySuggestion: String? {
         switch self {
         case .general:

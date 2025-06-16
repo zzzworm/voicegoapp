@@ -16,21 +16,21 @@ struct ProfileView: View {
     var body: some View {
         WithPerceptionTracking {
             NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
-                
+
                 ZStack {
-                    VStack{
-                        if let profile = store.state.profile{
-                            
-                            ProfileCell(profile: profile){
+                    VStack {
+                        if let profile = store.state.profile {
+
+                            ProfileCell(profile: profile) {
                                 store.send(.view(.onEditProfileTapped))
                             }
                         }
-                        let listItems = Group{
-                            HStack{
+                        let listItems = Group {
+                            HStack {
                                 Button(action: {
                                     store.send(.view(.onSettingTapped))
                                 }) {
-                                    HStack{
+                                    HStack {
                                         Image(systemName: "gearshape")
                                             .foregroundColor(.primary)
                                         Text("设置")
@@ -38,11 +38,11 @@ struct ProfileView: View {
                                     }
                                 }
                             }
-                            HStack{
+                            HStack {
                                 Button(action: {
                                     store.send(.view(.onSettingTapped))
                                 }) {
-                                    HStack{
+                                    HStack {
                                         Image(systemName: "bell")
                                             .foregroundColor(.primary)
                                         Text("反馈/举报")
@@ -59,7 +59,7 @@ struct ProfileView: View {
                             }
                         }
                         if #available(iOS 17.0, *) {
-                            List{
+                            List {
                                 listItems
                             }
                             .scrollContentBackground(.hidden)
@@ -67,10 +67,9 @@ struct ProfileView: View {
                             .listRowInsets(EdgeInsets()) // 移除默认内边距
                             .environment(\.defaultMinListRowHeight, 56)
                             .contentMargins(.top, 0)
-                        }
-                        else{
-                            List{
-                                Section{
+                        } else {
+                            List {
+                                Section {
                                     listItems
                                 }
                                 header: {
@@ -83,13 +82,13 @@ struct ProfileView: View {
                             .environment(\.defaultMinListRowHeight, 56)
                             .environment(\.defaultMinListHeaderHeight, 0)
                         }
-                        
+
                         if store.state.isLoading {
                             ProgressView()
                         }
                         Spacer()
                     }
-                    
+
                 }
                 .commonBackground()
                 .task {
@@ -97,7 +96,7 @@ struct ProfileView: View {
                 }
                 .navigationTitle("我的")
                 .navigationBarTitleDisplayMode(.inline)
-                
+
             } destination: { store in
                 switch store.case {
                 case let .setting(store):
@@ -112,7 +111,7 @@ struct ProfileView: View {
         }
         .enableInjection()
     }
-    
+
 #if DEBUG
     @ObserveInjection var forceRedraw
 #endif

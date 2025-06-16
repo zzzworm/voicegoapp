@@ -10,10 +10,9 @@ import ComposableArchitecture
 
 // MARK: - NoNetworkView
 
-struct NoNetworkView : View {
+struct NoNetworkView: View {
     let store: StoreOf<NoNetwork>
 
-    
     var body: some View {
         content
         .enableInjection()
@@ -22,15 +21,15 @@ struct NoNetworkView : View {
     #if DEBUG
     @ObserveInjection var forceRedraw
     #endif
-    
+
     @ViewBuilder private var content: some View {
         VStack(spacing: 30) {
             Spacer()
-            
+
             Text("Base.oops")
                 .font(Font.title)
                 .multilineTextAlignment(.center)
-            
+
             Image("wifi.exclamationmark")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
@@ -44,7 +43,7 @@ struct NoNetworkView : View {
                 store.send(.onOkTapped)
             }
             .buttonStyle(.cta)
-            
+
             Spacer()
         }
         .padding([.leading, .trailing], 48)

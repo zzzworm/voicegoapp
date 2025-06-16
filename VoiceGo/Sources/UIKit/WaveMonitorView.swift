@@ -8,8 +8,6 @@
 
 import SwiftUI
 
-
-
 struct BarView: View {
     var value: CGFloat
     var numberOfSamples: Int = 10
@@ -24,7 +22,7 @@ struct BarView: View {
             }
             .frame(maxHeight: .infinity) // 关键点
         }
-        
+
         .enableInjection()
     }
 
@@ -34,19 +32,19 @@ struct BarView: View {
 }
 
 struct WaveMonitorView: View {
-    
+
     @Binding  var soundSamples: [Float]
     private func normalizeSoundLevel(level: Float, height: CGFloat = 300) -> CGFloat {
         let level = max(0.1, CGFloat(level) + 50) / 2 // between 0.1 and 25
-        
+
         return CGFloat(level * (height / 25)) // scaled to max at 300 (our height of our bar)
     }
-    
+
     var body: some View {
         GeometryReader { geometry in
             HStack(alignment: .center, spacing: (geometry.size.width / CGFloat(soundSamples.count)/3.0)) {
                 ForEach(soundSamples, id: \.self) { level in
-                        BarView(value: self.normalizeSoundLevel(level: level, height:geometry.size.height), numberOfSamples: soundSamples.count)
+                        BarView(value: self.normalizeSoundLevel(level: level, height: geometry.size.height), numberOfSamples: soundSamples.count)
                 }
             }
         }
@@ -59,7 +57,7 @@ struct WaveMonitorView: View {
 }
 
 struct ContentView_Previews: PreviewProvider {
-    
+
     static var previews: some View {
         @State var soundSamples: [Float] = (0 ..< 10).map { _ in Float.random(in: -50...0) }
         WaveMonitorView(soundSamples: $soundSamples)
@@ -70,5 +68,3 @@ struct ContentView_Previews: PreviewProvider {
             .shadow(radius: 5)
     }
 }
-
-

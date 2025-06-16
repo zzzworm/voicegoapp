@@ -13,30 +13,30 @@ import PulseUI
 
 struct ProfileSettingView: View {
     @Bindable var store: StoreOf<ProfileSettingFeature>
-    
+
     var body: some View {
         content
             .enableInjection()
     }
-    
+
     #if DEBUG
     @ObserveInjection var forceRedraw
     #endif
-    
+
     @ViewBuilder private var content: some View {
         WithPerceptionTracking {
-            WithViewStore(self.store, observe: { $0 }) { viewStore in
+            WithViewStore(self.store, observe: { $0 }) { _ in
                 NavigationView {
                     ZStack {
-                        List{
-                            
+                        List {
+
 #if DEBUG
                             NavigationLink(destination: ConsoleView()) {
                                 Text("Console")
                             }
 #endif
-                            
-                            HStack{
+
+                            HStack {
                                 Button(action: {
                                     store.send(.logout)
                                 }) {

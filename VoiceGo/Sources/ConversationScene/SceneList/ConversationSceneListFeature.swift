@@ -2,7 +2,6 @@ import Foundation
 import ComposableArchitecture
 import StrapiSwift // Assuming StrapiSwift is used for API responses
 
-
 @Reducer
 struct ConversationSceneListFeature {
     @Dependency(\.uuid) var uuid
@@ -48,7 +47,7 @@ struct ConversationSceneListFeature {
                 if state.dataLoadingStatus == .loading && state.currentCategory == categoryTag {
                     return .none // Avoid re-fetching if already loading for the same category
                 }
-                
+
                 state.dataLoadingStatus = .loading
                 state.currentCategory = categoryTag // Set current category when fetch starts
                 return .run { send in
@@ -114,7 +113,7 @@ struct ConversationSceneListFeature {
                 //    }
                 //    return .none
                 }
-            
+
             case .path:
                 // Handle navigation path actions if needed, or rely on .forEach
                 return .none

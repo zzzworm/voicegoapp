@@ -9,16 +9,16 @@ import Foundation
 import Alamofire
 
 public class DecodableEventSourceSerializer<T: Decodable>: DataStreamSerializer {
-    
+
     public let decoder: DataDecoder
-    
+
     private let serializer: EventSourceSerializer
-    
+
     public init(decoder: DataDecoder = JSONDecoder(), delimiter: Data = EventSourceSerializer.doubleNewlineDelimiter) {
         self.decoder = decoder
         self.serializer = EventSourceSerializer(delimiter: delimiter)
     }
-    
+
     public func serialize(_ data: Data) throws -> [DecodableEventSourceMessage<T>] {
         return try serializer.serialize(data).map { message in
             return try DecodableEventSourceMessage(
@@ -31,5 +31,5 @@ public class DecodableEventSourceSerializer<T: Decodable>: DataStreamSerializer 
             )
         }
     }
-    
+
 }

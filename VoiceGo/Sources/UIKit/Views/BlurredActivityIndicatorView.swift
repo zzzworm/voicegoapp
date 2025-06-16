@@ -14,7 +14,7 @@ struct BlurredActivityIndicatorView<Content>: View where Content: View {
 
     var body: some View {
         ZStack(alignment: .center) {
-            if (!self.isShowing) {
+            if !self.isShowing {
                 self.content()
             } else {
                 self.content()

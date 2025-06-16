@@ -11,22 +11,21 @@ import SwiftyJSON
 import StrapiSwift
 import Alamofire
 
-
 struct VoiceGoAPIClient {
-    var fetchStudyTools:  @Sendable (String) async throws -> StrapiResponse<[StudyTool]>
-    var fetchUserProfile:  @Sendable () async throws -> UserProfile
-    var updateUserProfile:  @Sendable (UserProfile) async throws -> UserProfile
+    var fetchStudyTools: @Sendable (String) async throws -> StrapiResponse<[StudyTool]>
+    var fetchUserProfile: @Sendable () async throws -> UserProfile
+    var updateUserProfile: @Sendable (UserProfile) async throws -> UserProfile
     var getAliSTS: @Sendable () async throws -> AliOSSSTS
 
-    var getToolConversationList:  @Sendable (_ studyToolId : String ,_ page: Int, _ pageSize: Int) async throws -> StrapiResponse<[ToolConversation]>
-    var createToolConversation:  @Sendable (_ studyTool : StudyTool ,_ query: String) async throws -> StrapiResponse<ToolConversation>
-    var streamToolConversation:  @Sendable (_ studyTool : StudyTool ,_ query: String) async throws -> AsyncThrowingStream<DataStreamRequest.EventSourceEvent, Error>
+    var getToolConversationList: @Sendable (_ studyToolId: String, _ page: Int, _ pageSize: Int) async throws -> StrapiResponse<[ToolConversation]>
+    var createToolConversation: @Sendable (_ studyTool: StudyTool, _ query: String) async throws -> StrapiResponse<ToolConversation>
+    var streamToolConversation: @Sendable (_ studyTool: StudyTool, _ query: String) async throws -> AsyncThrowingStream<DataStreamRequest.EventSourceEvent, Error>
 
-    var createAITeacherConversation:  @Sendable (_ aiTeacher : AITeacher ,_ query: String) async throws -> StrapiResponse<AITeacherConversation>
-    var streamAITeacherConversation:  @Sendable (_ aiTeacher : AITeacher ,_ query: String) async throws -> AsyncThrowingStream<DataStreamRequest.EventSourceEvent, Error>
-    var getAITeacherConversationList:  @Sendable (_ aiTeacherId : String ,_ page: Int, _ pageSize: Int) async throws -> StrapiResponse<[AITeacherConversation]>
+    var createAITeacherConversation: @Sendable (_ aiTeacher: AITeacher, _ query: String) async throws -> StrapiResponse<AITeacherConversation>
+    var streamAITeacherConversation: @Sendable (_ aiTeacher: AITeacher, _ query: String) async throws -> AsyncThrowingStream<DataStreamRequest.EventSourceEvent, Error>
+    var getAITeacherConversationList: @Sendable (_ aiTeacherId: String, _ page: Int, _ pageSize: Int) async throws -> StrapiResponse<[AITeacherConversation]>
     // var deleteAITeacherConversationMesaage:  @Sendable (_ aiTeacherId : String ,_ messageId: String) async throws -> StrapiResponse<>
-    var loadMoreAITeacherConversationList:  @Sendable (_ aiTeacherId : String ,_ createdAt: Date, _ pageSize: Int) async throws -> StrapiResponse<[AITeacherConversation]>
+    var loadMoreAITeacherConversationList: @Sendable (_ aiTeacherId: String, _ createdAt: Date, _ pageSize: Int) async throws -> StrapiResponse<[AITeacherConversation]>
 
     var fetchAITeachers: @Sendable () async throws -> StrapiResponse<[AITeacher]>
 
@@ -49,7 +48,7 @@ func handleStrapiRequest<T: Decodable & Sendable>(_ action: @Sendable () async t
                 if statusCode > 400 && statusCode < 404 {
                     @Dependency(\.notificationCenter) var notificationCenter
                     print("Bad response: \(statusCode)")
-                    await MainActor.run{
+                    await MainActor.run {
                         notificationCenter.post(.signOut, nil, nil)
                     }
                 }
@@ -71,12 +70,11 @@ func handleStrapiRequest<T: Decodable & Sendable>(_ action: @Sendable () async t
     }
 }
 
-
 // 使用Moya实现APIClient的liveValue
-extension VoiceGoAPIClient : DependencyKey  {
+extension VoiceGoAPIClient: DependencyKey {
     static let liveValue = Self(
         fetchStudyTools: { category in
-            return try await handleStrapiRequest{
+            return try await handleStrapiRequest {
                 let resp =  try await Strapi.contentManager.collection("study-tools")
                     .filter("[categoryTag]", operator: .equal, value: category)
                     .populate("exampleCard")
@@ -84,7 +82,7 @@ extension VoiceGoAPIClient : DependencyKey  {
                 return resp
             }},
         fetchUserProfile: {
-            return try await handleStrapiRequest{
+            return try await handleStrapiRequest {
                 let response = try await Strapi.authentication.local.me(as: UserProfile.self)
                 return response
             }
@@ -124,28 +122,28 @@ extension VoiceGoAPIClient : DependencyKey  {
         },
         getToolConversationList: {studyToolId, page, pageSize in
             let response = try await Strapi.contentManager.collection("tool-conversation/my-list")
-                .filter("[study_tool_user_used][studyTool][documentId]",operator: .equal, value:studyToolId)
+                .filter("[study_tool_user_used][studyTool][documentId]", operator: .equal, value: studyToolId)
                 .paginate(page: page, pageSize: pageSize)
                 .getDocuments(as: [ToolConversation].self)
             return response
         },
         createToolConversation: {studyTool, query in
 
-            let data = StrapiRequestBody(["studyTool": .dictionary(["documentId":.string(studyTool.documentId)]), "query": .string(query)]);
+            let data = StrapiRequestBody(["studyTool": .dictionary(["documentId": .string(studyTool.documentId)]), "query": .string(query)])
             let response = try await Strapi.contentManager.collection("tool-conversation").postData(data, as: ToolConversation.self)
             return response
         },
         streamToolConversation: {studyTool, query in
-            return AsyncThrowingStream() { continuation in
+            return AsyncThrowingStream { continuation in
                 Task {
-                    let data = StrapiRequestBody(["studyTool": .dictionary(["documentId":.string(studyTool.documentId),"categoryKey":.string(studyTool.categoryKey)]), "query": .string(query)]);
+                    let data = StrapiRequestBody(["studyTool": .dictionary(["documentId": .string(studyTool.documentId), "categoryKey": .string(studyTool.categoryKey)]), "query": .string(query)])
                     let request = try await Strapi.contentManager.collection("tool-conversation/create-message?stream").asPostRequest(data)
 
                     Session.default.eventSourceRequest(request).responseEventSource(handler: { eventSource in
                         continuation.yield(eventSource.event)
                         switch eventSource.event {
                         case .message(let message):
-                            break;
+                            break
                         case .complete(let completion):
                             guard let httpResponse = completion.response else {
                                 let errorMessage = "Bad Response"
@@ -156,8 +154,7 @@ extension VoiceGoAPIClient : DependencyKey  {
                                 let errorMessage = "Bad Response"
                                 let errorDetails = StrapiErrorDetails(status: httpResponse.statusCode, name: "Bad Request", message: errorMessage, details: nil)
                                 continuation.finish(throwing: StrapiSwiftError.badResponse(statusCode: httpResponse.statusCode, error: errorDetails))
-                            }
-                            else{
+                            } else {
                                 continuation.finish()
                             }
 
@@ -167,13 +164,13 @@ extension VoiceGoAPIClient : DependencyKey  {
             }
         },
         createAITeacherConversation: { aiTeacher, query in
-            let data = StrapiRequestBody(["ai_teacher": .dictionary(["documentId":.string(aiTeacher.documentId)]), "query": .string(query)]);
+            let data = StrapiRequestBody(["ai_teacher": .dictionary(["documentId": .string(aiTeacher.documentId)]), "query": .string(query)])
             let response = try await Strapi.contentManager.collection("teacher-conversation/create-message").postData(data, as: AITeacherConversation.self)
             return response
         },
         streamAITeacherConversation: { aiTeacher, query in
 
-            return AsyncThrowingStream() { continuation in
+            return AsyncThrowingStream { continuation in
                 let task = Task {
                     let categoryKey = aiTeacher.card?.categoryKey ?? "教练对话"
                     let assist_content = aiTeacher.card?.assistContent ?? "请根据用户的提问，给出专业的回答"
@@ -189,7 +186,7 @@ extension VoiceGoAPIClient : DependencyKey  {
                     Session.default.eventSourceRequest(request).responseEventSource(handler: { eventSource in
                         continuation.yield(eventSource.event)
                         switch eventSource.event {
-                        case .message(_): break
+                        case .message: break
                         case .complete(let completion):
                             guard let httpResponse = completion.response else {
                                 let errorMessage = "Bad Response"
@@ -215,7 +212,7 @@ extension VoiceGoAPIClient : DependencyKey  {
             let response = try await Strapi.contentManager.collection("teacher-conversation/my-list")
                 .filter("[ai_teacher][documentId]", operator: .equal, value: aiTeacherId)
                 .paginate(page: page, pageSize: pageSize)
-                .sort(by:"createdAt", order: .descending)
+                .sort(by: "createdAt", order: .descending)
                 .getDocuments(as: [AITeacherConversation].self)
             return response
         },
@@ -223,11 +220,11 @@ extension VoiceGoAPIClient : DependencyKey  {
             let isoFormatter = ISO8601DateFormatter()
             isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
             let createdAtString = isoFormatter.string(from: createdAt)
-            
+
             let response = try await Strapi.contentManager.collection("teacher-conversation/my-list")
                 .filter("[ai_teacher][documentId]", operator: .equal, value: aiTeacherId)
                 .filter("[createdAt]", operator: .lessThan, value: createdAtString)
-                .sort(by:"createdAt", order: .descending)
+                .sort(by: "createdAt", order: .descending)
                 .paginate(page: 1, pageSize: pageSize)
                 .getDocuments(as: [AITeacherConversation].self)
             return response
@@ -241,7 +238,7 @@ extension VoiceGoAPIClient : DependencyKey  {
             }
         },
         streamSenceConversation: { scene, query in
-            return AsyncThrowingStream() { continuation in
+            return AsyncThrowingStream { continuation in
                 Task {
                     let categoryKey = scene.card?.categoryKey ?? "场景对话"
                     let assist_content = scene.card?.assistContent ?? "请根据用户的提问，给出专业的回答"
@@ -257,7 +254,7 @@ extension VoiceGoAPIClient : DependencyKey  {
                     Session.default.eventSourceRequest(request).responseEventSource(handler: { eventSource in
                         continuation.yield(eventSource.event)
                         switch eventSource.event {
-                        case .message(_): break
+                        case .message: break
                         case .complete(let completion):
                             guard let httpResponse = completion.response else {
                                 let errorMessage = "Bad Response"

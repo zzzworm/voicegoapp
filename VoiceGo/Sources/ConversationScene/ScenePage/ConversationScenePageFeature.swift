@@ -18,11 +18,11 @@ struct ConversationScenePageFeature {
         // Add other state properties for the detail view if needed
     }
     @CasePathable
-    enum Action: Equatable,BindableAction {
+    enum Action: Equatable, BindableAction {
         case binding(BindingAction<State>)
     }
     var body: some ReducerOf<Self> {
-        Reduce { state, action in
+        Reduce { _, _ in
             // Handle actions
             return .none
         }

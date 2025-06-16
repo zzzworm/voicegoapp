@@ -8,33 +8,44 @@ import Foundation
 import GRDB
 import SharingGRDB
 
+struct ToolConversationAnswer: Codable, Equatable {
+    // 数据库主键（如无可自增，或可用UUID）
+    let result: String
 
-struct ToolConversation : Equatable, Identifiable,TableRecord  {
-    static var databaseTableName = "toolHistory"
-    let documentId: String
-    let id : Int
-    let updatedAt: Date
-    let query : String
-    var answer : String = ""
-    let message_id: String
-    let conversation_id: String
-    var StudyToolUsed: StudyToolUsed? = nil
+}
+extension ToolConversationAnswer {
+    // MARK: - CodingKeys
+    enum CodingKeys: String, CodingKey {
+        case result
+    }
 }
 
+struct ToolConversation: Equatable, Identifiable, TableRecord {
+    static var databaseTableName = "toolHistory"
+    let documentId: String
+    let id: Int
+    let updatedAt: Date
+    let query: String
+    var answer: ToolConversationAnswer?
+    let message_id: String?
+    let conversation_id: String?
+    var StudyToolUsed: StudyToolUsed?
+}
 
-extension ToolConversation: Codable  , FetchableRecord, MutablePersistableRecord {
-    
+extension ToolConversation: Codable, FetchableRecord, MutablePersistableRecord {
+
     func encode(to container: inout PersistenceContainer) throws {
         container[Columns.documentId] = documentId
         container[Columns.id] = id
         container[Columns.updatedAt] = updatedAt
         container[Columns.query] = query
-        container[Columns.answer] = answer
+        container[Columns.answer] = answer?.result
         container[Columns.message_id] = message_id
         container[Columns.conversation_id] = conversation_id
     }
-    
-    enum Columns{
+
+
+    enum Columns {
         static let documentId = Column("documentId")
         static let id = Column("id")
         static let updatedAt = Column("updatedAt")
@@ -54,7 +65,7 @@ extension ToolConversation {
                 id: 1,
                 updatedAt: Date(),
                 query: "apply",
-                answer: """
+                answer: .init(result: """
                 1. **单词类型及释义**
                     -动词
                         -申请：I want to apply for a new job.（我想要申请一份新工作。）
@@ -64,16 +75,17 @@ extension ToolConversation {
                 3. **音标**：[əˈplaɪ]
                 4. **音节拆分**：ap -ply，音标拆分：[ə] -[ˈplaɪ]
                 5. **记忆方法**：可以根据词缀来记忆。“ap -”可看作是ad -的变体，表示“去，朝向”，“ply”有“折叠；弯曲”的意思，朝着某个方向弯曲（自己以适应要求等），就有了“申请”“应用”等含义。
-                """,
-                message_id: "89fc7a46-4ef5-4250-a6a0-07293a3c7056",
-                conversation_id: "89fc7a46-4ef5-4250-a6a0-07293a3c7056"
+                """),
+              message_id: "89fc7a46-4ef5-4250-a6a0-07293a3c7056",
+              conversation_id: "89fc7a46-4ef5-4250-a6a0-07293a3c7056"
+
             ),
             .init(
                 documentId: "89fc7a46-4ef5-4250-a6a0-07293a3c7056",
                 id: 1,
                 updatedAt: Date(),
                 query: "apply",
-                answer: """
+                answer: .init(result: """
                 单词类型及释义
 
                 动词
@@ -89,11 +101,12 @@ extension ToolConversation {
                 音标：/weɪt/
 
                 音节拆分：wait为一个音节，音节拆分：wait。
-                """,
-                message_id: "89fc7a46-4ef5-4250-a6a0-07293a3c7056",
-                conversation_id: "89fc7a46-4ef5-4250-a6a0-07293a3c7056"
-            ),
-            
+                """),
+               message_id: "89fc7a46-4ef5-4250-a6a0-07293a3c7056",
+               conversation_id: "89fc7a46-4ef5-4250-a6a0-07293a3c7056"
+
+            )
+
         ]
     }
 }

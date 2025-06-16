@@ -55,16 +55,16 @@ extension VoiceGoAPIClient: TestDependencyKey {
             return response
         },
         streamToolConversation: {studyTool, query in
-            return AsyncThrowingStream() { continuation in
+            return AsyncThrowingStream { continuation in
                 Task {
-                    let data = StrapiRequestBody(["studyTool": .dictionary(["documentId":.string(studyTool.documentId),"categoryKey":.string(studyTool.categoryKey)]), "query": .string(query)]);
+                    let data = StrapiRequestBody(["studyTool": .dictionary(["documentId": .string(studyTool.documentId), "categoryKey": .string(studyTool.categoryKey)]), "query": .string(query)])
                     let request = try await Strapi.contentManager.collection("tool-conversation/create-message?stream").asPostRequest(data)
-                    
+
                     Session.default.eventSourceRequest(request).responseEventSource(handler: { eventSource in
                         continuation.yield(eventSource.event)
                         switch eventSource.event {
                         case .message(let message):
-                            break;
+                            break
                         case .complete(let completion):
                             guard let httpResponse = completion.response else {
                                 let errorMessage = "Bad Response"
@@ -75,24 +75,23 @@ extension VoiceGoAPIClient: TestDependencyKey {
                                     let errorMessage = "Bad Response"
                                     let errorDetails = StrapiErrorDetails(status: httpResponse.statusCode, name: "Bad Request", message: errorMessage, details: nil)
                                     continuation.finish(throwing: StrapiSwiftError.badResponse(statusCode: httpResponse.statusCode, error: errorDetails))
-                                }
-                                else{
+                                } else {
                                     continuation.finish()
                                 }
-                            
+
                         }
                     })
                 }
             }
         },
         createAITeacherConversation: { _, _ in
-            
+
             let conversation = AITeacherConversation.sample[0]
             return StrapiResponse(data: conversation, meta: Meta(pagination: Pagination()))
         },
         streamAITeacherConversation: { aiTeacher, query in
-            
-            return AsyncThrowingStream() { continuation in
+
+            return AsyncThrowingStream { continuation in
                 Task {
                     let categoryKey = aiTeacher.card?.categoryKey ?? "教练对话"
                     let assist_content = aiTeacher.card?.assistContent ?? "请根据用户的提问，给出专业的回答"
@@ -108,7 +107,7 @@ extension VoiceGoAPIClient: TestDependencyKey {
                     Session.default.eventSourceRequest(request).responseEventSource(handler: { eventSource in
                         continuation.yield(eventSource.event)
                         switch eventSource.event {
-                        case .message(_): break
+                        case .message: break
                         case .complete(let completion):
                             guard let httpResponse = completion.response else {
                                 let errorMessage = "Bad Response"
@@ -140,7 +139,7 @@ extension VoiceGoAPIClient: TestDependencyKey {
             return StrapiResponse(data: filteredTeachers, meta: meta)
         },
         streamSenceConversation: { scene, query in
-            return AsyncThrowingStream() { continuation in
+            return AsyncThrowingStream { continuation in
                 Task {
                     let categoryKey = scene.card?.categoryKey ?? "场景对话"
                     let assist_content = scene.card?.assistContent ?? "请根据用户的提问，给出专业的回答"
@@ -156,7 +155,7 @@ extension VoiceGoAPIClient: TestDependencyKey {
                     Session.default.eventSourceRequest(request).responseEventSource(handler: { eventSource in
                         continuation.yield(eventSource.event)
                         switch eventSource.event {
-                        case .message(_): break
+                        case .message: break
                         case .complete(let completion):
                             guard let httpResponse = completion.response else {
                                 let errorMessage = "Bad Response"
@@ -185,7 +184,7 @@ extension VoiceGoAPIClient: TestDependencyKey {
                     updatedAt: Date(),
                     query: "preview-scene-query",
                     answer: ConversationAnswer(id: 1,
-                                               answer: "scene-answer",
+                                               result: "scene-answer",
                                                score: 1,
                                                revisions: ["scene-revision"],
                                                review: "scene-review",
@@ -262,7 +261,7 @@ extension VoiceGoAPIClient {
             return StrapiResponse(data: conversation, meta: Meta(pagination: Pagination()))
         },
         streamAITeacherConversation: { aiTeacher, query in
-            return AsyncThrowingStream() { continuation in
+            return AsyncThrowingStream { continuation in
                 Task {
                     let categoryKey = aiTeacher.card?.categoryKey ?? "教练对话"
                     let assist_content = aiTeacher.card?.assistContent ?? "请根据用户的提问，给出专业的回答"
@@ -278,7 +277,7 @@ extension VoiceGoAPIClient {
                     Session.default.eventSourceRequest(request).responseEventSource(handler: { eventSource in
                         continuation.yield(eventSource.event)
                         switch eventSource.event {
-                        case .message(_): break
+                        case .message: break
                         case .complete(let completion):
                             guard let httpResponse = completion.response else {
                                 let errorMessage = "Bad Response"
@@ -300,7 +299,7 @@ extension VoiceGoAPIClient {
         getAITeacherConversationList: { _, _, _ in
             return StrapiResponse(data: [], meta: Meta(pagination: Pagination()))
         },
-        loadMoreAITeacherConversationList:  { _, _, _ in
+        loadMoreAITeacherConversationList: { _, _, _ in
             return StrapiResponse(data: [], meta: Meta(pagination: Pagination()))
         },
         fetchAITeachers: {
@@ -310,7 +309,7 @@ extension VoiceGoAPIClient {
             return StrapiResponse(data: filteredTeachers, meta: meta)
         },
         streamSenceConversation: { scene, query in
-            return AsyncThrowingStream() { continuation in
+            return AsyncThrowingStream { continuation in
                 Task {
                     let categoryKey = scene.card?.categoryKey ?? "场景对话"
                     let assist_content = scene.card?.assistContent ?? "请根据用户的提问，给出专业的回答"
@@ -326,7 +325,7 @@ extension VoiceGoAPIClient {
                     Session.default.eventSourceRequest(request).responseEventSource(handler: { eventSource in
                         continuation.yield(eventSource.event)
                         switch eventSource.event {
-                        case .message(_): break
+                        case .message: break
                         case .complete(let completion):
                             guard let httpResponse = completion.response else {
                                 let errorMessage = "Bad Response"
@@ -355,7 +354,7 @@ extension VoiceGoAPIClient {
                     updatedAt: Date(),
                     query: "preview-scene-query",
                     answer: ConversationAnswer(id: 1,
-                                               answer: "scene-answer",
+                                               result: "scene-answer",
                                                score: 1,
                                                revisions: ["scene-revision"],
                                                review: "scene-review",

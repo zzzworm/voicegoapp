@@ -8,9 +8,9 @@
 import SwiftUI
 import ComposableArchitecture
 
-struct BottomInputBarFeature : Reducer{
+struct BottomInputBarFeature: Reducer {
     @ObservableState
-    struct State : Equatable {
+    struct State: Equatable {
         var text: String = ""
         var placeholdr: String = "对话，查词，翻译，问答"
         var isKeyboardVisible: Bool = false
@@ -24,10 +24,8 @@ struct BottomInputBarFeature : Reducer{
         case speechRecognitionInput(SpeechRecognitionInputDomain.Action)
         case toggleSpeechMode
     }
-    
-    
-    
-    var body: some ReducerOf<Self>  {
+
+    var body: some ReducerOf<Self> {
         BindingReducer()
         Scope(state: \.speechRecognitionInputState, action: /Action.speechRecognitionInput) {
             SpeechRecognitionInputDomain()
@@ -41,7 +39,7 @@ struct BottomInputBarFeature : Reducer{
                 return .none
             case .speechRecognitionInput(let action):
                 switch action {
-                case .binding(_):
+                case .binding:
                     break
                 case .alert, .recordButtonTapped, .recordButtonReleased:
                     break
@@ -52,10 +50,10 @@ struct BottomInputBarFeature : Reducer{
                     case .failure(let error):
                         print("Error transcribing speech: \(error)")
                     }
-                    
-                case .speechRecognizerAuthorizationStatusResponse(_):
+
+                case .speechRecognizerAuthorizationStatusResponse:
                     break
-                case .soundLeveUpdate(_):
+                case .soundLeveUpdate:
                     return .none
                 }
                 return .none
@@ -71,7 +69,7 @@ struct BottomInputBarFeature : Reducer{
 }
 
 struct BottomInputBarBarView: View {
-    @FocusState var isFocused : Bool // 1
+    @FocusState var isFocused: Bool // 1
     @Bindable var store: StoreOf<BottomInputBarFeature>
     var body: some View {
         WithPerceptionTracking {
@@ -89,15 +87,14 @@ struct BottomInputBarBarView: View {
                             .foregroundColor(.black)
                         }
                         .frame(width: 30)
-                        
-                        if (viewStore.speechMode){
-                            
+
+                        if viewStore.speechMode {
+
                             SpeechRecognitionInputView(store: store.scope(state: \.speechRecognitionInputState, action: BottomInputBarFeature.Action.speechRecognitionInput))
                                 .frame(maxHeight: 30)
-                        }
-                        else{
+                        } else {
                             // 添加输入框
-                            
+
                             TextField(
                                 store.state.placeholdr,
                                 text: viewStore.binding(
@@ -109,14 +106,14 @@ struct BottomInputBarBarView: View {
                             .lineLimit(15)
                             .focused($isFocused) // 2
                             .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .onSubmit{
+                            .onSubmit {
                                 viewStore.send(.submitText(viewStore.text))
                             }
                         }
                     }
                     .frame(minHeight: 30)
                     .padding(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
-                    
+
                 }
                 // Synchronize store focus state and local focus state.
                 .bind($store.isKeyboardVisible, to: $isFocused)
@@ -131,11 +128,11 @@ struct BottomInputBarBarView: View {
 }
 
 struct BottomInputBarBarView_Previews: PreviewProvider {
-    //Add preview
+    // Add preview
     @FocusState var focus: Bool
     static var previews: some View {
         BottomInputBarBarView(store: Store(
-            initialState:BottomInputBarFeature.State(), reducer: BottomInputBarFeature.init))
+            initialState: BottomInputBarFeature.State(), reducer: BottomInputBarFeature.init))
         .previewLayout(.sizeThatFits)
         .padding()
         .background(Color.white)

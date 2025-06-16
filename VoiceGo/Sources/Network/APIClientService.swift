@@ -2,17 +2,15 @@ import Alamofire
 import Foundation
 import Moya
 
-
-
 // 定义Moya的Service
 enum APIService {
     case fetchStudyTools
     case studyTool(String)
     case fetchUserProfile
-    
+
     case loginLocal(LoginEmailRequest)
     case registerLocal(RegisterEmailRequest)
-    
+
 }
 
 extension APIService: TargetType {
@@ -37,7 +35,7 @@ extension APIService: TargetType {
 
     var method: Moya.Method {
         switch self {
-        case .fetchStudyTools,.studyTool, .fetchUserProfile:
+        case .fetchStudyTools, .studyTool, .fetchUserProfile:
             return .get
         case .loginLocal, .registerLocal:
             return .post
@@ -49,11 +47,11 @@ extension APIService: TargetType {
         case  .registerLocal(let request):
             let parameters = try! DictionaryEncoder().encode(request)
             return .requestParameters(parameters: parameters, encoding: URLEncoding.default)
-        case .loginLocal(let request) :
+        case .loginLocal(let request):
             let parameters = try! DictionaryEncoder().encode(request)
             return .requestParameters(parameters: parameters, encoding: URLEncoding.default)
-        case .fetchStudyTools,.studyTool(_):
-            let parameters = ["populate[exampleCard][populate][0]"  : "suggestions"]
+        case .fetchStudyTools, .studyTool:
+            let parameters = ["populate[exampleCard][populate][0]": "suggestions"]
             return.requestParameters(parameters: parameters, encoding: URLEncoding.default)
         default:
             return .requestPlain
@@ -67,24 +65,23 @@ extension APIService: TargetType {
         headers["X-TIMEZONE-OFFSET"] = Configuration.current.timezoneOffset
         return headers
     }()
-    
+
     var headers: [String: String]? {
         switch self {
         default:
             return APIService.defaultHeaders
         }
     }
-    
+
     var validationType: ValidationType {
            return .successCodes
        }
 }
 
-
-// MARK - AccessTokenAuthorizable
+// MARK: - AccessTokenAuthorizable
 
 extension APIService: AccessTokenAuthorizable {
-    
+
     public var authorizationType: AuthorizationType? {
         switch self {
         case .loginLocal, .registerLocal:

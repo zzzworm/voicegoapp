@@ -14,7 +14,6 @@ public struct DictionaryApiClient {
     public var entries: @Sendable (_ word: String) async throws -> [DictionaryEntry]
 }
 
-
 public struct DictionaryEntry: Codable, Equatable, Sendable {
     public let word: String
     public let phonetics: [Phonetic]
@@ -48,7 +47,6 @@ public struct License: Codable, Equatable, Sendable {
     public let name: String
     public let url: String
 }
-
 
 extension DictionaryApiClient: DependencyKey {
     public static let liveValue: Self = {
@@ -97,7 +95,6 @@ extension DictionaryApiClient: TestDependencyKey {
         }
     )
 }
-
 
 public extension DependencyValues {
     var dictionaryApiClient: DictionaryApiClient {

@@ -10,9 +10,9 @@ import ComposableArchitecture
 
 // MARK: - PhoneOTPView
 
-struct PhoneOTPView : View {
+struct PhoneOTPView: View {
     @Bindable var store: StoreOf<PhoneOTPFeature>
-    
+
     var body: some View {
         content
         .enableInjection()
@@ -21,22 +21,22 @@ struct PhoneOTPView : View {
     #if DEBUG
     @ObserveInjection var forceRedraw
     #endif
-    
+
     @ViewBuilder private var content: some View {
         WithPerceptionTracking {
             VStack(spacing: 24) {
                 Text("We sent you code via SMS. For test proposal please enter 999999.")
                     .multilineTextAlignment(.center)
                     .font(.headline)
-                
+
                 OTPView(code: $store.code)
                     .padding([.leading, .trailing, .top], 40)
-                
+
                 //                Button("Resend", action: {
                 //                    viewStore.send(.onResendButtonTap)
                 //                })
                 //                .buttonStyle(.linkButton)
-                
+
                 Spacer()
             }
             .loader(isLoading: store.isActivityIndicatorVisible)

@@ -10,9 +10,9 @@ import UIFontComplete
 
 struct ErrorView: View {
     let message: String
-    let systemMessage: String = String(localized:"请检查网络连接或稍后重试", comment: "Error message when there is a network issue")
+    let systemMessage: String = String(localized: "请检查网络连接或稍后重试", comment: "Error message when there is a network issue")
     let retryAction: () -> Void
-    
+
     var body: some View {
         VStack {
             Image(VoiceGoAsset.Assets.errorLogo.name)
@@ -23,7 +23,7 @@ struct ErrorView: View {
             Text(message)
                 .font(BuiltInFont.helvetica.of(size: 26.0))
                 .padding(16)
-                
+
             Text(systemMessage)
                 .font(BuiltInFont.helvetica.of(size: 16.0))
                 .padding(16)
@@ -37,8 +37,8 @@ struct ErrorView: View {
                     .foregroundColor(.white)
             }
             .buttonStyle(selectedStyle)
-            .frame(width:100)
-            .padding(.bottom,16)
+            .frame(width: 100)
+            .padding(.bottom, 16)
 
         }
         .enableInjection()
@@ -55,6 +55,6 @@ struct ErrorView_Previews: PreviewProvider {
             message: "Oops, we couldn't fetch product list",
             retryAction: {}
         )
-            
+
     }
 }

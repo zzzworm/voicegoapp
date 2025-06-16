@@ -9,7 +9,6 @@ import Foundation
 import Dependencies
 import StrapiSwift
 
-
 struct AppleSignInClient {
     var login: () async throws -> AuthenticationResponse
     var logout: () -> Void
@@ -26,7 +25,7 @@ extension AppleSignInClient: DependencyKey {
     static let liveValue: Self = {
         return Self(
             login: {
-                
+
                 let result = await AppleSignInManager.shared.signIn()
                 let token: String
 

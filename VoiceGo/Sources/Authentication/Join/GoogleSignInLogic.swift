@@ -11,14 +11,14 @@ import ComposableArchitecture
 import SharingGRDB
 
 struct GoogleSignInLogic<State>: Reducer {
-    
+
     @Dependency(\.googleSignInClient) var googleSignInClient
     @Dependency(\.appleSignInClient) var appleSignInClient
     @Dependency(\.userKeychainClient) var userKeychainClient
     @Dependency(\.userDefaults) var userDefaultsClient
     @Dependency(\.defaultDatabase) var database
     @Dependency(\.mainQueue) var mainQueue
-    
+
     func reduce(into _: inout State, action: JoinFeature.Action) -> Effect<JoinFeature.Action> {
         switch action {
         case let .loginOptions(.presented(.delegate(loginOptionsAction))):
@@ -29,7 +29,6 @@ struct GoogleSignInLogic<State>: Reducer {
                 }
                 guard let presentingViewController = (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first?.rootViewController else {return .none}
 
-                
                 return .run { send in
                     await send(
                         .internal(
@@ -44,7 +43,7 @@ struct GoogleSignInLogic<State>: Reducer {
                     )
                 }
             case .didAppleLoginButtonSelected:
- 
+
                 return .run { send in
                     await send(
                         .internal(
@@ -56,33 +55,32 @@ struct GoogleSignInLogic<State>: Reducer {
                         )
                     )
                 }
-                
+
             default:
                 return .none
             }
-            
+
         case let .internal(internalAction):
             switch internalAction {
             case let .loginResponse(.success(data)):
                 Log.info("loginResponse: \(data)")
                 userKeychainClient.storeToken(data.jwt)
                 return .concatenate(
-                    
+
                     .run { _ in
                         await handleLoginResponse(data: data)
                     },
                     .send(.delegate(.didAuthenticated))
                 )
-                
+
             case let .loginResponse(.failure(error)):
                 Log.error("loginResponse: \(error)")
                 return .none
-                
+
             default:
                 return .none
             }
-            
-            
+
         default:
             return .none
         }

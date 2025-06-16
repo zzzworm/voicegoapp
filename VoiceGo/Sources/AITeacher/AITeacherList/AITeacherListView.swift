@@ -1,8 +1,6 @@
 import SwiftUI
 import ComposableArchitecture
 
-
-
 struct AITeacherListView: View {
     @Bindable var store: StoreOf<AITeacherListFeature>
 
@@ -10,7 +8,7 @@ struct AITeacherListView: View {
         WithPerceptionTracking {
             NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
                 VStack {
-                    
+
                     // Main content area
                     if store.dataLoadingStatus == .loading && store.aiTeacherList.isEmpty {
                         Spacer()
@@ -63,7 +61,7 @@ struct AITeacherListView: View {
                     .toolbar(.hidden, for: .tabBar) // Hide tab bar in detail view
                 }
             }
-            
+
         }
         .enableInjection() // Assuming you use Inject for previews and testing
     }
@@ -113,7 +111,7 @@ struct AITeacherListView_Previews: PreviewProvider {
             ),
             reducer: AITeacherListFeature.init
         )
-        
+
         // Mocking API client for preview if needed for fetch actions
         // store.dependencies.apiClient = .previewValue ...
 
@@ -122,4 +120,3 @@ struct AITeacherListView_Previews: PreviewProvider {
         }
     }
 }
-

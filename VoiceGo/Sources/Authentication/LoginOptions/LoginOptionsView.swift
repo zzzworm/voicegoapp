@@ -13,9 +13,9 @@ import GoogleSignIn
 
 // MARK: - LoginOptionsView
 
-struct LoginOptionsView  : View{
+struct LoginOptionsView: View {
     let store: StoreOf<LoginOptionsFeature>
-    
+
     var body: some View {
         content
         .enableInjection()
@@ -24,7 +24,7 @@ struct LoginOptionsView  : View{
     #if DEBUG
     @ObserveInjection var forceRedraw
     #endif
-    
+
     @ViewBuilder private var content: some View {
         VStack(spacing: 12) {
             Button("Continue with Email", action: {
@@ -32,12 +32,12 @@ struct LoginOptionsView  : View{
             })
             .buttonStyle(.cta)
             .padding(.top, 12)
-            
+
             Button("Continue with Phone", action: {
                 store.send(.view(.onPhoneLoginButtonTap))
             })
             .buttonStyle(.cta)
-            
+
             /*
             GoogleSignInButton(
                 viewModel: .init(scheme: .dark, style: .wide)
@@ -49,7 +49,7 @@ struct LoginOptionsView  : View{
                 store.send(.view(.onGoogleLoginButtonTap))
             })
             .buttonStyle(.cta)
-            
+
             /*
             SignInWithAppleButton(.signIn,
                          onRequest: { request in
@@ -74,7 +74,7 @@ struct LoginOptionsView  : View{
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
                 .font(.footnote)
-            
+
             Spacer()
         }
         .padding(.top, 42)

@@ -14,16 +14,16 @@ import ExyteChat
 struct AITeacherChatReactionFeature {
     @Dependency(\.userInfoRepository) var userInfoRepository
     @Dependency(\.uuid) var uuid
-    
+
     @ObservableState
     struct State: Equatable {
         var messageReactions: [String: [Reaction]] = [:]
     }
-    
+
     enum Action {
         case didReact(to: Message, reaction: DraftReaction)
     }
-    
+
     var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
@@ -31,24 +31,24 @@ struct AITeacherChatReactionFeature {
                 guard let user = userInfoRepository.currentUser?.toChatUser() else {
                     return .none
                 }
-                
+
                 let newReaction = Reaction(
                     id: uuid().uuidString,
                     user: user,
                     createdAt: Date(),
                     type: draftReaction.type
                 )
-                
+
                 if state.messageReactions[message.id] == nil {
                     state.messageReactions[message.id] = []
                 }
-                
+
                 if let index = state.messageReactions[message.id]?.firstIndex(where: { $0.user.id == user.id && $0.type == newReaction.type }) {
                     state.messageReactions[message.id]?.remove(at: index)
                 } else {
                     state.messageReactions[message.id]?.append(newReaction)
                 }
-                
+
                 return .none
             }
         }
@@ -57,7 +57,7 @@ struct AITeacherChatReactionFeature {
 
 final class AITeacherReactionDelegate: NSObject, ReactionDelegate {
     private let store: StoreOf<AITeacherChatReactionFeature>
-    
+
     init(store: StoreOf<AITeacherChatReactionFeature>) {
         self.store = store
     }

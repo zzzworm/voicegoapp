@@ -16,7 +16,7 @@ enum APIError {
 }
 
 extension APIError: LocalizedError {
-    
+
     var errorDescription: String? {
         switch self {
         case .serverUnavailable:
@@ -49,7 +49,7 @@ extension APIError: LocalizedError {
             }
         }
     }
-    
+
     var failureReason: String? {
         switch self {
         case .serverUnavailable:
@@ -62,7 +62,7 @@ extension APIError: LocalizedError {
             return moyaError.failureReason
         }
     }
-    
+
     var recoverySuggestion: String? {
         switch self {
         case .serverUnavailable:

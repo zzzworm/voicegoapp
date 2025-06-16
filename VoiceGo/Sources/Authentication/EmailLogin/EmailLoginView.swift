@@ -10,19 +10,17 @@ import ComposableArchitecture
 
 // MARK: - LoginView
 
-
 // MARK: - Views
 
 struct EmailLoginView: View {
     @Bindable var store: StoreOf<EmailLoginFeature>
-    
+
     enum FocusedField {
             case username, password
         }
 
     @FocusState private var focusedField: FocusedField?
 
-    
     var body: some View {
         content.enableInjection()
     }
@@ -30,12 +28,11 @@ struct EmailLoginView: View {
     #if DEBUG
     @ObserveInjection var forceRedraw
     #endif
-    
+
     @ViewBuilder private var content: some View {
         WithPerceptionTracking {
             BlurredActivityIndicatorView(
-                isShowing: $store.isActivityIndicatorVisible)
-            {
+                isShowing: $store.isActivityIndicatorVisible) {
                 VStack {
                     Image("splash_logo").padding(42)
                     VStack {
@@ -55,7 +52,7 @@ struct EmailLoginView: View {
                             text: $store.password
                         )
                         .focused($focusedField, equals: .password)
-                        
+
                         HStack {
                             Button("账号注册", action: {
                                 focusedField = nil
@@ -86,7 +83,7 @@ struct EmailLoginView: View {
                             focusedField = nil
                         }
                     }
-                    
+
                     Spacer()
                 }
                 .commonBackground()
@@ -101,7 +98,7 @@ struct EmailLoginView: View {
 
 struct EmailLoginView_Previews: PreviewProvider {
     static var previews: some View {
-        Group{
+        Group {
             EmailLoginView(
                 store: Store(
                     initialState: EmailLoginFeature.State(
@@ -109,13 +106,13 @@ struct EmailLoginView_Previews: PreviewProvider {
                         userIdentifier: "StrapiUser1",
                         password: "password123",
                         alert: nil
-                    )){
+                    )) {
                         EmailLoginFeature()
                     }
             )
             .preferredColorScheme(.light)
             .previewDisplayName("Light Mode")
-            
+
             EmailLoginView(
                 store: Store(
                     initialState: EmailLoginFeature.State(
@@ -123,17 +120,13 @@ struct EmailLoginView_Previews: PreviewProvider {
                         userIdentifier: "StrapiUser1",
                         password: "password123",
                         alert: nil
-                    )){
+                    )) {
                         EmailLoginFeature()
                     }
             )
             .preferredColorScheme(.dark)
             .previewDisplayName("Dark Mode")
         }
-            
+
     }
 }
-
-
-
-

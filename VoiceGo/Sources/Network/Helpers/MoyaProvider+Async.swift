@@ -11,15 +11,15 @@ import Foundation
 import Moya
 
 extension MoyaProvider {
-    
+
     class MoyaConcurrency {
-        
+
         private let provider: MoyaProvider
-        
+
         init(provider: MoyaProvider) {
             self.provider = provider
         }
-        
+
         func request(_ endpoint: Target) async throws -> Response {
             return try await withCheckedThrowingContinuation { continuation in
                 provider.request(endpoint) { result in
@@ -32,17 +32,16 @@ extension MoyaProvider {
                 }
             }
         }
-        
+
         func request<D: Decodable>(_ endpoint: Target) async throws -> D {
             return try await withCheckedThrowingContinuation { continuation in
                 provider.request(endpoint) { result in
                     switch result {
                     case .success(let response):
-                        do {                            
+                        do {
                             let res = try JSONDecoder.default.decode(D.self, from: response.data)
                             continuation.resume(returning: res)
-                        }
-                        catch {
+                        } catch {
                             continuation.resume(throwing: error)
                         }
                     case .failure(let error):
@@ -51,7 +50,7 @@ extension MoyaProvider {
                 }
             }
         }
-        
+
         func request(_ endpoint: Target) async throws {
             return try await withCheckedThrowingContinuation { continuation in
                 provider.request(endpoint) { result in
@@ -65,7 +64,7 @@ extension MoyaProvider {
             }
         }
     }
-    
+
     var async: MoyaConcurrency {
         MoyaConcurrency(provider: self)
     }

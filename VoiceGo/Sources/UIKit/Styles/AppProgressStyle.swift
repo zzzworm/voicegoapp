@@ -19,4 +19,3 @@ struct AppProgressStyle: ProgressViewStyle {
 extension ProgressViewStyle where Self == AppProgressStyle {
     static var main: AppProgressStyle { .init() }
 }
-

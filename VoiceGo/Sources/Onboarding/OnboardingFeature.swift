@@ -10,27 +10,27 @@ import ComposableArchitecture
 
 @Reducer
 public struct OnboardingFeature {
-    
+
     @ObservableState
     public struct State: Equatable, Hashable {
         var items: [Onboarding] = Onboarding.pages
         var currentTab: Onboarding.Tab = .page1
         var showGetStarted = false
     }
-    
+
     public enum Action: Equatable, BindableAction {
         public enum Delegate {
             case didOnboardingFinished
         }
-        
+
         case onGetStartedTapped
         // case onTabChanged(tab: Onboarding.Tab)
         case binding(BindingAction<State>)
         case delegate(Delegate)
     }
-    
+
     @Dependency(\.userDefaults) var userDefaultsClient
-    
+
     public var body: some Reducer<State, Action> {
         BindingReducer()
 
@@ -43,23 +43,22 @@ public struct OnboardingFeature {
                     },
                     .send(.delegate(.didOnboardingFinished))
                 )
-                
+
 //            case let .onTabChanged(tab):
 //                state.currentTab = tab
 //                state.showGetStarted = (tab == .page3)
 //                return .none
-                
+
             case .binding(\.currentTab):
                 state.showGetStarted = (state.currentTab == .page3)
                 return .none
-                
+
             case .binding:
                 return .none
-                
+
             case .delegate:
                 return .none
             }
         }
     }
 }
-

@@ -9,36 +9,34 @@ import SwiftUI
 
 struct VoiceAnimatedButton: View {
     fileprivate func animateIfNeed() {
-        if(animating){
+        if animating {
             animationTimer = Timer.scheduledTimer(withTimeInterval: 0.75, repeats: true) { _ in
                 step = (step+1)%3
             }
-        }
-        else{
+        } else {
             animationTimer?.invalidate()
         }
     }
-    
-    @Binding  var animating : Bool
-    @State private var step : Int = 0
+
+    @Binding  var animating: Bool
+    @State private var step: Int = 0
     @State private var animationTimer: Timer?
     var action: () -> Void?
     var body: some View {
-        Button{
-            if action != nil{
+        Button {
+            if action != nil {
                 action()
             }
         }
         label: {
-            if(!animating){
+            if !animating {
                 Image(systemName: "speaker.3")
-            }
-            else{
+            } else {
                 let iconName = "speaker.\(step+1)"
-                Image(systemName:iconName)
+                Image(systemName: iconName)
             }
         }
-        .onChange(of: animating) { newVaule in
+        .onChange(of: animating) { _ in
             animateIfNeed()
         }
         .enableInjection()
@@ -51,10 +49,10 @@ struct VoiceAnimatedButton: View {
 
 @available(iOS 17.0, *)
 #Preview {
-    @Previewable @State var animating : Bool = false
-    VoiceAnimatedButton(animating: $animating){
-        
-    }.onAppear(){
+    @Previewable @State var animating: Bool = false
+    VoiceAnimatedButton(animating: $animating) {
+
+    }.onAppear {
         animating = true
     }
 }

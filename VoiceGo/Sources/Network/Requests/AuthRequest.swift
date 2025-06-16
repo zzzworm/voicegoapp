@@ -8,18 +8,11 @@
 struct LoginEmailRequest: Encodable {
     let identifier: String
     let password: String
-
-    
-    init(identifier: String, password: String) {
-        self.identifier = identifier
-        self.password = password
-    }
 }
-
 
 struct RegisterEmailRequest: Encodable {
     let email: String
-    let username : String
+    let username: String
     let password: String
 
 }

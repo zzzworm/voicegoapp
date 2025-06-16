@@ -10,9 +10,8 @@ import ComposableArchitecture
 
 // MARK: - HelpView
 
-struct OnboardingView : View {
+struct OnboardingView: View {
     @Bindable var store: StoreOf<OnboardingFeature>
-
 
     var body: some View {
         content
@@ -35,9 +34,9 @@ struct OnboardingView : View {
                 }
                 .tabViewStyle(PageTabViewStyle())
                 .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
-                
+
                 let selectedStyle = CTAButtonStyle(isSelected: true)
-                
+
                 Button("Get Started") {
                     store.send(.onGetStartedTapped)
                 }
@@ -53,14 +52,14 @@ struct OnboardingView : View {
 // MARK: HelpPageView
 
 struct OnboardingPageView: View {
-    
+
     var data: Onboarding
 
     @State private var isAnimating: Bool = false
     @State private var playLottie = false
 
     var body: some View {
-        VStack() {
+        VStack {
             LottieViewRepresentable(name: data.lottie, loopMode: .autoReverse, play: $playLottie)
 
             Spacer()
@@ -76,7 +75,7 @@ struct OnboardingPageView: View {
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding()
-            
+
             Spacer()
         }
         .onAppear(perform: {
@@ -93,5 +92,3 @@ struct OnboardingPageView: View {
     @ObserveInjection var forceRedraw
     #endif
 }
-
-

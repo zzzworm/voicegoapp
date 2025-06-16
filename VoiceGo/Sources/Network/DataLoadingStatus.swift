@@ -14,7 +14,6 @@ enum DataLoadingStatus {
     case error
 }
 
-
 enum MessageingStatus {
     case notStarted
     case sending

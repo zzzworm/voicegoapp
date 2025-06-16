@@ -12,7 +12,7 @@ import StrapiSwift
 /// A structure representing the authentication response.
 struct AuthenticationResponse: Equatable, Decodable {
     var jwt: String
-    var user : UserProfile
+    var user: UserProfile
 }
 
 /// An enumeration representing possible authentication errors.
@@ -53,18 +53,18 @@ extension AuthenticationClient: DependencyKey {
     static let liveValue: Self = {
         return Self(
             login: { data in
-    
+
                 // Construct parameters and perform API request
                 let ret = try await Strapi.authentication.local.login(
                     identifier: data.identifier,
                     password: data.password, as: UserProfile.self
                 )
-                
+
                     Strapi.configure(baseURL: Configuration.current.baseURL, token: ret.jwt)
-                
+
                 return AuthenticationResponse(jwt: ret.jwt, user: ret.user)
             }, register: { data in
-                
+
                 // Validate email
                 guard data.email.isValidEmail()
                 else { throw AuthenticationError.invalidEmail }
@@ -72,11 +72,11 @@ extension AuthenticationClient: DependencyKey {
 //                // Validate password
 //                guard data.password.isValidPassword()
 //                else { throw AuthenticationError.invalidUserPassword }
-                
+
                 // Construct parameters and perform API request
                 let ret = try await Strapi.authentication.local.register(username: data.username, email: data.email, password: data.password, as: UserProfile.self)
                     Strapi.configure(baseURL: Configuration.current.baseURL, token: ret.jwt)
-                
+
                 return AuthenticationResponse(jwt: ret.jwt, user: ret.user)
             }
         )
@@ -89,4 +89,3 @@ extension AuthenticationClient: TestDependencyKey {
         register: unimplemented("\(Self.self).register")
     )
 }
-

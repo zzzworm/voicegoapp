@@ -10,7 +10,7 @@ import ComposableArchitecture
 
 struct ConversationSceneCell: View {
     let ConversationScene: ConversationScene
-    
+
     var body: some View {
         ZStack(alignment: .leading) {
             RoundedRectangle(cornerRadius: 10)
@@ -25,9 +25,9 @@ struct ConversationSceneCell: View {
                         .lineLimit(2)
                 }
                 .padding(10)
-                
+
                 Spacer()
-                
+
                 Image(systemName: "person.circle") // Placeholder for teacher avatar
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -38,11 +38,11 @@ struct ConversationSceneCell: View {
         }
         .enableInjection()
     }
-    
+
 #if DEBUG
     @ObserveInjection var forceRedraw
 #endif
-    
+
 }
 
 struct ConversationSceneCell_Previews: PreviewProvider {

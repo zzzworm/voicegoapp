@@ -11,18 +11,18 @@ import ComposableArchitecture
 @Reducer
 struct ProfileSettingFeature {
     @Dependency(\.apiClient) var apiClient
-    
+
     @ObservableState
-    struct State : Equatable{
+    struct State: Equatable {
         @Presents var alert: AlertState<Action>?
     }
-    
-    enum Action: BindableAction,Equatable {
-        
+
+    enum Action: BindableAction, Equatable {
+
         enum Delegate: Equatable {
             case didLogout
         }
-        
+
         case confirmLogout
         case logout
         case alert(PresentationAction<Action>)
@@ -50,9 +50,9 @@ struct ProfileSettingFeature {
                 return .send(.delegate(.didLogout))
             case .alert:
                 return .none
-            case .delegate(_):
+            case .delegate:
                 return .none
-            case .binding(_):
+            case .binding:
                 return .none
             case .confirmLogout:
                 return .none

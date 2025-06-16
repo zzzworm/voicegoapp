@@ -7,7 +7,7 @@ public enum VGError: LocalizedError {
     case invalidURLHTTPResponse(Int? = nil)
     case `default`
   }
-  
+
   public enum LoginReason {
     case unknown(Error)
     case noUserID
@@ -23,9 +23,8 @@ public enum VGError: LocalizedError {
 
 }
 
-
 extension VGError {
-    
+
     public var errorDescription: String? {
         switch self {
         case .network(let reason):
@@ -37,9 +36,9 @@ extension VGError {
         }
     }
 }
-    
+
     extension VGError.NetworkReason {
-        
+
         var errorDescription: String? {
             switch self {
             case .invalidURL:
@@ -53,9 +52,9 @@ extension VGError {
             }
         }
     }
-    
+
     extension VGError.LoginReason {
-        
+
         var errorDescription: String? {
             switch self {
             case .unknown(let error):
@@ -65,9 +64,9 @@ extension VGError {
             }
         }
     }
-    
+
     extension VGError.AuthorizationReason {
-        
+
         var errorDescription: String? {
             switch self {
             case .photoLibrary:
@@ -75,5 +74,4 @@ extension VGError {
             }
         }
     }
-    
 

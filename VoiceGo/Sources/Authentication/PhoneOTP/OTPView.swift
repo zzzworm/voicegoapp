@@ -11,20 +11,20 @@ import SwiftUI
 import Combine
 
 public struct OTPView: View {
-    
+
     // MARK: Fields
     enum FocusField: Hashable {
         case field
     }
-    
+
     @FocusState private var focusedField: FocusField?
     @Binding var code: String
-    
+
     // MARK: Constructor
     public init(code: Binding<String>) {
         self._code = code
     }
-    
+
     // MARK: Body
     public var body: some View {
         ZStack(alignment: .center) {
@@ -38,20 +38,19 @@ public struct OTPView: View {
                 .onReceive(Just(code)) { _ in limitText(6) }
                 .focused($focusedField, equals: .field)
                 .task {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5)
-                    {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         self.focusedField = .field
                     }
                 }
                 .padding()
-            
+
             HStack {
                 ForEach(0 ..< 6) { index in
                     ZStack {
                         Text(self.getPin(at: 0))
                             .font(.largeTitle)
                             .foregroundColor(.black)
-                        
+
                         Rectangle()
                             .frame(height: 2)
                             .padding(.vertical, 20)
@@ -70,16 +69,16 @@ public struct OTPView: View {
     #if DEBUG
     @ObserveInjection var forceRedraw
     #endif
-    
+
     // MARK: Heleprs
-    
+
     private func getPin(at index: Int) -> String {
         guard self.code.count > index else {
             return ""
         }
         return self.code[index]
     }
-    
+
     private func limitText(_ upper: Int) {
         if code.count > upper {
             code = String(code.prefix(upper))

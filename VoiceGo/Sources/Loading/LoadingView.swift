@@ -9,10 +9,9 @@ import SwiftUI
 import ComposableArchitecture
 import Perception
 
-
 // MARK: - LoadingView
 
-struct LoadingView  : View {
+struct LoadingView: View {
     #if os(macOS)
     @Bindable var store: StoreOf<LoadingFeature>
     #else
@@ -32,7 +31,7 @@ struct LoadingView  : View {
 
     @ViewBuilder private var content: some View {
         WithPerceptionTracking {
-            ZStack{
+            ZStack {
                 Image(VoiceGoAsset.Assets.splashBackground.name)
                     .resizable()
                     .scaledToFill()
@@ -41,7 +40,7 @@ struct LoadingView  : View {
                     Image("splash_logo")
                         .resizable()
                         .frame(width: 200, height: 200)
-                    
+
                     ProgressViewWrapper(progress: $store.progress)
                 }
             }
@@ -49,7 +48,7 @@ struct LoadingView  : View {
     }
 }
 
-//add preview
+// add preview
 struct LoadingView_Previews: PreviewProvider {
     static var previews: some View {
         LoadingView(

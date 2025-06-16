@@ -10,58 +10,57 @@ import ComposableArchitecture
 import SharingGRDB
 import SwiftUI
 
-
 @Reducer
 struct ProfileFeature {
     @Dependency(\.apiClient) var apiClient
     @Dependency(\.defaultDatabase) var database
     @Dependency(\.userDefaults) var userDefaultsClient
-    
+
     @ObservableState
-    struct State : Equatable {
+    struct State: Equatable {
         var isLoading = false
         var profile: UserProfile?
         var path = StackState<Path.State>()
-        
+
         @Presents var alert: AlertState<Never>?
     }
-    
+
     enum Action: BindableAction {
         enum ViewAction: Equatable {
             case onSettingTapped
             case onEditProfileTapped
         }
-        
+
         enum InternalAction: Equatable {
             case updateProfileResponse(TaskResult<UserProfile>)
         }
-        
+
         case `internal`(InternalAction)
         case alert(PresentationAction<Never>)
         case fetchUserProfileFromServer
-        
+
         case view(ViewAction)
         case path(StackActionOf<Path>)
         case binding(BindingAction<State>)
         case delegate(Delegate)
     }
-    
+
     @Reducer(state: .equatable)
     enum Path {
         case setting(ProfileSettingFeature)
         case edit(ProfileEditFeature)
     }
-    
+
     fileprivate enum DataState {
         case notStarted
         case loading
         case complete
     }
-    
+
     enum Delegate: Equatable {
         case didLogout
     }
-    
+
     var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce { state, action in
@@ -71,20 +70,20 @@ struct ProfileFeature {
                 case .onSettingTapped:
                     state.path.append(.setting(ProfileSettingFeature.State()))
                     return .none
-                    
+
                 case .onEditProfileTapped:
                     if let profile = state.profile {
                         state.path.append(.edit(ProfileEditFeature.State(profile: profile)))
                     }
                     return .none
                 }
-                
+
             case let .internal(internalAction):
                 switch internalAction {
                 case let .updateProfileResponse(.success(profile)):
                     state.profile = profile
                     state.isLoading = false
-                    Task{
+                    Task {
                         do {
                             try await database.write { db in
                                 var profile = profile
@@ -99,14 +98,14 @@ struct ProfileFeature {
                         }
                     }
                     return .none
-                    
+
                 case let .updateProfileResponse(.failure(error)):
                     state.isLoading = false
                     state.alert = AlertState(title: TextState("更新失败"),
                                              message: TextState(error.localizedDescription))
                     return .none
                 }
-                
+
             case .path(.element(id: _, action: .edit(.delegate(.didUpdateProfile(let profile))))):
                 state.profile = profile
                 state.path.removeAll()
@@ -119,10 +118,10 @@ struct ProfileFeature {
                 return .none
             case .path:
                 return .none
-                
+
             case .alert:
                 return .none
-                
+
             case .fetchUserProfileFromServer:
                 state.isLoading = true
                 return .run { send in
@@ -130,9 +129,9 @@ struct ProfileFeature {
                         TaskResult { try await apiClient.fetchUserProfile() }
                     )))
                 }
-            case .binding(_):
+            case .binding:
                 return .none
-            case .delegate(_):
+            case .delegate:
                 return .none
             }
         }

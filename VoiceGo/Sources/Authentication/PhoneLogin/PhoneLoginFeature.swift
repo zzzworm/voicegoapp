@@ -10,33 +10,33 @@ import ComposableArchitecture
 
 @Reducer
 struct PhoneLoginFeature {
-    
+
     @ObservableState
     struct State: Equatable {
         var number = ""
         var isContinueButtonDisabled = true
         var isActivityIndicatorVisible = false
     }
-    
+
     enum Action: Equatable, BindableAction {
         enum ViewAction: Equatable {
             case onContinueButtonTap
         }
-        
+
         enum Delegate {
             case didPhoneAuthenticated
         }
-        
+
         case view(ViewAction)
         case binding(BindingAction<State>)
         case delegate(Delegate)
     }
-    
+
     @Dependency(\.continuousClock) var clock
-    
+
     var body: some ReducerOf<Self> {
         BindingReducer()
-        
+
         Reduce { state, action in
             switch action {
             case let .view(viewAction):
@@ -52,10 +52,10 @@ struct PhoneLoginFeature {
             case .binding(\.number):
                 state.isContinueButtonDisabled = state.number.isEmpty
                 return .none
-                
+
             case .binding:
                 return .none
-                
+
             case .delegate:
                 return .none
             }

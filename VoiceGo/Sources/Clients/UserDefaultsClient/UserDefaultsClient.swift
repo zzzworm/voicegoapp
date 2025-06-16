@@ -33,17 +33,17 @@ public struct UserDefaultsClient: Sendable {
     var hasShownFirstLaunchOnboarding: Bool {
         self.boolForKey(Self.hasShownFirstLaunchOnboardingKey)
     }
-    
+
     /// A method to set the value indicating if the first launch onboarding has been shown.
     func setHasShownFirstLaunchOnboarding(_ bool: Bool) async {
         await self.setBool(bool, Self.hasShownFirstLaunchOnboardingKey)
     }
-    
+
     /// A computed property for retrieving the stored token.
     var currentUserID: String? {
         self.stringForKey(Self.currentUserIDKey)
     }
-    
+
     /// A method to set the stored token.
     func setCurrentUserID(_ string: String?) async {
         await self.setString(string, Self.currentUserIDKey)
@@ -59,7 +59,7 @@ private extension UserDefaultsClient {
 // MARK: TestDependencyKey
 
 extension UserDefaultsClient: TestDependencyKey {
-    public static let testValue : Self = {
+    public static let testValue: Self = {
         let defaults: () -> UserDefaults = { UserDefaults(suiteName: "group.com.souler")! }
         return Self(
             doubleForKey: unimplemented("\(Self.self).doubleForKey is unimplemented."),

@@ -12,7 +12,7 @@ import Foundation
 // MARK: - UserDefaultsClient + DependencyKey
 
 extension UserDefaultsClient: DependencyKey {
-    public static let liveValue : Self = {
+    public static let liveValue: Self = {
         let defaults: () -> UserDefaults = { UserDefaults(suiteName: "group.com.souler")! }
         return Self(
             doubleForKey: { defaults().double(forKey: $0) },

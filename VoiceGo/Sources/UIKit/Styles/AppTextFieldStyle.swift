@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct AppTextFieldStyle: TextFieldStyle {
-    
+
     func _body(configuration: TextField<Self._Label>) -> some View {
         configuration
             .padding(.vertical, 8)
             .foregroundColor(.darkText)
-        
+
             Rectangle()
             .frame(height: 0.5)
             .foregroundColor(.systemBackground)

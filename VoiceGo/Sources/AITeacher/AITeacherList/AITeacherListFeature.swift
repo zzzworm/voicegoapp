@@ -2,7 +2,6 @@ import Foundation
 import ComposableArchitecture
 import StrapiSwift // Assuming StrapiSwift is used for API responses
 
-
 @Reducer
 struct AITeacherListFeature {
     @Dependency(\.uuid) var uuid
@@ -46,7 +45,7 @@ struct AITeacherListFeature {
                 if state.dataLoadingStatus == .loading {
                     return .none // Avoid re-fetching if already loading
                 }
-                
+
                 state.dataLoadingStatus = .loading
                 return .run { send in
                     do {
@@ -101,7 +100,7 @@ struct AITeacherListFeature {
                 //    return .none
                 }
             case .path(.element(id: _, action: .aiTeacher(.tapTalkToTeacher(let aiTeacher)))):
-                
+
                     // Navigate to the conversation page for the selected AI Teacher
                 state.path.append(.talkToTeacher(.init(aiTeacher: aiTeacher)))
                 return .none

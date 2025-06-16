@@ -13,21 +13,21 @@ import StrapiSwift
 struct StudyToolsFeature {
     @Dependency(\.uuid) var uuid
     @Dependency(\.apiClient) var apiClient
-    
+
     @ObservableState
     struct State: Equatable {
         var path = StackState<Path.State>()
         var dataLoadingStatus = DataLoadingStatus.notStarted
-        var currentTag : StudyTool.ToolTag = .language_study
+        var currentTag: StudyTool.ToolTag = .language_study
         var studyToolList: IdentifiedArrayOf<StudyTool> = []
 
-        var cachedToolList: [ StudyTool.ToolTag :IdentifiedArrayOf<StudyTool>] = [:]
+        var cachedToolList: [ StudyTool.ToolTag: IdentifiedArrayOf<StudyTool>] = [:]
 
         var shouldShowError: Bool {
             dataLoadingStatus == .error
         }
     }
-    
+
     enum Action {
         enum ViewAction: Equatable {
             case onToolHistoryTap(StudyTool)
@@ -38,14 +38,14 @@ struct StudyToolsFeature {
         case fetchStudyToolsResponse(TaskResult<StrapiResponse<[StudyTool]>>)
         case path(StackActionOf<Path>)
     }
-    
+
     @Reducer(state: .equatable)
     enum Path {
         case studyTool(StudyToolFeature)
     }
-    
+
     @Dependency(\.defaultDatabase) var database
-    
+
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
@@ -53,70 +53,63 @@ struct StudyToolsFeature {
                 if state.dataLoadingStatus == .loading {
                     return .none
                 }
-                
+
                 state.dataLoadingStatus = .loading
                 return .run { send in
-                    do{
+                    do {
                         let result = try await apiClient.fetchStudyTools(categoryTag.rawValue)
                         await send(.fetchStudyToolsResponse(.success(result)))
-                    }
-                    catch{
+                    } catch {
                         await send(.fetchStudyToolsResponse(.failure(error)))
                     }
-                    
+
                 }
-                
+
             case .fetchStudyToolsResponse(.success(let studyToolListRsp)):
-                
-                var studyToolList : [StudyTool] = []
-                MainActor.assumeIsolated{
+
+                var studyToolList: [StudyTool] = []
+                MainActor.assumeIsolated {
                     studyToolList = studyToolListRsp.data
                 }
                 state.dataLoadingStatus = .success
                 state.studyToolList = IdentifiedArrayOf(uniqueElements: studyToolList)
                 state.cachedToolList[state.currentTag] = state.studyToolList
-                
-                
-                Task{
-                    do{
+
+                Task {
+                    do {
                         try await self.database.write { db in
                             for studyTool in studyToolList {
-                                
+
                                 var studyToolMutable = studyTool
                                 var qaCard = studyToolMutable.exampleCard
                                 if var qaCard = qaCard {
                                     try qaCard.upsert(db)
                                 }
                                 let ret = try studyToolMutable.upsert(db)
-                                
+
                             }
                         }
-                    }
-                    catch {
+                    } catch {
                         print("Error saving study tools to database: \(error)")
                     }
                 }
                 return .none
-                
-                
+
             case .fetchStudyToolsResponse(.failure(let error)):
                 state.dataLoadingStatus = .error
                 print(error)
                 print("Error getting StudyTools, try again later.")
                 return .none
-                
 
             case .switchTools(let category):
                 state.currentTag = category
-                if let tools = state.cachedToolList[category]{
+                if let tools = state.cachedToolList[category] {
                     state.studyToolList = tools
                     return .none
-                }
-                else{
+                } else {
                     return .send(.fetchStudyToolUsedList(category))
                 }
-                
-        
+
             case let .path(pathAction):
                 return .none
             case .view(let viewAction):
@@ -128,5 +121,5 @@ struct StudyToolsFeature {
             }
         }.forEach(\.path, action: \.path)
     }
-    
+
 }

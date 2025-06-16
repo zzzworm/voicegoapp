@@ -9,8 +9,8 @@
 import Foundation
 import StrapiSwift
 
-extension Pagination : Equatable{
-    
+extension Pagination: Equatable {
+
     public static func == (lhs: Pagination, rhs: Pagination) -> Bool {
         return lhs.page == rhs.page &&
             lhs.pageSize == rhs.pageSize &&
@@ -21,14 +21,13 @@ extension Pagination : Equatable{
     }
 }
 
-extension Meta : Equatable{
+extension Meta: Equatable {
     public static func == (lhs: Meta, rhs: Meta) -> Bool {
         return lhs.pagination == rhs.pagination
     }
 }
 
-
-extension StrapiResponse : Equatable where T: Equatable {
+extension StrapiResponse: Equatable where T: Equatable {
     public static func == (lhs: StrapiResponse, rhs: StrapiResponse) -> Bool {
         return lhs.data == rhs.data && lhs.meta == rhs.meta
     }

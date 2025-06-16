@@ -30,7 +30,7 @@ extension StudySetting: Decodable {
         case hobble
         case targetLocale
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StudySettingeKeys.self)
         self.level = StudySetting.Level(rawValue: try container.decode(Int.self, forKey: .level)) ?? .primary
@@ -51,7 +51,7 @@ extension StudySetting {
             targetLocale: "15618664527"
         )
     }
-    
+
     static var `default`: StudySetting {
         .init(
             level: .intermediate,

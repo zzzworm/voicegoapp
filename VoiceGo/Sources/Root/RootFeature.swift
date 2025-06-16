@@ -10,17 +10,15 @@ import ComposableArchitecture
 import GRDB
 import SharingGRDB
 
-
 @Reducer
 struct RootFeature {
 
     @Dependency(\.apiClient) var apiClient
     @Dependency(\.defaultDatabase) var database
-    
-    
+
     @ObservableState
-    struct State : Equatable {
-        var profile: UserProfile? = nil
+    struct State: Equatable {
+        var profile: UserProfile?
         var currentTab = Tab.studytools
         var tearchListState = AITeacherListFeature.State()
         var studytoolListState = StudyToolsFeature.State()
@@ -28,21 +26,20 @@ struct RootFeature {
         var profileState = ProfileFeature.State()
         var notifications = NotificationsFeature.State()
         @Presents var alert: AlertState<Never>?
-        
+
         public init(profile: UserProfile? = nil, currentTab: Tab = .studytools) {
             @Dependency(\.defaultDatabase) var database
             @Dependency(\.userDefaults) var userDefaultsClient
             @Dependency(\.userInfoRepository) var userInfoRepository
-            
+
             var profileFetched: UserProfile? = profile
-            
+
             do {
                 try database.read({ db in
                 profileFetched = try UserProfile.find(db, key: profile?.documentId ?? userDefaultsClient.currentUserID)
                 })
-            }
-            catch{
-                
+            } catch {
+
             }
             userInfoRepository.currentUser = profileFetched
             self.profile = profileFetched
@@ -54,7 +51,7 @@ struct RootFeature {
             self.alert = nil
         }
     }
-    
+
     enum Tab: Int, CaseIterable {
         case favourites
         case tearchList
@@ -62,30 +59,30 @@ struct RootFeature {
         case conversationSceneList
         case profile
     }
-    
+
     enum Action: BindableAction {
         case onTabChanged(Tab)
         case addNotifications(NotificationItem)
-        
+
         case tearchList(AITeacherListFeature.Action)
         case studytoolList(StudyToolsFeature.Action)
         case conversationSceneList(ConversationSceneListFeature.Action)
         case profile(ProfileFeature.Action)
         case notifications(NotificationsFeature.Action)
-                
+
         enum Delegate: Equatable {
             case didLogout
         }
         case binding(BindingAction<State>)
         case delegate(Delegate)
-        
+
         case alert(PresentationAction<Never>)
-        
+
         enum InternalAction: Equatable {
             case updateProfileResponse(TaskResult<UserProfile>)
         }
         case `internal`(InternalAction)
-        
+
         case task
     }
 
@@ -129,13 +126,13 @@ struct RootFeature {
                             return .none
             case .binding:
                 return .none
-            case .notifications(_):
+            case .notifications:
                 return .none
-            case .notifications(.internal(_)):
+            case .notifications(.internal):
                 return .none
-            case .notifications(.alert(_)):
+            case .notifications(.alert):
                 return .none
-            case .delegate(_):
+            case .delegate:
                 return .none
             case .task:
                 return .run { send in
@@ -147,7 +144,7 @@ struct RootFeature {
                 switch internalAction {
                 case let .updateProfileResponse(.success(profile)):
                     state.profile = profile
-                    Task{
+                    Task {
                         do {
                             try await database.write { db in
                                 var profile = profile
@@ -162,13 +159,13 @@ struct RootFeature {
                         }
                     }
                     return .none
-                    
+
                 case let .updateProfileResponse(.failure(error)):
                     state.alert = AlertState(title: TextState("更新失败"),
                                           message: TextState(error.localizedDescription))
                     return .none
                 }
-            case .alert(_):
+            case .alert:
                 return .none
             }
         }
