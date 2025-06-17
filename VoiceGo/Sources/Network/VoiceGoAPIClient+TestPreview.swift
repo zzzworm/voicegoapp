@@ -132,6 +132,10 @@ extension VoiceGoAPIClient: TestDependencyKey {
         loadMoreAITeacherConversationList: { _, _, _ in
             return StrapiResponse(data: [], meta: Meta(pagination: Pagination()))
         },
+        updateAITeacherConversationReactions: { messageId, _ in
+            let conversation = AITeacherConversation.sample[0]
+            return StrapiResponse(data: conversation, meta: Meta(pagination: Pagination()))
+        },
         fetchAITeachers: {
             let filteredTeachers = AITeacher.sample
             let pagination = Pagination(page: 1, pageSize: 10, pageCount: 1, limit: 10, start: 0, total: filteredTeachers.count)
@@ -184,7 +188,7 @@ extension VoiceGoAPIClient: TestDependencyKey {
                     updatedAt: Date(),
                     query: "preview-scene-query",
                     answer: ConversationAnswer(id: 1,
-                                               result: "scene-answer",
+                                               answer: "scene-answer",
                                                score: 1,
                                                revisions: ["scene-revision"],
                                                review: "scene-review",
@@ -302,6 +306,10 @@ extension VoiceGoAPIClient {
         loadMoreAITeacherConversationList: { _, _, _ in
             return StrapiResponse(data: [], meta: Meta(pagination: Pagination()))
         },
+        updateAITeacherConversationReactions: { messageId, _ in
+            let conversation = AITeacherConversation.sample[0]
+            return StrapiResponse(data: conversation, meta: Meta(pagination: Pagination()))
+        },
         fetchAITeachers: {
             let filteredTeachers = AITeacher.sample
             let pagination = Pagination(page: 1, pageSize: 10, pageCount: 1, limit: 10, start: 0, total: filteredTeachers.count)
@@ -354,7 +362,7 @@ extension VoiceGoAPIClient {
                     updatedAt: Date(),
                     query: "preview-scene-query",
                     answer: ConversationAnswer(id: 1,
-                                               result: "scene-answer",
+                                               answer: "scene-answer",
                                                score: 1,
                                                revisions: ["scene-revision"],
                                                review: "scene-review",

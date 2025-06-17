@@ -42,16 +42,14 @@ struct StudyToolView: View {
                                                         .padding(EdgeInsets(top: 0, leading: 10, bottom: 10, trailing: 10))
                                                 }
 
-                                                ForEach(Array(viewStore.toolHistoryListState.enumerated()), id: \.element.id) { index, item in
-
-                                                    let childStore = self.store.scope(
-                                                        state: { $0.toolHistoryListState[id: item.id]! },
-                                                        action: {.toolHistory(id: item.id, action: $0)}
-                                                    )
+                                                ForEachStore(
+                                                  self.store.scope(state: \.toolHistoryListState, action: \.toolHistory)
+                                                ) { childStore in
                                                     ToolHistoryCell(store: childStore)
                                                         .padding(EdgeInsets(top: 0, leading: 10, bottom: 10, trailing: 10))
                                                         .id(childStore.id)
                                                         .onAppear {
+                                                            let index = self.store.state.toolHistoryListState.firstIndex(where: { $0.id == childStore.id }) ?? 0
                                                             viewStore.send(.viewIndex(index))
                                                         }
                                                 }

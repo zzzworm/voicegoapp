@@ -3,10 +3,58 @@ import GRDB
 import SharingGRDB
 import ExyteChat
 
+struct ConversationReaction
+{
+    let emoji: String
+    let usedAt : Date
+}
+
+extension ConversationReaction: Codable, Equatable {
+    enum CodingKeys: String, CodingKey {
+        case emoji
+        case usedAt
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        emoji = try container.decode(String.self, forKey: .emoji)
+        let usedAtString = try container.decode(String.self, forKey: .usedAt)
+        let isoFormatter = ISO8601DateFormatter()
+        isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        usedAt = isoFormatter.date(from: usedAtString) ?? Date()
+    }
+}
+
+extension ConversationReaction : DatabaseValueConvertible {
+    var databaseValue: DatabaseValue {
+        let jsonData = try? JSONEncoder().encode(self)
+        let stringifiedReaction: String = String(data: jsonData ?? Data(), encoding: .utf8) ?? ""
+        return stringifiedReaction.databaseValue
+    }
+    
+    static func fromDatabaseValue(_ dbValue: DatabaseValue) -> Self? {
+        guard let stringValue = String.fromDatabaseValue(dbValue) else { return nil }
+        guard let jsonData = stringValue.data(using: .utf8) else { return nil }
+        guard let conversationReaction = try? JSONDecoder().decode(ConversationReaction.self, from: jsonData) else { return nil }
+        return conversationReaction
+    }
+}
+
+extension ExyteChat.Reaction {
+    func toConversationReaction() -> ConversationReaction? {
+        switch self.type {
+        case .emoji(let emoji):
+            return ConversationReaction(emoji: emoji, usedAt: self.createdAt)
+        }
+        return nil
+    }
+}
+
+
 struct ConversationAnswer: Codable, FetchableRecord, PersistableRecord, Equatable, Identifiable {
     // 数据库主键（如无可自增，或可用UUID）
     var id: Int64? // 可选，数据库自增主键
-    let result: String
+    let answer: String
     let score: Int
     let revisions: [String] // 假设 revisions 是字符串数组，如有更复杂结构请补充
     let review: String
@@ -21,7 +69,7 @@ extension ConversationAnswer {
     // MARK: - CodingKeys
     enum CodingKeys: String, CodingKey {
         case id
-        case result
+        case answer
         case score
         case revisions
         case review
@@ -31,10 +79,11 @@ extension ConversationAnswer {
 
     func encode(to container: inout PersistenceContainer) {
         container[Column("id")] = id
-        container[Column("result")] = result
+        container[Column("answer")] = answer
         container[Column("score")] = score
         do {
-            let stringifiedRevisions = try JSONEncoder().encode(revisions)
+            let jsonData = try JSONEncoder().encode(revisions)
+            let stringifiedRevisions:String = String(data: jsonData, encoding: .utf8) ?? "[]"
             container[Column("revisions")] = stringifiedRevisions
         } catch {
             print("Error encoding revisions: \(error)")
@@ -46,7 +95,7 @@ extension ConversationAnswer {
 
     init(row: Row) throws {
         id = row[Column("id")]
-        result = row[Column("result")]
+        answer = row[Column("answer")]
         score = row[Column("score")]
         revisions = try JSONDecoder().decode([String].self, from: row[Column("revisions")])
         review = row[Column("review")]
@@ -68,7 +117,7 @@ struct AITeacherConversation: Equatable, Identifiable, TableRecord, Codable {
     var user: UserProfile
     let createdAt: Date
     let publishedAt: Date
-    
+    let reactions: [ConversationReaction]?
     let ai_teacher_id: String?
     let user_id: String?
     
@@ -81,24 +130,12 @@ struct AITeacherConversation: Equatable, Identifiable, TableRecord, Codable {
         static let conversation_id = Column("conversation_id")
         static let createdAt = Column("createdAt")
         static let publishedAt = Column("publishedAt")
+        static let reactions = Column("reactions")
     }
 }
 
 extension AITeacherConversation {
     static var databaseTableName = "aiTeacherHistory"
-
-    func encode(to container: inout PersistenceContainer) {
-        container[Column("documentId")] = documentId
-        container[Column("id")] = id
-        container[Column("updatedAt")] = updatedAt
-        container[Column("query")] = query
-        container[Column("message_id")] = message_id
-        container[Column("conversation_id")] = conversation_id
-        container[Column("ai_teacher_id")] = ai_teacher.id
-        container[Column("user_id")] = user.id
-        container[Column("createdAt")] = createdAt
-        container[Column("publishedAt")] = publishedAt
-    }
     
     func toChatLatestMessage() -> [ExyteChat.Message] {
         let userMsg =  ExyteChat.Message(
@@ -140,7 +177,7 @@ extension AITeacherConversation {
                 user: ai_teacher.toChatUser(),
                 status: .read,
                 createdAt: updatedAt,
-                text: answer.result,
+                text: answer.answer,
                 attachments: [],
                 reactions: [],
                 recording: nil,
@@ -183,13 +220,25 @@ extension AITeacherConversation {
             )
             associations.append(association)
         }
+        var chatReactions: [ExyteChat.Reaction] = []
+        if let reactions = reactions {
+            chatReactions = reactions.map { reaction in
+                ExyteChat.Reaction(
+                    id: UUID().uuidString,
+                    user: user.toChatUser(),
+                    createdAt: reaction.usedAt,
+                    type: .emoji(reaction.emoji)
+                )
+            }
+        }
         let answerMsg = ExyteChat.Message(
             id: message_id ?? UUID().uuidString,
             user: ai_teacher.toChatUser(),
             status: .read,
             createdAt: updatedAt,
-            text: answer!.result,
+            text: answer!.answer,
             attachments: [],
+            reactions: chatReactions,
             associations: associations,
             recording: nil,
             replyMessage: nil
@@ -203,7 +252,7 @@ extension AITeacherConversation {
             id: 1,
             updatedAt: Date(),
             query: "What is the capital of France?",
-            answer: ConversationAnswer(result: "The capital of France is Paris.",
+            answer: ConversationAnswer(answer: "The capital of France is Paris.",
                                        score: 100,
                                        revisions: [],
                                        review: "Correct answer.",
@@ -215,6 +264,7 @@ extension AITeacherConversation {
             user: UserProfile.sample,
             createdAt: Date(),
             publishedAt: Date(),
+            reactions: [ConversationReaction(emoji: "👍", usedAt: Date())],
             ai_teacher_id: AITeacher.sample[0].documentId,
             user_id: UserProfile.sample.documentId
         )

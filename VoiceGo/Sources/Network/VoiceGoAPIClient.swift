@@ -26,6 +26,7 @@ struct VoiceGoAPIClient {
     var getAITeacherConversationList: @Sendable (_ aiTeacherId: String, _ page: Int, _ pageSize: Int) async throws -> StrapiResponse<[AITeacherConversation]>
     // var deleteAITeacherConversationMesaage:  @Sendable (_ aiTeacherId : String ,_ messageId: String) async throws -> StrapiResponse<>
     var loadMoreAITeacherConversationList: @Sendable (_ aiTeacherId: String, _ createdAt: Date, _ pageSize: Int) async throws -> StrapiResponse<[AITeacherConversation]>
+    var updateAITeacherConversationReactions: @Sendable ( _ messageId: String, _ reactions: [ConversationReaction]) async throws -> StrapiResponse<AITeacherConversation>
 
     var fetchAITeachers: @Sendable () async throws -> StrapiResponse<[AITeacher]>
 
@@ -227,6 +228,17 @@ extension VoiceGoAPIClient: DependencyKey {
                 .sort(by: "createdAt", order: .descending)
                 .paginate(page: 1, pageSize: pageSize)
                 .getDocuments(as: [AITeacherConversation].self)
+            return response
+        },
+        updateAITeacherConversationReactions: { messageId, reactions in
+            let data = StrapiRequestBody(["reactions": .array(reactions.map { reaction in
+                .dictionary([
+                    "emoji": .string(reaction.emoji),
+                    "usedAt": .string(reaction.usedAt.iso8601String()),
+                ])
+            })])
+            let response = try await Strapi.contentManager.collection("teacher-conversations/update-message-reactions/\(messageId)")
+                .postData(data, as: AITeacherConversation.self)
             return response
         },
         fetchAITeachers: {

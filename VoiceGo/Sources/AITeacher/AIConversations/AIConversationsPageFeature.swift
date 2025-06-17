@@ -10,6 +10,7 @@ import ComposableArchitecture
 import ExyteChat
 import StrapiSwift
 import SwiftUICore
+import Combine
 
 enum MessageAction: MessageMenuAction {
     case copy, reply, edit, delete
@@ -109,7 +110,6 @@ struct AIConversationsPageFeature {
         var paginationState: Pagination?
         var isLoadMore = false
         var isScrolling = false
-        var reactionState = AITeacherChatReactionFeature.State()
         var inputBarState = BottomInputBarFeature.State()
 
         public init(aiTeacher: AITeacher) {
@@ -120,7 +120,8 @@ struct AIConversationsPageFeature {
     @CasePathable
     enum Action: BindableAction {
         case view(ViewAction)
-        case reaction(AITeacherChatReactionFeature.Action)
+        case didReact(to: Message, reaction: DraftReaction)
+        case updateMessageReactions(ExyteChat.Message, [ExyteChat.Reaction])
         case inputBar(BottomInputBarFeature.Action)
         enum ViewAction: Equatable {
             case onAppear
@@ -180,9 +181,7 @@ struct AIConversationsPageFeature {
     }
 
     var body: some ReducerOf<Self> {
-        Scope(state: \.reactionState, action: \.reaction) {
-            AITeacherChatReactionFeature()
-        }
+
         Scope(state: \.inputBarState, action: /Action.inputBar) {
             BottomInputBarFeature()
         }
@@ -275,25 +274,45 @@ struct AIConversationsPageFeature {
                 )
                 state.messages.append(newMessage)
                 state.pendingMessage = newMessage
+                state.pendingDrfat = draft
                 var aiTeacher = state.aiTeacher
-                return .run {send in
-                    do {
-                        let response = try await apiClient.createAITeacherConversation(aiTeacher, draft.text)
-                        let answerMsg = await response.data.toAnswerMessage()
-                        return await send(.messagesLoaded([answerMsg]))
-                    } catch let error as StrapiSwiftError {
-                        switch error {
-                        case .badResponse(let statusCode, let errorDetails):
-                            if let errorName = errorDetails?.name, errorName == "FreeTrialLimitExceededError" {
-                                return await send(.useAgeReachLimit)
+                return .run { send in
+                    await withTaskCancellation(
+                        id: newMessage.id,
+                        cancelInFlight: true
+                    ) {
+                        do {
+                            let response = try await apiClient.createAITeacherConversation(aiTeacher, draft.text)
+                            let answerMsg = await response.data.toAnswerMessage()
+                            await send(.messagesLoaded([answerMsg]))
+                        } catch let error as StrapiSwiftError {
+                            switch error {
+                            case .badResponse(_, let errorDetails):
+                                if let errorName = errorDetails?.name, errorName == "FreeTrialLimitExceededError" {
+                                    await send(.useAgeReachLimit)
+                                    return
+                                }
+                                fallthrough
+                            default:
+                                await send(.sendDraftFailed(newMessage, draft))
                             }
-                        default:
-                            return await send(.sendDraftFailed(newMessage, draft))
+                        } catch {
+                            await send(.sendDraftFailed(newMessage, draft))
                         }
                     }
                 }
+            case .updateMessageReactions(let message, let reactions):
+                if let index = state.messages.firstIndex(where: { $0.id == message.id }) {
+                    var updatedMessage = state.messages[index]
+                    updatedMessage.reactions = reactions
+                    state.messages[index] = updatedMessage
+                }
+                return .none
             case .stopMessageing(let message, let draft):
-                return .send(.sendDraftFailed(message, draft))
+                
+                return .concatenate(.cancel(id: message.id),
+                               .send(.sendDraftFailed(message, draft))
+                )
             case .useAgeReachLimit:
                 state.alert = AlertState(
                     title: TextState("Upgrade Plan"),
@@ -318,6 +337,7 @@ struct AIConversationsPageFeature {
                     /// If the draft message is not found, we can log or handle it accordingly
                 }
                 state.pendingMessage = nil
+                state.pendingDrfat = nil
                 return .none
             case let .loadMore(before):
                 let createdAt = before.createdAt
@@ -350,7 +370,40 @@ struct AIConversationsPageFeature {
                 return .none
             case .binding:
                 return .none
-            case .reaction:
+            case .didReact(to: let message, reaction: let draftReaction):
+                guard let user = userInfoRepository.currentUser?.toChatUser() else {
+                    return .none
+                }
+
+                let newReaction = Reaction(
+                    id: uuid().uuidString,
+                    user: user,
+                    createdAt: Date(),
+                    type: draftReaction.type
+                )
+                if let index = state.messages.firstIndex(where: { $0.id == message.id }) {
+                    var message = state.messages[index]
+                    if let reactionIndex = message.reactions.firstIndex(where: { $0.user.id == user.id && $0.type == newReaction.type }) {
+                        message.reactions.remove(at: reactionIndex)
+                    } else {
+                        message.reactions.append(newReaction)
+                    }
+                    
+                    return .run { send in
+                        do{
+                            try await apiClient.updateAITeacherConversationReactions(
+                                 message.id,
+                                 message.reactions.compactMap { $0.toConversationReaction() }
+                            )
+                            return await send(.updateMessageReactions(message, message.reactions))
+                        }
+                        catch {
+                            // Handle error if needed
+                            Log.error("Failed to react to message: \(error)")
+                        }
+                    }
+                }
+                
                 return .none
             case .inputBar(let action):
                 switch action {
@@ -383,15 +436,5 @@ struct AIConversationsPageFeature {
             }
         }
         .ifLet(\.$alert, action: \.alert)
-        .onChange(of: \.reactionState.messageReactions) { _, newValue in
-            Reduce { state, _ in
-                for (messageId, reactions) in newValue {
-                    if let index = state.messages.firstIndex(where: { $0.id == messageId }) {
-                        state.messages[index].reactions = reactions
-                    }
-                }
-                return .none
-            }
-        }
     }
 }
