@@ -89,6 +89,17 @@ extension StudyTool: Codable, FetchableRecord, TableRecord, MutablePersistableRe
 }
 
 extension StudyTool {
+    static var translation: StudyTool {
+        .init(
+            id: 6,
+            documentId: "yjyt2zwv7rfscj28ms6npqf5",
+            title: "AI翻译",
+            description: "支持中文翻译",
+            categoryKey: "AI翻译",
+            categoryTag: .language_study,
+            imageUrl: "https://voicego-image.oss-cn-shanghai.aliyuncs.com/images/ai_translation_e2c2ee1941.jpg"
+        )
+    }
     static var sample: [StudyTool] {
         [
             .init(

@@ -10,55 +10,11 @@ import Foundation
 import ComposableArchitecture
 import ExyteChat
 
-@Reducer
-struct AITeacherChatReactionFeature {
-    @Dependency(\.userInfoRepository) var userInfoRepository
-    @Dependency(\.uuid) var uuid
-
-    @ObservableState
-    struct State: Equatable {
-        var messageReactions: [String: [Reaction]] = [:]
-    }
-
-    enum Action {
-        case didReact(to: Message, reaction: DraftReaction)
-    }
-
-    var body: some Reducer<State, Action> {
-        Reduce { state, action in
-            switch action {
-            case let .didReact(message, draftReaction):
-                guard let user = userInfoRepository.currentUser?.toChatUser() else {
-                    return .none
-                }
-
-                let newReaction = Reaction(
-                    id: uuid().uuidString,
-                    user: user,
-                    createdAt: Date(),
-                    type: draftReaction.type
-                )
-
-                if state.messageReactions[message.id] == nil {
-                    state.messageReactions[message.id] = []
-                }
-
-                if let index = state.messageReactions[message.id]?.firstIndex(where: { $0.user.id == user.id && $0.type == newReaction.type }) {
-                    state.messageReactions[message.id]?.remove(at: index)
-                } else {
-                    state.messageReactions[message.id]?.append(newReaction)
-                }
-
-                return .none
-            }
-        }
-    }
-}
 
 final class AITeacherReactionDelegate: NSObject, ReactionDelegate {
-    private let store: StoreOf<AITeacherChatReactionFeature>
+    private let store: StoreOf<AIConversationsPageFeature>
 
-    init(store: StoreOf<AITeacherChatReactionFeature>) {
+    init(store: StoreOf<AIConversationsPageFeature>) {
         self.store = store
     }
 
@@ -80,13 +36,17 @@ final class AITeacherReactionDelegate: NSObject, ReactionDelegate {
     }
 
     nonisolated func allowEmojiSearch(for message: Message) -> Bool {
-        return true
+        return false
     }
 
     @MainActor
     func shouldShowOverview(for message: Message) -> Bool {
         store.withState { state in
-            !(state.messageReactions[message.id]?.isEmpty ?? true)
+            if let index = state.messages.firstIndex(where: { $0.id == message.id }) {
+                let reactions = state.messages[index].reactions 
+                return !reactions.isEmpty
+            }
+            return false
         }
     }
 }

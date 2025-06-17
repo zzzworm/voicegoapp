@@ -111,10 +111,6 @@ struct AITeacherListView_Previews: PreviewProvider {
             ),
             reducer: AITeacherListFeature.init
         )
-
-        // Mocking API client for preview if needed for fetch actions
-        // store.dependencies.apiClient = .previewValue ...
-
         return NavigationView {
             AITeacherListView(store: store)
         }

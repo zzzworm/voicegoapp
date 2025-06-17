@@ -23,7 +23,7 @@ struct ToolHistoryCell: View {
                         HStack {
                             VStack(alignment: .leading) {
                                 HStack {
-                                    Text(viewStore.history.query).font(.system(.body, design: .rounded))
+                                    Text(store.state.history.query).font(.system(.body, design: .rounded))
                                         .padding(.trailing, 20)
                                     Spacer()
                                 }
@@ -40,16 +40,24 @@ struct ToolHistoryCell: View {
 
                                 Divider()
                                 if let answer = viewStore.history.answer {
-                                    Markdown(answer.result)
-                                        .markdownTheme(.fancy)
-                                        .padding(.trailing, 10)
-                                        .textSelection(.enabled)
-                                        .font(.system(.body, design: .rounded))
+                                    if let attributedString = try? AttributedString(markdown: answer.answer,
+                                                                                    options: .init(interpretedSyntax: .
+                                                                                                   inlineOnlyPreservingWhitespace,
+                                                                                                   failurePolicy: .returnPartiallyParsedIfPossible)) {
+                                                Text(attributedString)
+                                                    .multilineTextAlignment(.leading)
+                                            } else {
+                                                Markdown(answer.answer)
+                                                    .markdownTheme(.fancy)
+                                                    .textSelection(.enabled)
+                                                    .font(.system(.body, design: .rounded))
+                                            }
+                                    
                                 }
                                 else{
                                     Text("生成中...")
                                         .font(.system(.body, design: .rounded))
-                                        .foregroundColor(.secondary)
+                                        .foregroundColor(.label)
                                         .padding(.trailing, 10)
                                 }
                             }
@@ -64,7 +72,7 @@ struct ToolHistoryCell: View {
                                     viewStore.send(.stopSpeak)
                                 } else {
                                     if let answer = viewStore.history.answer {
-                                        viewStore.send(.speakAnswer(answer.result))
+                                        viewStore.send(.speakAnswer(answer.answer))
                                     }
                                 }
                             }
@@ -72,7 +80,7 @@ struct ToolHistoryCell: View {
 
                             Button {
                                 if let answer = viewStore.history.answer {
-                                    viewStore.send(.speakAnswer(answer.result))
+                                    viewStore.send(.speakAnswer(answer.answer))
                                 }
                             } label: {
                                 Image(systemName: "doc.on.clipboard")

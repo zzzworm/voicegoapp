@@ -35,6 +35,7 @@ extension String {
         let passwordPredicate = NSPredicate(format: "SELF MATCHES %@", "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).*)")
         return passwordPredicate.evaluate(with: self)
     }
+
 }
 
 extension Double {
@@ -62,5 +63,13 @@ extension String {
         String(String.UnicodeScalarView(self.unicodeScalars.compactMap {
             UnicodeScalar(127397 + $0.value)
         }))
+    }
+}
+
+extension Date{
+    func iso8601String() -> String {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return formatter.string(from: self)
     }
 }

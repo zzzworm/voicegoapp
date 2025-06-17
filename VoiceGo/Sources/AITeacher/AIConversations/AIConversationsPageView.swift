@@ -101,7 +101,7 @@ struct AIConversationsPageView: View {
     init(store: StoreOf<AIConversationsPageFeature>) {
         self.store = store
         self.reactionDelegate = AITeacherReactionDelegate(
-            store: store.scope(state: \.reactionState, action: \.reaction)
+            store: store
         )
     }
 
@@ -214,6 +214,7 @@ struct AIConversationsPageView: View {
                     store.send(.tapAssociation(message, association))
 
                 })
+                .setAvailableInputs([.text, .audio])
                 .alert($store.scope(state: \.alert, action: \.alert))
                 .disabled(store.isLoading)
                 .overlay {

@@ -9,6 +9,7 @@ import MarkdownUI
 
 extension Theme {
   static let fancy = Theme()
+    
     .code {
       FontFamilyVariant(.monospaced)
       FontSize(.em(0.85))
@@ -20,7 +21,7 @@ extension Theme {
     .paragraph { configuration in
       configuration.label
             .relativeLineSpacing(.em(0.0))
-            .relativePadding(.leading, length: .em(0.5))
+            .relativePadding(.leading, length: .em(0.0))
         .markdownMargin(top: 0, bottom: 6)
     }
     .blockquote { configuration in
@@ -33,13 +34,13 @@ extension Theme {
       configuration in
       configuration.label
             .relativeLineSpacing(.em(0.0))
-            .relativePadding(.leading, length: .em(0.5))
+            .relativePadding(.leading, length: .em(0.0))
         .markdownMargin(top: 0, bottom: 6)
     }
     .listItem { configuration in
       configuration.label
             .relativeLineSpacing(.em(0.0))
-            .relativePadding(.leading, length: .em(0.5))
+            .relativePadding(.leading, length: .em(0.0))
         .markdownMargin(top: .em(0.25))
     }
 }

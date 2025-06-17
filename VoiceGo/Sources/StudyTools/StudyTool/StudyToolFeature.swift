@@ -36,7 +36,7 @@ struct StudyToolFeature {
     enum Action: Equatable, BindableAction {
         case fetchStudyHistory(page: Int = 1, pageSize: Int = 10)
         case fetchStudyHistoryResponse(TaskResult<StrapiResponse<[ToolConversation]>>)
-        case toolHistory(id: ToolHistoryFeature.State.ID, action: ToolHistoryFeature.Action)
+        case toolHistory(IdentifiedActionOf<ToolHistoryFeature>)
         case inputBar(BottomInputBarFeature.Action)
         case streamAnswer(String)
         case complete(ToolConversation)
@@ -100,10 +100,10 @@ struct StudyToolFeature {
             case .streamAnswer(let result):
                 if var currentToolHistory = state.currenttoolHistory {
                     if var answer = currentToolHistory.history.answer {
-                        ToolConversationAnswer(result: answer.result + result)
+                        ToolConversationAnswer(answer: answer.answer + result)
                         currentToolHistory.history.answer = answer
                     } else {
-                        currentToolHistory.history.answer = ToolConversationAnswer(result: result)
+                        currentToolHistory.history.answer = ToolConversationAnswer(answer: result)
                     }
                     state.currenttoolHistory = currentToolHistory
                     state.toolHistoryListState.update(currentToolHistory, at: state.lastIndex)
@@ -111,8 +111,9 @@ struct StudyToolFeature {
                 return .none
             case .complete(let history):
                 guard var currentToolHistory = state.currenttoolHistory else { return .none }
-                currentToolHistory.history = history
-                state.toolHistoryListState.update(currentToolHistory, at: state.lastIndex)
+                let toolHistoryState = ToolHistoryFeature.State(history: history)
+                state.toolHistoryListState.remove(at: state.lastIndex)
+                state.toolHistoryListState.insert(toolHistoryState, at: state.lastIndex)
                 state.currenttoolHistory = nil
                 state.lastIndex = 0
                 return .none
@@ -126,7 +127,7 @@ struct StudyToolFeature {
                 } else {
                     return .none
                 }
-            case .toolHistory(id: let id, action: let action):
+            case .toolHistory(let action):
                 return .none
             case .inputBar(let action):
                 switch action {
@@ -137,7 +138,7 @@ struct StudyToolFeature {
                 case .speechRecognitionInput:
                     break
                 case .submitText(let query):
-                    if query.isEmpty {
+                    if query.isEmpty || state.currenttoolHistory != nil {
                         return .none
                     }
                     let studyTool = state.studyTool
@@ -145,7 +146,7 @@ struct StudyToolFeature {
                                                                                              id: 0,
                                                                                              updatedAt: .now,
                                                                                              query: query,
-                                                                                              answer: .init(result: ""),
+                                                                                              answer: .init(answer: ""),
                                                                                              message_id: "",
                                                                                              conversation_id: ""))
                     state.currenttoolHistory = toolHistoryState
@@ -194,7 +195,7 @@ struct StudyToolFeature {
                 return .none
             }
         }
-        .forEach(\.toolHistoryListState, action: /Action.toolHistory) {
+        .forEach(\.toolHistoryListState, action: \.toolHistory) { 
             ToolHistoryFeature()
         }
 

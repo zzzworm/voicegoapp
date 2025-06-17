@@ -37,7 +37,16 @@ struct ToolQACardView: View {
                 Text(card.originText).padding(EdgeInsets(top: 5, leading: 5, bottom: 10, trailing: 5))
                 GroundedCaptionView(caption: card.actionText)
                 if let answer = card.suggestions.first {
-                    Markdown(answer)
+                    if let attributedString = try? AttributedString(markdown: answer,
+                                                                    options: .init(interpretedSyntax: .
+                                                                                   inlineOnlyPreservingWhitespace,
+                                                                                   failurePolicy: .returnPartiallyParsedIfPossible)) {
+                        Text(attributedString)
+                            .padding(EdgeInsets(top: 5, leading: 5, bottom: 10, trailing: 5))
+                    } else {
+                        Text(answer).padding(EdgeInsets(top: 5, leading: 5, bottom: 10, trailing: 5))
+                    }
+//                    Markdown(answer)
                 }
                 Spacer()
             }

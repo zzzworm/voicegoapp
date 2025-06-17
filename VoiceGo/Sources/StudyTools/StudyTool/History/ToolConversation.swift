@@ -10,13 +10,13 @@ import SharingGRDB
 
 struct ToolConversationAnswer: Codable, Equatable {
     // 数据库主键（如无可自增，或可用UUID）
-    let result: String
+    let answer: String
 
 }
 extension ToolConversationAnswer {
     // MARK: - CodingKeys
     enum CodingKeys: String, CodingKey {
-        case result
+        case answer
     }
 }
 
@@ -39,7 +39,13 @@ extension ToolConversation: Codable, FetchableRecord, MutablePersistableRecord {
         container[Columns.id] = id
         container[Columns.updatedAt] = updatedAt
         container[Columns.query] = query
-        container[Columns.answer] = answer?.result
+        do{
+            let jsonData = try JSONEncoder().encode(answer)
+            let stringifiedAnswer: String = String(data: jsonData, encoding: .utf8) ?? ""
+            container[Columns.answer] = stringifiedAnswer
+        } catch {
+            print("Error encoding answer: \(error)")
+        }
         container[Columns.message_id] = message_id
         container[Columns.conversation_id] = conversation_id
     }
@@ -54,6 +60,21 @@ extension ToolConversation: Codable, FetchableRecord, MutablePersistableRecord {
         static let message_id = Column("message_id")
         static let conversation_id = Column("conversation_id")
     }
+    
+    init(row: Row) throws {
+        documentId = row[Columns.documentId]
+        id = row[Columns.id]
+        updatedAt = row[Columns.updatedAt]
+        query = row[Columns.query]
+        if let answerString = row[Columns.answer] as String? {
+            answer = try JSONDecoder().decode(ToolConversationAnswer.self, from: Data(answerString.utf8))
+        } else {
+            answer = nil
+        }
+        message_id = row[Columns.message_id]
+        conversation_id = row[Columns.conversation_id]
+        
+    }
 }
 
 // swiftlint:disable line_length
@@ -65,7 +86,7 @@ extension ToolConversation {
                 id: 1,
                 updatedAt: Date(),
                 query: "apply",
-                answer: .init(result: """
+                answer: .init(answer: """
                 1. **单词类型及释义**
                     -动词
                         -申请：I want to apply for a new job.（我想要申请一份新工作。）
@@ -85,7 +106,7 @@ extension ToolConversation {
                 id: 1,
                 updatedAt: Date(),
                 query: "apply",
-                answer: .init(result: """
+                answer: .init(answer: """
                 单词类型及释义
 
                 动词

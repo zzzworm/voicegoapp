@@ -133,7 +133,7 @@ let project = Project(
             "ENABLE_USER_SCRIPT_SANDBOXING": "NO",
             ],
             debug: [
-                "OTHER_LDFLAGS": " $(inherited) -Xlinker -interposable -ObjC -force_load",
+                "OTHER_LDFLAGS": "$(inherited) -Xlinker -interposable -ObjC -force_load",
             ]
             ),
             additionalFiles: [
