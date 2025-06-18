@@ -7,6 +7,7 @@
 
 import SwiftUI
 import ComposableArchitecture
+import PartialSheet
 
 struct RootView: View {
     @Bindable var store: StoreOf<RootFeature>
@@ -84,6 +85,7 @@ struct RootView: View {
             .alert($store.scope(state: \.alert, action: \.alert))
             .task { await store.send(.task).finish() }
         }
+        .attachPartialSheetToRoot()
         .enableInjection()
     }
 

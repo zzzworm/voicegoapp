@@ -1,5 +1,5 @@
 {
-  "originHash" : "1f0fc856c9a813037dadd37c9085307dd2ff2df63303018d738bf14fd74b1947",
+  "originHash" : "6a5de951e0e9e1bcc9e4de540d7971ed7ecf652f425c3d1146467034058113e5",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -305,6 +305,15 @@
       "state" : {
         "revision" : "0ead44350d2737db384908569c012fe67c421e4d",
         "version" : "12.8.0"
+      }
+    },
+    {
+      "identity" : "partialsheet",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/AndreaMiotto/PartialSheet.git",
+      "state" : {
+        "revision" : "6c61890976181274ea7baf6a4c297418346db799",
+        "version" : "3.1.1"
       }
     },
     {

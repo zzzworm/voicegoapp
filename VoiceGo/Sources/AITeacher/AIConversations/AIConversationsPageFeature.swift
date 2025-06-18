@@ -90,6 +90,8 @@ struct AIConversationsPageFeature {
     @ObservableState
     struct State: Equatable {
         @Presents var alert: AlertState<Action.AlertAction>?
+        var chatSheet: AITeacherChatSheetFeature.State?
+        var isChatSheetPresented : Bool = false
         public var messages: [ExyteChat.Message] = []
         public var chatTitle: String {
             aiTeacher.name
@@ -120,13 +122,13 @@ struct AIConversationsPageFeature {
     @CasePathable
     enum Action: BindableAction {
         case view(ViewAction)
+        case inputBar(BottomInputBarFeature.Action)
+        case alert(PresentationAction<AlertAction>)
+        case chatSheet(AITeacherChatSheetFeature.Action)
+        case setSheet(isPresented: Bool)
+        
         case didReact(to: Message, reaction: DraftReaction)
         case updateMessageReactions(ExyteChat.Message, [ExyteChat.Reaction])
-        case inputBar(BottomInputBarFeature.Action)
-        enum ViewAction: Equatable {
-            case onAppear
-            case onDisappear
-        }
         case fetchConversationList(page: Int, pageSize: Int)
         case fetchConversationListResponse(TaskResult<StrapiResponse<[AITeacherConversation]>>)
         case sendDraft(DraftMessage)
@@ -137,11 +139,19 @@ struct AIConversationsPageFeature {
         case messagesLoaded([ExyteChat.Message])
         case tapAssociation(ExyteChat.Message, ExyteChat.Association)
         case copyMessage(ExyteChat.Message)
-        case useAgeReachLimit
+        
+        enum ViewAction: Equatable {
+            case onAppear
+            case onDisappear
+        }
+        
         enum AlertAction: Equatable {
+            case confirmDeleteMessage(ExyteChat.Message)
+            case confirmDeleteConversation
             case confirmUpgradePlan
         }
-        case alert(PresentationAction<AlertAction>)
+        
+        case useAgeReachLimit
         case binding(BindingAction<State>)
     }
 
@@ -181,11 +191,10 @@ struct AIConversationsPageFeature {
     }
 
     var body: some ReducerOf<Self> {
-
-        Scope(state: \.inputBarState, action: /Action.inputBar) {
+        BindingReducer()
+        Scope(state: \.inputBarState, action: \.inputBar) {
             BottomInputBarFeature()
         }
-        BindingReducer()
         Reduce { state, action in
             switch action {
             case .fetchConversationList(let page, let pageSize):
@@ -250,13 +259,31 @@ struct AIConversationsPageFeature {
             case .view(.onDisappear):
                 // Cleanup if needed
                 return .none
-            case .tapAssociation(let message, let association):
+            case let .tapAssociation(message, association):
                 switch association.type {
                 case .suggestion(let suggestReply):
-                    // Handle association tap
+                    // Handle suggestion tap - show in sheet
                     let reply: String = String(suggestReply.split(separator: ":").last ?? "")
-                    state.inputBarState.text = reply
+                    state.chatSheet = AITeacherChatSheetFeature.State(
+                        title: "Suggestion",
+                        markdownContent: reply
+                    )
+                    state.isChatSheetPresented = true
                 }
+                return .none
+                
+            case .setSheet(let isPresented):
+                state.isChatSheetPresented = isPresented
+                if !isPresented {
+                    state.chatSheet = nil
+                }
+                return .none
+            case .chatSheet(.submitText(let reply)):
+                state.inputBarState.text = reply
+                state.isChatSheetPresented = false
+                state.chatSheet = nil
+                return .none
+            case .chatSheet:
                 return .none
 
             case let .sendDraft(draft):
@@ -436,5 +463,6 @@ struct AIConversationsPageFeature {
             }
         }
         .ifLet(\.$alert, action: \.alert)
+        .ifLet(\.chatSheet, action: \.chatSheet) { AITeacherChatSheetFeature() }
     }
 }

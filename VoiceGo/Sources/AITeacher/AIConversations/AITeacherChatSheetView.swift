@@ -2,6 +2,7 @@ import ComposableArchitecture
 import SwiftUI
 import MarkdownUI
 
+
 struct AITeacherChatSheetView: View {
 #if DEBUG
     @ObserveInjection var forceRedraw
@@ -43,45 +44,48 @@ struct AITeacherChatSheetView: View {
     }
 
     private var markdownContentView: some View {
-        ScrollView {
-            Markdown(store.markdownContent)
-                .markdownTheme(.gitHub)
+        VStack {
+            if let attributedString = store.state.attributedContent ) {
+                Text(attributedString)
+                    .multilineTextAlignment(.leading)
+            }
+            else {
+                Text("无法解析的内容")
+                    .foregroundColor(.red)
+            }
+            if let translationContent = store.state.translationContent, !translationContent.isEmpty {
+                Text(translationContent)
+                    .foregroundColor(.secondary)
+                    .padding(.top, 5)
+            }
+            if let knowledgeContent = store.state.knowledgeContent, !knowledgeContent.isEmpty {
+                Text(knowledgeContent)
+                    .foregroundColor(.secondary)
+                    .padding(.top, 5)
+            }
         }
-        .frame(height: UIScreen.main.bounds.height * 0.5)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-        )
     }
 
     private var toolbarView: some View {
-        HStack(spacing: 20) {
-            Button("Option 1") { store.send(.toolbarButtonTapped("1")) }
+        HStack(spacing: 10) {
+            Button("翻") { store.send(.translationButtonTapped) }
                 .buttonStyle(.bordered)
             
-            Button("Option 2") { store.send(.toolbarButtonTapped("2")) }
+            Button("AI") { store.send(.knowledgeButtonTapped) }
                 .buttonStyle(.bordered)
+            Spacer()
             
-            Button("Option 3") { store.send(.toolbarButtonTapped("3")) }
+            Button("发送") {
+                store.send(.submitText(store.state.attributedContent?.string ?? ""))
+            }
                 .buttonStyle(.bordered)
         }
-        .padding(.vertical, 15)
+        .padding(.bottom, 5)
     }
 
     private var bottomButtonView: some View {
-        Button(action: {
-            store.send(.bottomButtonTapped)
-        }) {
-            Text("Continue")
-                .fontWeight(.semibold)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color.accentColor)
-                .foregroundColor(.white)
-                .cornerRadius(12)
-        }
-        .padding(.top, 5)
+        SpeechRecognitionInputView(store: store.scope(state: \.speechRecognitionInputState, action: \.speechRecognitionInput))
+            .frame(maxHeight: 30)
     }
 }
 
