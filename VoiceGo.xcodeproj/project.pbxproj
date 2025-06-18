@@ -12,6 +12,7 @@
 		01E35FF9C29578D69D6618C4 /* OTPView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4819F9FFA44FFBE1649986CE /* OTPView.swift */; };
 		024E4F10D0102E3A08804F27 /* GoogleUtilities_Environment.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6082E30EC84D00A5C0AF9314 /* GoogleUtilities_Environment.framework */; };
 		02A04FA85C520D4AC9C37A3C /* AliOSSClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64F6E254D9B972F34B2A3C59 /* AliOSSClient.swift */; };
+		0341DA2A86577537520916B8 /* PartialSheet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6358DC6AE72A7911F5D60D2 /* PartialSheet.framework */; };
 		04288551B0ECBE49351AB4FA /* libwebp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3851AC1E82BCFE61345C4A2D /* libwebp.framework */; };
 		044607DDA6F56E9B0567BD13 /* swift-sharing_Sharing.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 533E6917B3542780B9E54DEB /* swift-sharing_Sharing.bundle */; };
 		044C14240AC7029C3BA88CF2 /* StudyToolView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BF273D0155E8072009FF628 /* StudyToolView.swift */; };
@@ -763,6 +764,7 @@
 		B4E7780E23F48D98927EC677 /* NoNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoNetwork.swift; sourceTree = "<group>"; };
 		B56FCF47D5EEB97E367C4462 /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		B5DC016B64C1B3C51F2A9DCF /* WaveShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveShape.swift; sourceTree = "<group>"; };
+		B6358DC6AE72A7911F5D60D2 /* PartialSheet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PartialSheet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6A5D4FF78B17BED46C7021D /* Chat_ExyteChat.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Chat_ExyteChat.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		B7344A98C233E937357DE35C /* ActivityViewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityViewRepresentable.swift; sourceTree = "<group>"; };
 		B776C33462DA45974DAAC3A6 /* VoiceGoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VoiceGoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -959,6 +961,7 @@
 				39BFC441927C66BDEA569422 /* Nuke.framework in Frameworks */,
 				72C9AA804088A1B9683DAB70 /* NukeUI.framework in Frameworks */,
 				9CB27814E9B2BE0BD7FCD249 /* OrderedCollections.framework in Frameworks */,
+				0341DA2A86577537520916B8 /* PartialSheet.framework in Frameworks */,
 				1439F22F886422BB5188C0E7 /* Perception.framework in Frameworks */,
 				65279EF83F990CD4BD6AAFE2 /* PerceptionCore.framework in Frameworks */,
 				2D47B55F989A4B29E4320D99 /* PhoneNumberKit.framework in Frameworks */,
@@ -1583,6 +1586,7 @@
 				10A63D00664CE423C5CDD8F2 /* NukeUI.framework */,
 				68E8FCAE4ACFE01EA63E64D0 /* opensslWrapper.framework */,
 				E57C0545013E985B1FC10312 /* OrderedCollections.framework */,
+				B6358DC6AE72A7911F5D60D2 /* PartialSheet.framework */,
 				46EE84DCF4651172BB3DA72F /* Perception.framework */,
 				D600BDCED342816D011C959F /* PerceptionCore.framework */,
 				18D81777448B0E25129502AD /* PhoneNumberKit_PhoneNumberKit.bundle */,
@@ -2699,6 +2703,7 @@
 					"-fmodule-map-file=$(SRCROOT)/Tuist/.build/tuist-derived/third_party_IsAppEncrypted/third_party_IsAppEncrypted.modulemap",
 				);
 				OTHER_LDFLAGS = (
+					"$(inherited)",
 					"-ObjC",
 					"-force_load",
 				);

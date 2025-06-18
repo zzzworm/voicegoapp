@@ -10,6 +10,9 @@
     "Advanced" : {
       "comment" : "Eng level: Advanced\nWord level: High Difficulty"
     },
+    "AI" : {
+
+    },
     "AI Teacher Details: %@" : {
 
     },
@@ -59,9 +62,6 @@
 
     },
     "continue" : {
-
-    },
-    "Continue" : {
 
     },
     "Continue with Apple" : {
@@ -126,15 +126,6 @@
 
     },
     "Notifications (%lld)" : {
-
-    },
-    "Option 1" : {
-
-    },
-    "Option 2" : {
-
-    },
-    "Option 3" : {
 
     },
     "OR" : {
@@ -300,6 +291,9 @@
     "反馈/举报" : {
 
     },
+    "发送" : {
+
+    },
     "发送验证码" : {
 
     },
@@ -357,6 +351,9 @@
     "摆脱尴尬,社恐福音.与AI外教随时对话,让你轻松练口语." : {
 
     },
+    "无法解析的内容" : {
+
+    },
     "昵称" : {
 
     },
@@ -397,6 +394,9 @@
 
     },
     "编辑资料" : {
+
+    },
+    "翻" : {
 
     },
     "英语水平" : {

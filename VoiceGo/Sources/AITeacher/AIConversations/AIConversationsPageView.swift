@@ -14,14 +14,15 @@ import InjectionNext
 
 struct AIConversationsPageView: View {
     @Bindable var store: StoreOf<AIConversationsPageFeature>
-    private let reactionDelegate: AITeacherReactionDelegate
 
+    private let reactionDelegate: AITeacherReactionDelegate
+    
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.presentationMode) private var presentationMode
     @Environment(\.chatTheme) private var theme
-
+    
     private let recorderSettings = RecorderSettings(sampleRate: 16000, numberOfChannels: 1, linearPCMBitDepth: 16)
-
+    
     @ViewBuilder
     private func messageInputView(
         textBinding: Binding<String>,
@@ -33,15 +34,15 @@ struct AIConversationsPageView: View {
             case .message: // input view on chat screen
                 VStack {
                     HStack {
-//                        Button { inputViewActionClosure(.photo) }
-//                        label: {
-//                            theme.images.inputView.attachCamera
-//                                .frame(width: 40, height: 40)
-//                                .background {
-//                                    Circle().fill(theme.colors.sendButtonBackground)
-//                                }
-//                        }
-
+                        //                        Button { inputViewActionClosure(.photo) }
+                        //                        label: {
+                        //                            theme.images.inputView.attachCamera
+                        //                                .frame(width: 40, height: 40)
+                        //                                .background {
+                        //                                    Circle().fill(theme.colors.sendButtonBackground)
+                        //                                }
+                        //                        }
+                        
                         BottomInputBarBarView(store: store.scope(state: \.inputBarState, action: \.inputBar))
                         if store.state.isSending {
                             Button {
@@ -74,13 +75,13 @@ struct AIConversationsPageView: View {
                     .padding(.horizontal, 10)
                     Text("AI生成内容，仅供参考").padding(.bottom, 5)
                 }
-
+                
             case .signature: // input view on photo selection screen
                 VStack {
                     HStack {
                         TextField("Compose a signature for photo", text: textBinding)
                             .background(Color.white)
-
+                        
                         Button {
                             inputViewActionClosure(.send)
                         }
@@ -97,18 +98,18 @@ struct AIConversationsPageView: View {
             }
         }
     }
-
+    
     init(store: StoreOf<AIConversationsPageFeature>) {
         self.store = store
         self.reactionDelegate = AITeacherReactionDelegate(
             store: store
         )
     }
-
+    
 #if DEBUG
     @ObserveInjection var forceRedraw
 #endif
-
+    
     @ViewBuilder
     private var navigationBarLeadingContent: some View {
         HStack {
@@ -142,12 +143,12 @@ struct AIConversationsPageView: View {
         }
         .padding(.leading, 10)
     }
-
+    
     var body: some View {
         content
             .enableInjection()
     }
-
+    
     @ViewBuilder private var content: some View {
         WithViewStore(self.store, observe: { $0 }) { _ in
             var chatView = ChatView(
@@ -175,47 +176,54 @@ struct AIConversationsPageView: View {
                     }
                 },
                 messageMenuAction: { (action: MessageAction, defaultActionClosure, message) in // <-- here: specify the name of your `MessageMenuAction` enum
-                                    switch action {
-                                    case .reply:
-                                        defaultActionClosure(message, .reply)
-                                    case .edit:
-                                        defaultActionClosure(message, .edit { editedText in
-                                            // update this message's text on your BE
-                                            let draft = DraftMessage(
-                                                text: editedText,
-                                                medias: [],
-                                                giphyMedia: nil,
-                                                recording: nil,
-                                                replyMessage: nil,
-                                                createdAt: Date()
-                                            )
-                                            store.send(.sendDraft(draft))
-                                        })
-                                    case .copy:
-                                        store.send(.copyMessage(message))
-                                    case .delete:
-                                        store.send(.deleteMessage(message))
-                                    }
+                    switch action {
+                    case .reply:
+                        defaultActionClosure(message, .reply)
+                    case .edit:
+                        defaultActionClosure(message, .edit { editedText in
+                            // update this message's text on your BE
+                            let draft = DraftMessage(
+                                text: editedText,
+                                medias: [],
+                                giphyMedia: nil,
+                                recording: nil,
+                                replyMessage: nil,
+                                createdAt: Date()
+                            )
+                            store.send(.sendDraft(draft))
+                        })
+                    case .copy:
+                        store.send(.copyMessage(message))
+                    case .delete:
+                        store.send(.deleteMessage(message))
+                    }
                 }
-
+                
             )
-
+            
             if let pageCount = store.state.paginationState?.pageCount, pageCount > 1 {
                 chatView.enableLoadMore(pageSize: 3) { message in
                     store.send(.loadMore(before: message))
                 }
             }
-
+            
             chatView
                 .messageUseMarkdown(true)
                 .setRecorderSettings(recorderSettings)
                 .tapAssociationClosure({ message, association in
-
+                    
                     store.send(.tapAssociation(message, association))
-
+                    
                 })
                 .setAvailableInputs([.text, .audio])
                 .alert($store.scope(state: \.alert, action: \.alert))
+                .partialSheet(
+                    isPresented: $store.isChatSheetPresented.sending(\.setSheet)
+                ) {
+                    if let subStore = store.scope(state: \.chatSheet, action: \.chatSheet) {
+                        AITeacherChatSheetView(store: subStore)
+                    }
+                }
                 .disabled(store.isLoading)
                 .overlay {
                     if store.isLoading {
@@ -236,8 +244,8 @@ struct AIConversationsPageView: View {
                 }
         }
     }
+    
 }
-
 #Preview {
     AIConversationsPageView(
         store: Store(
