@@ -4,6 +4,8 @@
 <dict>
 	<key>Common</key>
 	<dict>
+		<key>tool_translation_documentId</key>
+		<string>eu4fpm2tj5bripj0o5bmevw9</string>
 		<key>dbName</key>
 		<string>db.sqlite</string>
 		<key>api_version</key>

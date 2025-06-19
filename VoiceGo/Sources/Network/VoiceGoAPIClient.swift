@@ -131,7 +131,7 @@ extension VoiceGoAPIClient: DependencyKey {
         createToolConversation: {studyTool, query in
 
             let data = StrapiRequestBody(["studyTool": .dictionary(["documentId": .string(studyTool.documentId)]), "query": .string(query)])
-            let response = try await Strapi.contentManager.collection("tool-conversation").postData(data, as: ToolConversation.self)
+            let response = try await Strapi.contentManager.collection("tool-conversation/create-message").postData(data, as: ToolConversation.self)
             return response
         },
         streamToolConversation: {studyTool, query in

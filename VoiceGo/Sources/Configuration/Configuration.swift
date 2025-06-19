@@ -189,4 +189,7 @@ extension Configuration: VoiceGoConfiguration {
     var apiVersion: String {
         return config["api_version"] as! String
     }
+    var studyToolTranslationDocumentId: String {
+        return config["tool_translation_documentId"] as! String
+    }
 }

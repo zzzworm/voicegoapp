@@ -92,7 +92,7 @@ extension StudyTool {
     static var translation: StudyTool {
         .init(
             id: 6,
-            documentId: "yjyt2zwv7rfscj28ms6npqf5",
+            documentId: Configuration.current.studyToolTranslationDocumentId,
             title: "AI翻译",
             description: "支持中文翻译",
             categoryKey: "AI翻译",

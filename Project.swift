@@ -52,6 +52,7 @@ let commonDependencies : [TargetDependency] = [
                 .external(name: "UIFontComplete"),
                 .external(name: "ExyteChat"),
                 .external(name: "PartialSheet"),
+                .external(name: "NBus"),
                 .sdk(name: "AuthenticationServices", type: .framework),
             ]
 
