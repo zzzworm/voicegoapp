@@ -14,7 +14,7 @@ struct AITeacherChatSheetView: View {
         VStack(spacing: 0) {
             headerView
             
-            markdownContentView
+            markdownContentView.padding(.vertical,5)
             
             toolbarView
             
@@ -44,8 +44,8 @@ struct AITeacherChatSheetView: View {
     }
 
     private var markdownContentView: some View {
-        VStack {
-            if let attributedString = store.state.attributedContent ) {
+        VStack(alignment: .leading, spacing: 5) {
+            if let attributedString = store.state.attributedContent  {
                 Text(attributedString)
                     .multilineTextAlignment(.leading)
             }
@@ -54,11 +54,12 @@ struct AITeacherChatSheetView: View {
                     .foregroundColor(.red)
             }
             if let translationContent = store.state.translationContent, !translationContent.isEmpty {
+                Divider()
                 Text(translationContent)
                     .foregroundColor(.secondary)
-                    .padding(.top, 5)
             }
             if let knowledgeContent = store.state.knowledgeContent, !knowledgeContent.isEmpty {
+                Divider()
                 Text(knowledgeContent)
                     .foregroundColor(.secondary)
                     .padding(.top, 5)
@@ -76,7 +77,11 @@ struct AITeacherChatSheetView: View {
             Spacer()
             
             Button("发送") {
-                store.send(.submitText(store.state.attributedContent?.string ?? ""))
+                if let attributedContentCharacters  = store.state.attributedContent?.characters {
+                    let text =  String(attributedContentCharacters)
+                    store.send(.submitText(text))
+                }
+                
             }
                 .buttonStyle(.bordered)
         }

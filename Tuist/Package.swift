@@ -72,6 +72,7 @@ let package = Package(
         .package(url: "https://github.com/eu-digital-identity-wallet/SwiftCopyableMacro.git", from: "0.0.3"),
         .package(url: "https://github.com/Nirma/UIFontComplete.git", from: "6.2.0"),
         .package(url: "https://github.com/AndreaMiotto/PartialSheet.git", from: "3.1.1"),
+        .package(url: "https://github.com/nuomi1/NBus.git", from: "1.3.0"),
         .package(path: "../Packages/exyteChat"),
         .package(path: "../Packages/strapi-swift"),
         .package(path: "../Packages/ActivityIndicatorView"),
