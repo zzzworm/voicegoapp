@@ -31,7 +31,7 @@ extension InnerAIToolsClient: DependencyKey {
                 @Dependency(\.apiClient) var apiClient
                 let createToolConversation = StudyTool.translation
                 do {
-                    let response = try await apiClient.createToolConversation(createToolConversation, text)
+                    let response = try await apiClient.createToolConversation(createToolConversation, text, "")
                     if let answer = response.data.answer {
                         return answer.answer
                     } else {

@@ -52,7 +52,8 @@ let commonDependencies : [TargetDependency] = [
                 .external(name: "UIFontComplete"),
                 .external(name: "ExyteChat"),
                 .external(name: "PartialSheet"),
-                .external(name: "NBus"),
+                // .external(name: "NBus"),
+                .external(name: "WrapLayout"),
                 .sdk(name: "AuthenticationServices", type: .framework),
             ]
 
@@ -133,10 +134,11 @@ let project = Project(
             "SWIFT_EMIT_LOC_STRINGS": "YES",
             "ASSETCATALOG_COMPILER_LOCALIZATION": "zh-Hans",
             "ENABLE_USER_SCRIPT_SANDBOXING": "NO",
-            ],
-            debug: [
-                "OTHER_LDFLAGS": "$(inherited) -Xlinker -interposable -ObjC -force_load",
             ]
+            //,
+            // debug: [
+            //     "OTHER_LDFLAGS": "$(inherited) -Xlinker -interposable -ObjC -force_load",
+            // ]
             ),
             additionalFiles: [
                 "VoiceGo/VoiceGo.entitlements"

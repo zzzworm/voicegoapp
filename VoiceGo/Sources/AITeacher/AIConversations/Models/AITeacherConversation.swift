@@ -169,6 +169,7 @@ extension AITeacherConversation {
                text: query,
                attachments: [],
                reactions: [],
+               additionMessages: [answer.review],
                recording: nil,
                replyMessage: nil
            )
@@ -180,6 +181,7 @@ extension AITeacherConversation {
                 text: answer.answer,
                 attachments: [],
                 reactions: [],
+                additionMessages: [],
                 recording: nil,
                 replyMessage: nil
             )

@@ -46,7 +46,7 @@ enum MessageAction: MessageMenuAction {
     // The default behavior is to include all menu action items
     static func menuItems(for message: ExyteChat.Message) -> [MessageAction] {
         if message.user.isCurrentUser {
-            return [.edit, .delete]
+            return [.edit]
         } else {
             return [.copy, .reply]
         }

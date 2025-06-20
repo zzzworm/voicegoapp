@@ -123,6 +123,7 @@
 		4D24B0E16BFB87F56BDEF2CA /* AppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 641EBAC2EE9335991DC623FF /* AppView.swift */; };
 		4E7A017A5177EED86F304195 /* NotificationsFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158C0ECE70CFF2DC9951B96F /* NotificationsFeature.swift */; };
 		50A281EBE4FDF57900488B61 /* Dependencies.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A8118A2051A884F5B978A14 /* Dependencies.framework */; };
+		50A981CBE620848782DC7F8A /* WrapLayout.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4194F6CD9D329B5337BCA451 /* WrapLayout.framework */; };
 		518F58C45A000B73F6533873 /* GoogleUtilities_GoogleUtilities_Logger.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0769FC29CABC6FD7BD9FF1F4 /* GoogleUtilities_GoogleUtilities_Logger.bundle */; };
 		51E55E319728C9B34707525C /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5522E0A2D5B23E55C778DBF8 /* RootView.swift */; };
 		52856BEB2AF52CBCD7DFA08C /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EE19D4E02D28D3B15652C774 /* SafariServices.framework */; };
@@ -594,6 +595,7 @@
 		3DE074C99BFAC42565BA5AC9 /* PhoneOTPView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneOTPView.swift; sourceTree = "<group>"; };
 		3FE83BD524FBA8660C3CCA17 /* AuthTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthTextField.swift; sourceTree = "<group>"; };
 		40543AD059CF55B826B06C49 /* Sharing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Sharing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4194F6CD9D329B5337BCA451 /* WrapLayout.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WrapLayout.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		423DA45DEFBB1D0EF71FF9FA /* SpeechClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechClient.swift; sourceTree = "<group>"; };
 		4304E91204FB98BBF1535A54 /* AliOSSSTS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliOSSSTS.swift; sourceTree = "<group>"; };
 		43746BB1E95D44D89A03D604 /* ExyteMediaPicker.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ExyteMediaPicker.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -983,6 +985,7 @@
 				CB13EA47EF9A84C004B9E99B /* UIFontComplete.framework in Frameworks */,
 				0477536B3FA9931A0D239313 /* UIKitNavigation.framework in Frameworks */,
 				324F294ECBD2BA811BDAF18D /* UIKitNavigationShim.framework in Frameworks */,
+				50A981CBE620848782DC7F8A /* WrapLayout.framework in Frameworks */,
 				300A43503E0FE69BF8A19973 /* XCTestDynamicOverlay.framework in Frameworks */,
 				BB6E46F9A029549FBF36F14E /* abslWrapper.framework in Frameworks */,
 				DE387AFDECF8C18E84386CF2 /* cmark_gfm.framework in Frameworks */,
@@ -1614,6 +1617,7 @@
 				B1F5F2BCD320A599ED1E1ABF /* UIKitNavigationShim.framework */,
 				DC6E5AC349B1F7B8A2A63006 /* VoiceGo.app */,
 				B776C33462DA45974DAAC3A6 /* VoiceGoTests.xctest */,
+				4194F6CD9D329B5337BCA451 /* WrapLayout.framework */,
 				BF86E58BF9C5875337AB5F95 /* XCTestDynamicOverlay.framework */,
 			);
 			name = Products;
@@ -2212,7 +2216,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				65A0869FBCF830F88ABDE7A1 /* PBXTargetDependency */,
 			);
 			name = VoiceGo;
 			packageProductDependencies = (
@@ -2540,10 +2543,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		65A0869FBCF830F88ABDE7A1 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			productRef = 9A0BC8228AB6550348162F4D /* SwiftLintBuildToolPlugin */;
-		};
 		7831C90202CD3E717DEF29C6 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = VoiceGo;
@@ -3293,13 +3292,6 @@
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		9A0BC8228AB6550348162F4D /* SwiftLintBuildToolPlugin */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = "plugin:SwiftLintBuildToolPlugin";
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F768024D5F6BD2A175B1D059 /* Project object */;
 }
