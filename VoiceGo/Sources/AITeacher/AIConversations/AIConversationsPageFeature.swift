@@ -401,34 +401,66 @@ struct AIConversationsPageFeature {
                 guard let user = userInfoRepository.currentUser?.toChatUser() else {
                     return .none
                 }
-
-                let newReaction = Reaction(
-                    id: uuid().uuidString,
-                    user: user,
-                    createdAt: Date(),
-                    type: draftReaction.type
-                )
-                if let index = state.messages.firstIndex(where: { $0.id == message.id }) {
-                    var message = state.messages[index]
-                    if let reactionIndex = message.reactions.firstIndex(where: { $0.user.id == user.id && $0.type == newReaction.type }) {
-                        message.reactions.remove(at: reactionIndex)
-                    } else {
-                        message.reactions.append(newReaction)
+                
+                switch draftReaction.type {
+                case .emoji(let emoji):
+                    
+                    let newReaction = Reaction(
+                        id: uuid().uuidString,
+                        user: user,
+                        createdAt: Date(),
+                        type: draftReaction.type
+                    )
+                    if let index = state.messages.firstIndex(where: { $0.id == message.id }) {
+                        var message = state.messages[index]
+                        if let reactionIndex = message.reactions.firstIndex(where: { $0.user.id == user.id && $0.type == newReaction.type }) {
+                            message.reactions.remove(at: reactionIndex)
+                        } else {
+                            message.reactions.append(newReaction)
+                        }
+                        
+                        return .run { send in
+                            do{
+                                try await apiClient.updateAITeacherConversationReactions(
+                                    message.id,
+                                    message.reactions.compactMap { $0.toConversationReaction() }
+                                )
+                                return await send(.updateMessageReactions(message, message.reactions))
+                            }
+                            catch {
+                                // Handle error if needed
+                                Log.error("Failed to react to message: \(error)")
+                            }
+                        }
+                    }
+                    return .none
+                case .menu(title: let title, icon: let icon):
+                    if let systemImageEnum = AITeacherConversation.UserMessageActionSystemImage(rawValue: icon){
+                        switch systemImageEnum {
+                        case .score:
+                            return .none
+                        case .review:
+                            if let index = state.messages.firstIndex(where: { $0.id == message.id }) {
+                                var message = state.messages[index]
+                                if let payload = draftReaction.payload, !payload.isEmpty , let jsonDate = payload.data(using: .utf8){
+                                    if message.additionMessages.isEmpty {
+                                        do{
+                                            var revisions = try JSONDecoder().decode([String].self, from: jsonDate)
+                                            message.additionMessages.append(contentsOf: revisions)
+                                        }
+                                        catch {
+                                            Log.error("Failed to decode JSON data: \(error)")
+                                        }
+                                    }
+                                    else{
+                                        message.additionMessages = []
+                                    }
+                                    state.messages[index] = message
+                                }
+                            }
+                        }
                     }
                     
-                    return .run { send in
-                        do{
-                            try await apiClient.updateAITeacherConversationReactions(
-                                 message.id,
-                                 message.reactions.compactMap { $0.toConversationReaction() }
-                            )
-                            return await send(.updateMessageReactions(message, message.reactions))
-                        }
-                        catch {
-                            // Handle error if needed
-                            Log.error("Failed to react to message: \(error)")
-                        }
-                    }
                 }
                 
                 return .none

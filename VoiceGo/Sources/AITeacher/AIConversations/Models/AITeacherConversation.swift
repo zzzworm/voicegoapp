@@ -14,7 +14,7 @@ extension ConversationReaction: Codable, Equatable {
         case emoji
         case usedAt
     }
-
+    
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         emoji = try container.decode(String.self, forKey: .emoji)
@@ -45,8 +45,9 @@ extension ExyteChat.Reaction {
         switch self.type {
         case .emoji(let emoji):
             return ConversationReaction(emoji: emoji, usedAt: self.createdAt)
+        case .menu(_, _):
+            return nil
         }
-        return nil
     }
 }
 
@@ -60,12 +61,12 @@ struct ConversationAnswer: Codable, FetchableRecord, PersistableRecord, Equatabl
     let review: String
     let simpleReplay: String?
     let formalReplay: String?
-
+    
 }
 extension ConversationAnswer {
     // MARK: - GRDB Table
     static let databaseTableName = "conversationAnswer"
-
+    
     // MARK: - CodingKeys
     enum CodingKeys: String, CodingKey {
         case id
@@ -76,7 +77,7 @@ extension ConversationAnswer {
         case simpleReplay = "simple_replay"
         case formalReplay = "formal_replay"
     }
-
+    
     func encode(to container: inout PersistenceContainer) {
         container[Column("id")] = id
         container[Column("answer")] = answer
@@ -92,12 +93,16 @@ extension ConversationAnswer {
         container[Column("simpleReplay")] = simpleReplay
         container[Column("formalReplay")] = formalReplay
     }
-
+    
     init(row: Row) throws {
         id = row[Column("id")]
         answer = row[Column("answer")]
         score = row[Column("score")]
-        revisions = try JSONDecoder().decode([String].self, from: row[Column("revisions")])
+        let stringifiedRevisions = row[Column("revisions")] as String
+        guard let jsonData = stringifiedRevisions.data(using: .utf8) else {
+            throw DatabaseError(resultCode: .SQLITE_MISUSE, message: "Failed to convert revisions string to data")
+        }
+        revisions = try JSONDecoder().decode([String].self, from: jsonData)
         review = row[Column("review")]
         simpleReplay = row[Column("simpleReplay")]
         formalReplay = row[Column("formalReplay")]
@@ -105,7 +110,7 @@ extension ConversationAnswer {
 }
 
 struct AITeacherConversation: Equatable, Identifiable, TableRecord, Codable {
-
+    
     let documentId: String
     let id: Int
     let updatedAt: Date
@@ -132,47 +137,31 @@ struct AITeacherConversation: Equatable, Identifiable, TableRecord, Codable {
         static let publishedAt = Column("publishedAt")
         static let reactions = Column("reactions")
     }
+    
+    enum UserMessageActionSystemImage : String, Codable {
+        case score = "suit.heart"
+        case review = "exclamationmark.triangle"
+    }
 }
 
 extension AITeacherConversation {
     static var databaseTableName = "aiTeacherHistory"
     
     func toChatLatestMessage() -> [ExyteChat.Message] {
-        let userMsg =  ExyteChat.Message(
-            id: UUID().uuidString,
-            user: user.toChatUser(),
-            status: .read,
-            createdAt: createdAt,
-            text: query,
-            attachments: [],
-            reactions: [],
-            recording: nil,
-            replyMessage: nil
-        )
+        let userMsg =  toUserMessage()
         if let answer = answer {
-
+            
             let answerMsg = toAnswerMessage()
             return [userMsg, answerMsg]
         }
-
+        
         return [userMsg]
     }
-
+    
     func toChatMessage() -> [ExyteChat.Message] {
-
+        
         if let answer = answer {
-            let userMsg = ExyteChat.Message(
-               id: UUID().uuidString,
-               user: user.toChatUser(),
-               status: .read,
-               createdAt: createdAt,
-               text: query,
-               attachments: [],
-               reactions: [],
-               additionMessages: [answer.review],
-               recording: nil,
-               replyMessage: nil
-           )
+            let userMsg = toUserMessage()
             let answerMsg = ExyteChat.Message(
                 id: message_id ?? UUID().uuidString,
                 user: ai_teacher.toChatUser(),
@@ -188,24 +177,24 @@ extension AITeacherConversation {
             return [userMsg, answerMsg]
         } else {
             let userMsg = ExyteChat.Message(
-               id: UUID().uuidString,
-               user: user.toChatUser(),
-               status: .sent,
-               createdAt: createdAt,
-               text: query,
-               attachments: [],
-               reactions: [],
-               recording: nil,
-               replyMessage: nil
-           )
+                id: UUID().uuidString,
+                user: user.toChatUser(),
+                status: .sent,
+                createdAt: createdAt,
+                text: query,
+                attachments: [],
+                reactions: [],
+                recording: nil,
+                replyMessage: nil
+            )
             return [userMsg]
         }
-
+        
     }
-
+    
     func toAnswerMessage() -> ExyteChat.Message {
         var associations: [ExyteChat.Association] = []
-
+        
         if let simpleReplay = answer?.simpleReplay {
             let association = ExyteChat.Association(
                 id: UUID().uuidString,
@@ -213,9 +202,9 @@ extension AITeacherConversation {
             )
             associations.append(association)
         }
-
+        
         if let formalReplay = answer?.formalReplay {
-
+            
             let association = ExyteChat.Association(
                 id: UUID().uuidString,
                 type: .suggestion("地道: \(formalReplay)")
@@ -229,7 +218,8 @@ extension AITeacherConversation {
                     id: UUID().uuidString,
                     user: user.toChatUser(),
                     createdAt: reaction.usedAt,
-                    type: .emoji(reaction.emoji)
+                    type: .emoji(reaction.emoji),
+                    status: .read
                 )
             }
         }
@@ -247,7 +237,48 @@ extension AITeacherConversation {
         )
         return answerMsg
     }
-
+    
+    func toUserMessage() -> ExyteChat.Message {
+        var reactions: [ExyteChat.Reaction] = []
+        if let answer = answer {
+            let scoreReaction =   ExyteChat.Reaction(
+                id: UUID().uuidString,
+                user: user.toChatUser(),
+                createdAt: updatedAt,
+                type: .menu(title: "地道:\(answer.score)", icon: UserMessageActionSystemImage.score.rawValue),
+                payload: String(answer.score), status: .read // Assuming score is a string representation
+            )
+            reactions.append(scoreReaction)
+            if answer.revisions.count > 0 {
+                let jsonData = try? JSONEncoder().encode(answer.revisions)
+                let revisionsString: String = String(data: jsonData ?? Data(), encoding: .utf8) ?? "[]"
+                let reviewReaction =   ExyteChat.Reaction(
+                    id: UUID().uuidString,
+                    user: user.toChatUser(),
+                    createdAt: updatedAt,
+                    type: .menu(title: "改进:\(answer.revisions.count)", icon:UserMessageActionSystemImage.review.rawValue),
+                    payload: revisionsString,
+                    status: .read
+                )
+                reactions.append(reviewReaction)
+            }
+        }
+        
+        let userMsg = ExyteChat.Message(
+            id: UUID().uuidString,
+            user: user.toChatUser(),
+            status: .read,
+            createdAt: createdAt,
+            text: query,
+            attachments: [],
+            reactions: reactions,
+            additionMessages: [],
+            recording: nil,
+            replyMessage: nil
+        )
+        return userMsg
+    }
+    
     static var sample: [AITeacherConversation] = [
         AITeacherConversation(
             documentId: "conversation_doc_1",
