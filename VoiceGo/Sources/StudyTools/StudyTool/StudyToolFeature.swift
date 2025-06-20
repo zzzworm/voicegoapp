@@ -150,11 +150,15 @@ struct StudyToolFeature {
                                                                                              message_id: "",
                                                                                              conversation_id: ""))
                     state.currenttoolHistory = toolHistoryState
+                    var assist_content = "";
+                    if let lastItem = state.toolHistoryListState.last {
+                        assist_content = lastItem.history.answer?.answer ?? ""
+                    }
                     let (inserted, index) = state.toolHistoryListState.append(toolHistoryState)
                     state.lastIndex = index
 
                     return .run { send in
-                            for try await event in try await apiClient.streamToolConversation(studyTool, query) {
+                            for try await event in try await apiClient.streamToolConversation(studyTool, query, assist_content) {
 
                                 switch event {
                                 case .message(let message):
@@ -195,7 +199,7 @@ struct StudyToolFeature {
                 return .none
             }
         }
-        .forEach(\.toolHistoryListState, action: \.toolHistory) { 
+        .forEach(\.toolHistoryListState, action: \.toolHistory) {
             ToolHistoryFeature()
         }
 

@@ -47,17 +47,17 @@ extension VoiceGoAPIClient: TestDependencyKey {
             )
             return resp
         },
-        createToolConversation: { _, _ in
+        createToolConversation: { _, _, _ in
             let response = StrapiResponse(
                 data: ToolConversation.sample[0],
                 meta: nil
             )
             return response
         },
-        streamToolConversation: {studyTool, query in
+        streamToolConversation: {studyTool, query, assist_content in
             return AsyncThrowingStream { continuation in
                 Task {
-                    let data = StrapiRequestBody(["studyTool": .dictionary(["documentId": .string(studyTool.documentId), "categoryKey": .string(studyTool.categoryKey)]), "query": .string(query)])
+                    let data = StrapiRequestBody(["studyTool": .dictionary(["documentId": .string(studyTool.documentId), "categoryKey": .string(studyTool.categoryKey)]), "query": .string(query), "assist_content": .string(assist_content)])
                     let request = try await Strapi.contentManager.collection("tool-conversation/create-message?stream").asPostRequest(data)
 
                     Session.default.eventSourceRequest(request).responseEventSource(handler: { eventSource in
@@ -248,14 +248,14 @@ extension VoiceGoAPIClient {
             )
             return resp
         },
-        createToolConversation: { _, _ in
+        createToolConversation: { _, _, _ in
             let response = StrapiResponse(
                 data: ToolConversation.sample[0],
                 meta: nil
             )
             return response
         },
-        streamToolConversation: { _, _ in
+        streamToolConversation: { _, _,_ in
             return AsyncThrowingStream { continuation in
                 continuation.finish()
             }

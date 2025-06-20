@@ -18,8 +18,8 @@ struct VoiceGoAPIClient {
     var getAliSTS: @Sendable () async throws -> AliOSSSTS
 
     var getToolConversationList: @Sendable (_ studyToolId: String, _ page: Int, _ pageSize: Int) async throws -> StrapiResponse<[ToolConversation]>
-    var createToolConversation: @Sendable (_ studyTool: StudyTool, _ query: String) async throws -> StrapiResponse<ToolConversation>
-    var streamToolConversation: @Sendable (_ studyTool: StudyTool, _ query: String) async throws -> AsyncThrowingStream<DataStreamRequest.EventSourceEvent, Error>
+    var createToolConversation: @Sendable (_ studyTool: StudyTool, _ query: String, _ assist_content: String) async throws -> StrapiResponse<ToolConversation>
+    var streamToolConversation: @Sendable (_ studyTool: StudyTool, _ query: String, _ assist_content: String) async throws -> AsyncThrowingStream<DataStreamRequest.EventSourceEvent, Error>
 
     var createAITeacherConversation: @Sendable (_ aiTeacher: AITeacher, _ query: String) async throws -> StrapiResponse<AITeacherConversation>
     var streamAITeacherConversation: @Sendable (_ aiTeacher: AITeacher, _ query: String) async throws -> AsyncThrowingStream<DataStreamRequest.EventSourceEvent, Error>
@@ -128,16 +128,16 @@ extension VoiceGoAPIClient: DependencyKey {
                 .getDocuments(as: [ToolConversation].self)
             return response
         },
-        createToolConversation: {studyTool, query in
+        createToolConversation: {studyTool, query, assist_content in
 
-            let data = StrapiRequestBody(["studyTool": .dictionary(["documentId": .string(studyTool.documentId)]), "query": .string(query)])
+            let data = StrapiRequestBody(["studyTool": .dictionary(["documentId": .string(studyTool.documentId)]), "query": .string(query), "assist_content": .string(assist_content)])
             let response = try await Strapi.contentManager.collection("tool-conversation/create-message").postData(data, as: ToolConversation.self)
             return response
         },
-        streamToolConversation: {studyTool, query in
+        streamToolConversation: {studyTool, query, assist_content in
             return AsyncThrowingStream { continuation in
                 Task {
-                    let data = StrapiRequestBody(["studyTool": .dictionary(["documentId": .string(studyTool.documentId), "categoryKey": .string(studyTool.categoryKey)]), "query": .string(query)])
+                    let data = StrapiRequestBody(["studyTool": .dictionary(["documentId": .string(studyTool.documentId), "categoryKey": .string(studyTool.categoryKey)]), "query": .string(query), "assist_content": .string(assist_content)])
                     let request = try await Strapi.contentManager.collection("tool-conversation/create-message?stream").asPostRequest(data)
 
                     Session.default.eventSourceRequest(request).responseEventSource(handler: { eventSource in
