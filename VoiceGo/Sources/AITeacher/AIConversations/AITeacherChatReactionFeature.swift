@@ -24,15 +24,20 @@ final class AITeacherReactionDelegate: NSObject, ReactionDelegate {
     }
 
     nonisolated func canReact(to message: Message) -> Bool {
-        return !message.user.isCurrentUser
+        return !message.user.isCurrentUser || !message.reactions.isEmpty
     }
 
     nonisolated func reactions(for message: Message) -> [ReactionType]? {
-        return [
-            .emoji("👍"),
-            .emoji("❤️"),
-            .emoji("😢")
-        ]
+        if message.user.isCurrentUser {
+            return nil
+        }
+        else{
+            return [
+                .emoji("👍"),
+                .emoji("❤️"),
+                .emoji("😢")
+            ]
+        }
     }
 
     nonisolated func allowEmojiSearch(for message: Message) -> Bool {
@@ -43,7 +48,7 @@ final class AITeacherReactionDelegate: NSObject, ReactionDelegate {
     func shouldShowOverview(for message: Message) -> Bool {
         store.withState { state in
             if let index = state.messages.firstIndex(where: { $0.id == message.id }) {
-                let reactions = state.messages[index].reactions 
+                let reactions = state.messages[index].reactions
                 return !reactions.isEmpty
             }
             return false
